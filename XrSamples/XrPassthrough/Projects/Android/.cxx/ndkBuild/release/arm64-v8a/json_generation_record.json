@@ -1,0 +1,92 @@
+[
+  {
+    "level": "INFO",
+    "message": "Start JSON generation. Platform version: 24 min SDK version: arm64-v8a",
+    "file": "C:\\Users\\JW\\Desktop\\JW\\Projects\\VR\\ovr_openxr_mobile_sdk\\XrSamples\\XrPassthrough\\Projects\\Android\\jni\\Android.mk",
+    "tag": "release|arm64-v8a"
+  },
+  {
+    "level": "INFO",
+    "message": "Gradle local properties file not found at C:\\Users\\JW\\Desktop\\JW\\Projects\\VR\\ovr_openxr_mobile_sdk\\local.properties",
+    "file": "C:\\Users\\JW\\Desktop\\JW\\Projects\\VR\\ovr_openxr_mobile_sdk\\XrSamples\\XrPassthrough\\Projects\\Android\\jni\\Android.mk",
+    "tag": "release|arm64-v8a"
+  },
+  {
+    "level": "INFO",
+    "message": "rebuilding JSON C:\\Users\\JW\\Desktop\\JW\\Projects\\VR\\ovr_openxr_mobile_sdk\\XrSamples\\XrPassthrough\\Projects\\Android\\.cxx\\ndkBuild\\release\\arm64-v8a\\android_gradle_build.json due to:",
+    "file": "C:\\Users\\JW\\Desktop\\JW\\Projects\\VR\\ovr_openxr_mobile_sdk\\XrSamples\\XrPassthrough\\Projects\\Android\\jni\\Android.mk",
+    "tag": "release|arm64-v8a"
+  },
+  {
+    "level": "INFO",
+    "message": "- expected json C:\\Users\\JW\\Desktop\\JW\\Projects\\VR\\ovr_openxr_mobile_sdk\\XrSamples\\XrPassthrough\\Projects\\Android\\.cxx\\ndkBuild\\release\\arm64-v8a\\android_gradle_build.json file is not present, will remove stale json folder",
+    "file": "C:\\Users\\JW\\Desktop\\JW\\Projects\\VR\\ovr_openxr_mobile_sdk\\XrSamples\\XrPassthrough\\Projects\\Android\\jni\\Android.mk",
+    "tag": "release|arm64-v8a"
+  },
+  {
+    "level": "INFO",
+    "message": "- missing previous command file C:\\Users\\JW\\Desktop\\JW\\Projects\\VR\\ovr_openxr_mobile_sdk\\XrSamples\\XrPassthrough\\Projects\\Android\\.cxx\\ndkBuild\\release\\arm64-v8a\\build_command.txt, will remove stale json folder",
+    "file": "C:\\Users\\JW\\Desktop\\JW\\Projects\\VR\\ovr_openxr_mobile_sdk\\XrSamples\\XrPassthrough\\Projects\\Android\\jni\\Android.mk",
+    "tag": "release|arm64-v8a"
+  },
+  {
+    "level": "INFO",
+    "message": "- command changed from previous, will remove stale json folder",
+    "file": "C:\\Users\\JW\\Desktop\\JW\\Projects\\VR\\ovr_openxr_mobile_sdk\\XrSamples\\XrPassthrough\\Projects\\Android\\jni\\Android.mk",
+    "tag": "release|arm64-v8a"
+  },
+  {
+    "level": "INFO",
+    "message": "created folder \u0027C:\\Users\\JW\\Desktop\\JW\\Projects\\VR\\ovr_openxr_mobile_sdk\\XrSamples\\XrPassthrough\\Projects\\Android\\.cxx\\ndkBuild\\release\\arm64-v8a\u0027",
+    "file": "C:\\Users\\JW\\Desktop\\JW\\Projects\\VR\\ovr_openxr_mobile_sdk\\XrSamples\\XrPassthrough\\Projects\\Android\\jni\\Android.mk",
+    "tag": "release|arm64-v8a"
+  },
+  {
+    "level": "INFO",
+    "message": "executing ndkBuild Executable : C:\\Users\\JW\\AppData\\Local\\Android\\Sdk\\ndk\\21.0.6113669\\ndk-build.cmd\narguments : \nNDK_PROJECT_PATH\u003dnull\nAPP_BUILD_SCRIPT\u003dC:\\Users\\JW\\Desktop\\JW\\Projects\\VR\\ovr_openxr_mobile_sdk\\XrSamples\\XrPassthrough\\Projects\\Android\\jni\\Android.mk\nNDK_APPLICATION_MK\u003dC:\\Users\\JW\\Desktop\\JW\\Projects\\VR\\ovr_openxr_mobile_sdk\\XrSamples\\XrPassthrough\\Projects\\Android\\jni\\Application.mk\nAPP_ABI\u003darm64-v8a\nNDK_ALL_ABIS\u003darm64-v8a\nNDK_DEBUG\u003d0\nAPP_PLATFORM\u003dandroid-24\nNDK_OUT\u003dC:/Users/JW/Desktop/JW/Projects/VR/ovr_openxr_mobile_sdk/XrSamples/XrPassthrough/Projects/Android/build/intermediates/ndkBuild/release/obj\nNDK_LIBS_OUT\u003dC:\\Users\\JW\\Desktop\\JW\\Projects\\VR\\ovr_openxr_mobile_sdk\\XrSamples\\XrPassthrough\\Projects\\Android\\build\\intermediates\\ndkBuild\\release\\lib\nV\u003d0\n-j12\n-CC:\\Users\\JW\\Desktop\\JW\\Projects\\VR\\ovr_openxr_mobile_sdk\\XrSamples\\XrPassthrough\\Projects\\Android\nAPP_PLATFORM\u003dandroid-24\nNDK_TOOLCHAIN_VERSION\u003dclang\nAPP_STL\u003dc++_static\nNDK_DEBUG\u003d0\nOVR_DEBUG\u003d0\nUSE_ASAN\u003d0\nAPP_SHORT_COMMANDS\u003dfalse\nLOCAL_SHORT_COMMANDS\u003dfalse\n-B\n-n\njvmArgs : \n\n",
+    "file": "C:\\Users\\JW\\Desktop\\JW\\Projects\\VR\\ovr_openxr_mobile_sdk\\XrSamples\\XrPassthrough\\Projects\\Android\\jni\\Android.mk",
+    "tag": "release|arm64-v8a"
+  },
+  {
+    "level": "INFO",
+    "message": "Executable : C:\\Users\\JW\\AppData\\Local\\Android\\Sdk\\ndk\\21.0.6113669\\ndk-build.cmd\narguments : \nNDK_PROJECT_PATH\u003dnull\nAPP_BUILD_SCRIPT\u003dC:\\Users\\JW\\Desktop\\JW\\Projects\\VR\\ovr_openxr_mobile_sdk\\XrSamples\\XrPassthrough\\Projects\\Android\\jni\\Android.mk\nNDK_APPLICATION_MK\u003dC:\\Users\\JW\\Desktop\\JW\\Projects\\VR\\ovr_openxr_mobile_sdk\\XrSamples\\XrPassthrough\\Projects\\Android\\jni\\Application.mk\nAPP_ABI\u003darm64-v8a\nNDK_ALL_ABIS\u003darm64-v8a\nNDK_DEBUG\u003d0\nAPP_PLATFORM\u003dandroid-24\nNDK_OUT\u003dC:/Users/JW/Desktop/JW/Projects/VR/ovr_openxr_mobile_sdk/XrSamples/XrPassthrough/Projects/Android/build/intermediates/ndkBuild/release/obj\nNDK_LIBS_OUT\u003dC:\\Users\\JW\\Desktop\\JW\\Projects\\VR\\ovr_openxr_mobile_sdk\\XrSamples\\XrPassthrough\\Projects\\Android\\build\\intermediates\\ndkBuild\\release\\lib\nV\u003d0\n-j12\n-CC:\\Users\\JW\\Desktop\\JW\\Projects\\VR\\ovr_openxr_mobile_sdk\\XrSamples\\XrPassthrough\\Projects\\Android\nAPP_PLATFORM\u003dandroid-24\nNDK_TOOLCHAIN_VERSION\u003dclang\nAPP_STL\u003dc++_static\nNDK_DEBUG\u003d0\nOVR_DEBUG\u003d0\nUSE_ASAN\u003d0\nAPP_SHORT_COMMANDS\u003dfalse\nLOCAL_SHORT_COMMANDS\u003dfalse\n-B\n-n\njvmArgs : \n\n",
+    "file": "C:\\Users\\JW\\Desktop\\JW\\Projects\\VR\\ovr_openxr_mobile_sdk\\XrSamples\\XrPassthrough\\Projects\\Android\\jni\\Android.mk",
+    "tag": "release|arm64-v8a"
+  },
+  {
+    "level": "INFO",
+    "message": "done executing ndkBuild",
+    "file": "C:\\Users\\JW\\Desktop\\JW\\Projects\\VR\\ovr_openxr_mobile_sdk\\XrSamples\\XrPassthrough\\Projects\\Android\\jni\\Android.mk",
+    "tag": "release|arm64-v8a"
+  },
+  {
+    "level": "INFO",
+    "message": "write build output C:\\Users\\JW\\Desktop\\JW\\Projects\\VR\\ovr_openxr_mobile_sdk\\XrSamples\\XrPassthrough\\Projects\\Android\\.cxx\\ndkBuild\\release\\arm64-v8a\\build_output.txt",
+    "file": "C:\\Users\\JW\\Desktop\\JW\\Projects\\VR\\ovr_openxr_mobile_sdk\\XrSamples\\XrPassthrough\\Projects\\Android\\jni\\Android.mk",
+    "tag": "release|arm64-v8a"
+  },
+  {
+    "level": "INFO",
+    "message": "parse and convert ndk-build output to build configuration JSON",
+    "file": "C:\\Users\\JW\\Desktop\\JW\\Projects\\VR\\ovr_openxr_mobile_sdk\\XrSamples\\XrPassthrough\\Projects\\Android\\jni\\Android.mk",
+    "tag": "release|arm64-v8a"
+  },
+  {
+    "level": "INFO",
+    "message": "found application make file C:\\Users\\JW\\Desktop\\JW\\Projects\\VR\\ovr_openxr_mobile_sdk\\XrSamples\\XrPassthrough\\Projects\\Android\\jni\\Application.mk",
+    "file": "C:\\Users\\JW\\Desktop\\JW\\Projects\\VR\\ovr_openxr_mobile_sdk\\XrSamples\\XrPassthrough\\Projects\\Android\\jni\\Android.mk",
+    "tag": "release|arm64-v8a"
+  },
+  {
+    "level": "INFO",
+    "message": "write command file C:\\Users\\JW\\Desktop\\JW\\Projects\\VR\\ovr_openxr_mobile_sdk\\XrSamples\\XrPassthrough\\Projects\\Android\\.cxx\\ndkBuild\\release\\arm64-v8a\\build_command.txt",
+    "file": "C:\\Users\\JW\\Desktop\\JW\\Projects\\VR\\ovr_openxr_mobile_sdk\\XrSamples\\XrPassthrough\\Projects\\Android\\jni\\Android.mk",
+    "tag": "release|arm64-v8a"
+  },
+  {
+    "level": "INFO",
+    "message": "JSON generation completed without problems",
+    "file": "C:\\Users\\JW\\Desktop\\JW\\Projects\\VR\\ovr_openxr_mobile_sdk\\XrSamples\\XrPassthrough\\Projects\\Android\\jni\\Android.mk",
+    "tag": "release|arm64-v8a"
+  }
+]

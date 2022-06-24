@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1272057350/XrPassthrough.iml" filepath="$PROJECT_DIR$/.idea/modules/-1272057350/XrPassthrough.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-561493510/XrPassthrough.XrSamples.iml" filepath="$PROJECT_DIR$/.idea/modules/-561493510/XrPassthrough.XrSamples.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/2103812869/XrPassthrough.XrSamples.XrPassthrough.iml" filepath="$PROJECT_DIR$/.idea/modules/2103812869/XrPassthrough.XrSamples.XrPassthrough.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/1236954180/XrPassthrough.XrSamples.XrPassthrough.Projects.iml" filepath="$PROJECT_DIR$/.idea/modules/1236954180/XrPassthrough.XrSamples.XrPassthrough.Projects.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/XrPassthrough.XrSamples.XrPassthrough.Projects.Android.iml" filepath="$PROJECT_DIR$/.idea/modules/XrPassthrough.XrSamples.XrPassthrough.Projects.Android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/XrPassthrough.XrSamples.XrPassthrough.Projects.Android.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/XrPassthrough.XrSamples.XrPassthrough.Projects.Android.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/XrPassthrough.XrSamples.XrPassthrough.Projects.Android.main.iml" filepath="$PROJECT_DIR$/.idea/modules/XrPassthrough.XrSamples.XrPassthrough.Projects.Android.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/XrPassthrough.XrSamples.XrPassthrough.Projects.Android.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/XrPassthrough.XrSamples.XrPassthrough.Projects.Android.unitTest.iml" />
+    </modules>
+  </component>
+</project>

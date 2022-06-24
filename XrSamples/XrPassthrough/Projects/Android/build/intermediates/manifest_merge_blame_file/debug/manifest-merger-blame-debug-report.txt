@@ -1,0 +1,108 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.oculus.sdk.xrpassthrough"
+4    android:installLocation="auto"
+5    android:versionCode="1"
+6    android:versionName="1.0" >
+7
+8    <uses-sdk
+9        android:minSdkVersion="24"
+9-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml
+10        android:targetSdkVersion="25" />
+10-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml
+11    <!-- Tell the system this app requires OpenGL ES 3.1. -->
+12    <uses-feature
+12-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:10:3-13:9
+13        android:glEsVersion="0x00030001"
+13-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:11:7-39
+14        android:required="true" />
+14-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:12:7-30
+15    <uses-feature
+15-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:15:3-18:9
+16        android:name="android.hardware.vr.headtracking"
+16-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:16:7-54
+17        android:required="true" />
+17-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:17:7-30
+18    <uses-feature
+18-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:20:3-90
+19        android:name="com.oculus.experimental.enabled"
+19-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:20:17-63
+20        android:required="true" />
+20-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:20:64-87
+21    <uses-feature
+21-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:21:3-89
+22        android:name="com.oculus.feature.PASSTHROUGH"
+22-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:21:17-62
+23        android:required="true" />
+23-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:21:63-86
+24
+25    <!-- Volume Control -->
+26    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+26-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:24:3-78
+26-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:24:20-75
+27    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+27-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:25:3-78
+27-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:25:20-75
+28    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+28-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:26:3-77
+28-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:26:20-74
+29
+30    <application
+30-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:27:3-53:17
+31        android:allowBackup="false"
+31-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:28:7-34
+32        android:debuggable="true"
+33        android:extractNativeLibs="false"
+34        android:label="xrpassthrough"
+34-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:29:7-36
+35        android:testOnly="true" >
+36        <meta-data
+36-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:31:5-81
+37            android:name="com.oculus.supportedDevices"
+37-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:31:16-58
+38            android:value="all" />
+38-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:31:59-78
+39        <!-- launchMode is set to singleTask because there should never be multiple copies of the app running -->
+40        <!-- Theme.Black.NoTitleBar.Fullscreen gives solid black instead of a (bad stereoscopic) gradient on app transition -->
+41        <!-- If targeting API level 24+, configChanges should additionally include 'density'. -->
+42        <!-- If targeting API level 24+, android:resizeableActivity="false" should be added. -->
+43        <activity
+43-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:36:5-52:16
+44            android:name="com.oculus.NativeActivity"
+44-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:37:9-49
+45            android:configChanges="screenSize|screenLayout|orientation|keyboardHidden|keyboard|navigation|uiMode"
+45-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:42:9-110
+46            android:excludeFromRecents="false"
+46-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:41:9-43
+47            android:launchMode="singleTask"
+47-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:39:9-40
+48            android:screenOrientation="landscape"
+48-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:40:9-46
+49            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" >
+49-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:38:9-73
+50
+51            <!-- Tell NativeActivity the name of the .so -->
+52            <meta-data
+52-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:45:7-86
+53                android:name="android.app.lib_name"
+53-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:45:18-53
+54                android:value="xrpassthrough" />
+54-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:45:54-83
+55            <!-- This filter lets the apk show up as a launchable icon. -->
+56            <intent-filter>
+56-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:47:7-51:23
+57                <action android:name="android.intent.action.MAIN" />
+57-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:48:9-61
+57-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:48:17-58
+58
+59                <category android:name="com.oculus.intent.category.VR" />
+59-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:49:9-66
+59-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:49:19-63
+60                <category android:name="android.intent.category.LAUNCHER" />
+60-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:50:9-69
+60-->C:\Users\JW\Desktop\JW\Projects\VR\piarno\XrSamples\XrPassthrough\Projects\Android\AndroidManifest.xml:50:19-66
+61            </intent-filter>
+62        </activity>
+63    </application>
+64
+65</manifest>
