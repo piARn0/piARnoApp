@@ -96,7 +96,7 @@ class ovrSurfaceRender {
         const int eye);
 
    private:
-    // Returns the index of the updated SceneMatrices UBO.
+    // Returns the index of the updated sceneMatrices UBO.
     int UpdateSceneMatrices(
         const OVR::Matrix4f* viewMatrix,
         const OVR::Matrix4f* projectionMatrix,
@@ -104,7 +104,7 @@ class ovrSurfaceRender {
 
    private:
     // Use a ring-buffer to avoid rendering hazards with potential update
-    // of the SceneMatrices UBO multiple times per frame.
+    // of the sceneMatrices UBO multiple times per frame.
     static const int MAX_SCENEMATRICES_UBOS = 8;
     int CurrentSceneMatricesIdx;
     GlBuffer SceneMatrices[MAX_SCENEMATRICES_UBOS]; // ubo for storing per-view scene matrices which

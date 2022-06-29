@@ -449,7 +449,7 @@ int ovrTextureManagerImpl::FindTextureIndex(char const* uri) const {
     // texture file loads to be eliminated during perf testing for purposes
     // of comparison
 #if 0
-	if ( Textures.size() > 0 )
+	if ( textures.size() > 0 )
 	{
 		return 0;
 	}
@@ -549,7 +549,7 @@ void ovrTextureManagerImpl::PrintStats() const {
 //==============================================================================================
 
 //==============================
-// ovrTextureManager::Create
+// ovrTextureManager::create
 ovrTextureManager* ovrTextureManager::Create() {
     ovrTextureManagerImpl* m = new ovrTextureManagerImpl();
     m->Init();
@@ -557,7 +557,7 @@ ovrTextureManager* ovrTextureManager::Create() {
 }
 
 //==============================
-// ovrTextureManager::Destroy
+// ovrTextureManager::destroy
 void ovrTextureManager::Destroy(ovrTextureManager*& m) {
     if (m != nullptr) {
         m->Shutdown();

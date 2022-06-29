@@ -966,7 +966,7 @@ enum XMLError {
 };
 
 
-/** An attribute is a name-value pair. Elements have an arbitrary
+/** An attribute is a name-value pair. elements have an arbitrary
 	number of attributes, each with a unique name.
 
 	@note The attributes are not XMLNodes. You may only query the
@@ -1071,7 +1071,7 @@ private:
 
 /** The element is a container class. It has a value, the element name,
 	and can contain other elements, text, comments, and unknowns.
-	Elements also contain an arbitrary number of attributes.
+	elements also contain an arbitrary number of attributes.
 */
 class XMLElement : public XMLNode
 {
@@ -1461,25 +1461,25 @@ public:
     virtual bool Accept( XMLVisitor* visitor ) const;
 
     /**
-    	Create a new Element associated with
+    	create a new Element associated with
     	this Document. The memory for the Element
     	is managed by the Document.
     */
     XMLElement* NewElement( const char* name );
     /**
-    	Create a new Comment associated with
+    	create a new Comment associated with
     	this Document. The memory for the Comment
     	is managed by the Document.
     */
     XMLComment* NewComment( const char* comment );
     /**
-    	Create a new Text associated with
+    	create a new Text associated with
     	this Document. The memory for the Text
     	is managed by the Document.
     */
     XMLText* NewText( const char* text );
     /**
-    	Create a new Declaration associated with
+    	create a new Declaration associated with
     	this Document. The memory for the object
     	is managed by the Document.
 
@@ -1491,7 +1491,7 @@ public:
     */
     XMLDeclaration* NewDeclaration( const char* text=0 );
     /**
-    	Create a new Unknown associated with
+    	create a new Unknown associated with
     	this Document. The memory forthe object
     	is managed by the Document.
     */
@@ -1614,11 +1614,11 @@ private:
 class XMLHandle
 {
 public:
-    /// Create a handle from any node (at any depth of the tree.) This can be a null pointer.
+    /// create a handle from any node (at any depth of the tree.) This can be a null pointer.
     XMLHandle( XMLNode* node )												{
         _node = node;
     }
-    /// Create a handle from a node.
+    /// create a handle from a node.
     XMLHandle( XMLNode& node )												{
         _node = &node;
     }

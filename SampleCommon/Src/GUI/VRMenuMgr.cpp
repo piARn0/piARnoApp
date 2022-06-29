@@ -1379,7 +1379,7 @@ void VRMenuMgrLocal::ExecutePendingComponentDeletions() {
 }
 
 //==============================
-// OvrVRMenuMgr::Create
+// OvrVRMenuMgr::create
 OvrVRMenuMgr* OvrVRMenuMgr::Create(OvrGuiSys& guiSys) {
     VRMenuMgrLocal* mgr = new VRMenuMgrLocal(guiSys);
     return mgr;

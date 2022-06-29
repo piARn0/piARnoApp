@@ -17,7 +17,9 @@ LOCAL_C_INCLUDES := \
 
 LOCAL_SRC_FILES := ../../../Src/XrPassthrough.cpp \
     ../../../Src/XrPassthroughGl.cpp \
-    ../../../Src/XrPassthroughInput.cpp
+    ../../../Src/XrPassthroughInput.cpp \
+    ../../../Src/Engine.cpp \
+    ../../../Src/piarno.cpp \
 
 LOCAL_LDLIBS 			:= -llog -landroid -lGLESv3 -lEGL
 LOCAL_STATIC_LIBRARIES 	:= samplexrframework

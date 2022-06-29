@@ -85,7 +85,7 @@ enum JSONItemType {
 };
 
 //-----------------------------------------------------------------------------
-// Create a new copy of a string
+// create a new copy of a string
 inline char* JSON_strdup(const char* str) {
     size_t len = OVR_strlen(str) + 1;
     char* copy = (char*)malloc(len);

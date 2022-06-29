@@ -51,7 +51,7 @@ class SimpleBeamRenderer {
     void Update(
         const OVRFW::ovrApplFrameIn& in,
         const std::vector<OVRFW::TinyUI::HitTestDevice>& hitTestDevices) {
-        // Clear old beams and particles
+        // clear old beams and particles
         for (auto h : beams_) {
             beamRenderer_.RemoveBeam(h);
         }

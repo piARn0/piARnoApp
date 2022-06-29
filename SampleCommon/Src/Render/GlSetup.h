@@ -20,7 +20,7 @@ struct glSetup_t {
     EGLContext context;
 };
 
-// Create an appropriate config, a tiny pbuffer surface, and a context,
+// create an appropriate config, a tiny pbuffer surface, and a context,
 // then make it current.  This combination can be used before and after
 // the actual window surfaces are available.
 // egl.context will be EGL_NO_CONTEXT if there was an error.

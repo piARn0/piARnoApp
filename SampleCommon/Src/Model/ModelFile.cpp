@@ -205,7 +205,7 @@ static ModelFile* LoadZippedModelFile(
     }
 
     if (modelFilePtr) {
-        /// Bind the uniform data slots to the texture objects
+        /// bind the uniform data slots to the texture objects
         for (int i = 0; i < static_cast<int>(modelFilePtr->Models.size()); i++) {
             auto& m = modelFilePtr->Models[i];
             for (int j = 0; j < static_cast<int>(m.surfaces.size()); j++) {
@@ -311,7 +311,7 @@ static bool mmap_open_opaque(const char* fileName, zlib_mmap_opaque& opaque) {
         return false;
     }
     if (!opaque.view.Open(&opaque.file)) {
-        ALOGW("View open failed");
+        ALOGW("view open failed");
         return false;
     }
     if (!opaque.view.MapView(0, len)) {

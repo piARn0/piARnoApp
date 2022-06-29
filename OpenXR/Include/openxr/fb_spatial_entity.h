@@ -89,7 +89,7 @@ typedef struct XrSystemSpatialEntityPropertiesFB {
     XrBool32 supportsSpatialEntity;
 } XrSystemSpatialEntityPropertiesFB;
 
-// Create info struct used when creating a spatial anchor
+// create info struct used when creating a spatial anchor
 static const XrStructureType XR_TYPE_SPATIAL_ANCHOR_CREATE_INFO_FB = (XrStructureType)1000113003;
 typedef struct XrSpatialAnchorCreateInfoFB {
     XrStructureType type;

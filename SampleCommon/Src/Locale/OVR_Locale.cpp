@@ -487,10 +487,10 @@ void ovrLocaleInternal::ReplaceLocalizedText(char const* inText, char* out, size
 //==============================================================================================
 
 //==============================
-// ovrLocale::Create
+// ovrLocale::create
 ovrLocale*
 ovrLocale::Create(JNIEnv& jni_, jobject activity_, char const* name, ovrFileSys* fileSys) {
-    ALOG("ovrLocale::Create - entered");
+    ALOG("ovrLocale::create - entered");
 
     ovrLocale* localePtr = NULL;
 
@@ -506,28 +506,28 @@ ovrLocale::Create(JNIEnv& jni_, jobject activity_, char const* name, ovrFileSys*
 
     JavaClass localeClass(&jni_, jni_.FindClass("java/util/Locale")); // class pointer of Locale
     if (localeClass.GetJClass() == NULL) {
-        ALOG("ovrLocale::Create - localeClass == NULL");
+        ALOG("ovrLocale::create - localeClass == NULL");
     } else {
         jmethodID getDefaultMethod =
             jni_.GetStaticMethodID(localeClass.GetJClass(), "getDefault", "()Ljava/util/Locale;");
         if (getDefaultMethod == NULL) {
-            ALOG("ovrLocale::Create - getDefaultMethod == NULL");
+            ALOG("ovrLocale::create - getDefaultMethod == NULL");
         } else {
             jobject defaultLocale =
                 jni_.CallStaticObjectMethod(localeClass.GetJClass(), getDefaultMethod);
             if (defaultLocale == NULL) {
-                ALOG("ovrLocale::Create - defaultLocale == NULL");
+                ALOG("ovrLocale::create - defaultLocale == NULL");
             } else {
                 jmethodID getLanguageMethod = jni_.GetMethodID(
                     localeClass.GetJClass(), "getLanguage", "()Ljava/lang/String;");
                 if (getLanguageMethod == NULL) {
-                    ALOG("ovrLocale::Create - getLanguageMethod == NULL");
+                    ALOG("ovrLocale::create - getLanguageMethod == NULL");
                 } else {
                     jstring language =
                         (jstring)jni_.CallObjectMethod(defaultLocale, getLanguageMethod);
                     if (language) {
                         const char* language_ch = jni_.GetStringUTFChars(language, 0);
-                        ALOG("ovrLocale::Create - languageCode = `%s`", language_ch);
+                        ALOG("ovrLocale::create - languageCode = `%s`", language_ch);
                         languageCode = language_ch;
                         jni_.ReleaseStringUTFChars(language, language_ch);
                     }
@@ -538,12 +538,12 @@ ovrLocale::Create(JNIEnv& jni_, jobject activity_, char const* name, ovrFileSys*
 
     localePtr = new ovrLocaleInternal(jni_, activity_, name, languageCode.c_str());
 
-    ALOG("ovrLocale::Create - exited");
+    ALOG("ovrLocale::create - exited");
     return localePtr;
 }
 
 //==============================
-// ovrLocale::Destroy
+// ovrLocale::destroy
 void ovrLocale::Destroy(ovrLocale*& localePtr) {
     delete localePtr;
     localePtr = NULL;

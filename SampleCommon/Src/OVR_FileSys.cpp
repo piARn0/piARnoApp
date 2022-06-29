@@ -443,14 +443,14 @@ void ovrFileSysLocal::Shutdown() {
 //==============================================================================================
 
 //==============================
-// ovrFileSys::Create
+// ovrFileSys::create
 ovrFileSys* ovrFileSys::Create(xrJava const& javaContext) {
     ovrFileSys* fs = new ovrFileSysLocal(javaContext);
     return fs;
 }
 
 //==============================
-// ovrFileSys::Destroy
+// ovrFileSys::destroy
 void ovrFileSys::Destroy(ovrFileSys*& fs) {
     if (fs != nullptr) {
         ovrFileSysLocal* fsl = static_cast<ovrFileSysLocal*>(fs);

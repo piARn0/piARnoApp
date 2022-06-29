@@ -95,7 +95,7 @@ bool ovrFramebuffer_Create(
     frameBuffer->ColorSwapChain.Width = swapChainCreateInfo.width;
     frameBuffer->ColorSwapChain.Height = swapChainCreateInfo.height;
 
-    // Create the swapchain.
+    // create the swapchain.
     OXR(xrCreateSwapchain(session, &swapChainCreateInfo, &frameBuffer->ColorSwapChain.Handle));
     // Get the number of swapchain images.
     OXR(xrEnumerateSwapchainImages(
@@ -126,7 +126,7 @@ bool ovrFramebuffer_Create(
         (GLuint*)malloc(frameBuffer->TextureSwapChainLength * sizeof(GLuint));
 
     for (uint32_t i = 0; i < frameBuffer->TextureSwapChainLength; i++) {
-        // Create the color buffer texture.
+        // create the color buffer texture.
         const GLuint colorTexture = frameBuffer->ColorSwapChainImage[i].image;
 
         GLenum colorTextureTarget = GL_TEXTURE_2D;
@@ -139,14 +139,14 @@ bool ovrFramebuffer_Create(
 
         if (multisamples > 1 && glRenderbufferStorageMultisampleEXT != NULL &&
             glFramebufferTexture2DMultisampleEXT != NULL) {
-            // Create multisampled depth buffer.
+            // create multisampled depth buffer.
             GL(glGenRenderbuffers(1, &frameBuffer->DepthBuffers[i]));
             GL(glBindRenderbuffer(GL_RENDERBUFFER, frameBuffer->DepthBuffers[i]));
             GL(glRenderbufferStorageMultisampleEXT(
                 GL_RENDERBUFFER, multisamples, GL_DEPTH_COMPONENT24, width, height));
             GL(glBindRenderbuffer(GL_RENDERBUFFER, 0));
 
-            // Create the frame buffer.
+            // create the frame buffer.
             // NOTE: glFramebufferTexture2DMultisampleEXT only works with GL_FRAMEBUFFER.
             GL(glGenFramebuffers(1, &frameBuffer->FrameBuffers[i]));
             GL(glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer->FrameBuffers[i]));
@@ -171,13 +171,13 @@ bool ovrFramebuffer_Create(
                 return false;
             }
         } else {
-            // Create depth buffer.
+            // create depth buffer.
             GL(glGenRenderbuffers(1, &frameBuffer->DepthBuffers[i]));
             GL(glBindRenderbuffer(GL_RENDERBUFFER, frameBuffer->DepthBuffers[i]));
             GL(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, width, height));
             GL(glBindRenderbuffer(GL_RENDERBUFFER, 0));
 
-            // Create the frame buffer.
+            // create the frame buffer.
             GL(glGenFramebuffers(1, &frameBuffer->FrameBuffers[i]));
             GL(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer->FrameBuffers[i]));
             GL(glFramebufferRenderbuffer(

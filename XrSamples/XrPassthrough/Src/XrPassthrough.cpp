@@ -310,7 +310,7 @@ void App::Clear() {
     TouchPadDownLastFrame = false;
 
     egl.Clear();
-    appRenderer.Clear();
+    appRenderer.clear();
 }
 
 void App::HandleSessionStateChanges(XrSessionState state) {
@@ -675,7 +675,7 @@ void android_main(struct android_app* androidApp) {
         delete[] extensionProperties;
     }
 
-    // Create the OpenXR instance.
+    // create the OpenXR instance.
     XrApplicationInfo appInfo = {};
     strcpy(appInfo.applicationName, "XrPassthrough");
     appInfo.applicationVersion = 0;
@@ -756,7 +756,7 @@ void android_main(struct android_app* androidApp) {
     graphicsRequirements.type = XR_TYPE_GRAPHICS_REQUIREMENTS_OPENGL_ES_KHR;
     OXR(pfnGetOpenGLESGraphicsRequirementsKHR(app.Instance, systemId, &graphicsRequirements));
 
-    // Create the EGL Context
+    // create the EGL Context
     app.egl.CreateContext(nullptr);
 
     // Check the graphics requirements.
@@ -798,7 +798,7 @@ void android_main(struct android_app* androidApp) {
     INIT_PFN(xrGeometryInstanceSetTransformFB);
     // FB_passthrough sample end
 
-    // Create the OpenXR Session.
+    // create the OpenXR Session.
     XrGraphicsBindingOpenGLESAndroidKHR graphicsBindingAndroidGLES = {};
     graphicsBindingAndroidGLES.type = XR_TYPE_GRAPHICS_BINDING_OPENGL_ES_ANDROID_KHR;
     graphicsBindingAndroidGLES.next = NULL;
@@ -930,7 +930,7 @@ void android_main(struct android_app* androidApp) {
 
     delete[] referenceSpaces;
 
-    // Create a space to the first path
+    // create a space to the first path
     XrReferenceSpaceCreateInfo spaceCreateInfo = {};
     spaceCreateInfo.type = XR_TYPE_REFERENCE_SPACE_CREATE_INFO;
     spaceCreateInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_VIEW;
@@ -965,7 +965,7 @@ void android_main(struct android_app* androidApp) {
     swapChainCreateInfo.arraySize = 2;
     swapChainCreateInfo.mipCount = 1;
 
-    // Create the swapchain.
+    // create the swapchain.
     OXR(xrCreateSwapchain(app.Session, &swapChainCreateInfo, &app.ColorSwapChain));
     OXR(xrEnumerateSwapchainImages(app.ColorSwapChain, 0, &app.SwapChainLength, nullptr));
     auto images = new XrSwapchainImageOpenGLESKHR[app.SwapChainLength];
@@ -985,8 +985,8 @@ void android_main(struct android_app* androidApp) {
         colorTextures[i] = GLuint(images[i].image);
     }
 
-    app.appRenderer.Create(
-        format, width, height, NUM_MULTI_SAMPLES, app.SwapChainLength, colorTextures);
+    app.appRenderer.create(
+            format, width, height, NUM_MULTI_SAMPLES, app.SwapChainLength, colorTextures);
 
     delete[] images;
     delete[] colorTextures;
@@ -994,7 +994,7 @@ void android_main(struct android_app* androidApp) {
     AppInput_init(app);
 
     // FB_passthrough sample begin
-    // Create passthrough objects
+    // create passthrough objects
     XrPassthroughFB passthrough = XR_NULL_HANDLE;
     XrPassthroughLayerFB passthroughLayer = XR_NULL_HANDLE;
     XrPassthroughLayerFB reconPassthroughLayer = XR_NULL_HANDLE;
@@ -1051,8 +1051,8 @@ void android_main(struct android_app* androidApp) {
     int framesCyclePaused = 0;
     bool cyclePaused = false;
 
-    //color (actually just opacity) of the clear color on top of passthrough
-    float clearColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+    //color of the clear color of the layer on top of passthrough but just use the one in scene directly?
+    //float clearColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 
     //enable passthrough
     OXR(xrPassthroughStartFB(passthrough));
@@ -1060,12 +1060,12 @@ void android_main(struct android_app* androidApp) {
     passthroughLayer = reconPassthroughLayer;
     OXR(xrPassthroughLayerResumeFB(passthroughLayer));
     style.textureOpacityFactor = 1.0f;
-    style.edgeColor = {0.0f, 1.0f, 0.0f, 1.0f};
+    style.edgeColor = {0.0f, 1.0f, 0.0f, 1.0f}; //WELCOME TO THE MATRIX
     OXR(xrPassthroughLayerSetStyleFB(passthroughLayer, &style));
 
     //create piarno obj and initialize it
     piarno pia;
-    pia.init();
+    pia.init(&app.appRenderer.scene);
 
     while (androidApp->destroyRequested == 0) {
         frameCount++;
@@ -1104,19 +1104,19 @@ void android_main(struct android_app* androidApp) {
             cyclePaused = !cyclePaused;
         }
 
-        if (cyclePaused) {
+        /*if (cyclePaused) {
             clearColor[0] = 0.3f;
             framesCyclePaused++;
         } else {
             clearColor[0] = 0.0f;
         }
-        app.appRenderer.scene.SetClearColor(clearColor);
+        app.appRenderer.scene.setClearColor(clearColor);*/
 
-        // Create the scene if not yet created.
+        // create the scene if not yet created.
         // The scene is created here to be able to show a loading icon.
-        if (!app.appRenderer.scene.IsCreated()) {
-            // Create the scene.
-            app.appRenderer.scene.Create();
+        if (!app.appRenderer.scene.isCreated()) {
+            // create the scene.
+            app.appRenderer.scene.create();
         }
 
         if (stageBoundsDirty) {
@@ -1186,11 +1186,11 @@ void android_main(struct android_app* androidApp) {
                 XrSpaceLocation loc = {XR_TYPE_SPACE_LOCATION};
                 OXR(xrLocateSpace(
                     controllerSpace[i], app.LocalSpace, frameState.predictedDisplayTime, &loc));
-                app.appRenderer.scene.trackedController[i].Active =
+                app.appRenderer.scene.trackedController[i].active =
                     (loc.locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT) != 0;
-                app.appRenderer.scene.trackedController[i].Pose = OvrFromXr(loc.pose);
+                app.appRenderer.scene.trackedController[i].pose = OvrFromXr(loc.pose);
             } else {
-                app.appRenderer.scene.trackedController[i].Clear();
+                app.appRenderer.scene.trackedController[i].clear();
             }
         }
 
@@ -1210,7 +1210,7 @@ void android_main(struct android_app* androidApp) {
         uint32_t chainIndex = 0;
         XrSwapchainImageAcquireInfo acquireInfo = {XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO, NULL};
         OXR(xrAcquireSwapchainImage(app.ColorSwapChain, &acquireInfo, &chainIndex));
-        frameIn.SwapChainIndex = int(chainIndex);
+        frameIn.swapChainIndex = int(chainIndex);
 
         XrPosef xfLocalFromEye[NUM_EYES];
 
@@ -1227,8 +1227,8 @@ void android_main(struct android_app* androidApp) {
             XrMatrix4x4f projMat;
             XrMatrix4x4f_CreateProjectionFov(&projMat, GRAPHICS_OPENGL_ES, fov, 0.1f, 0.0f);
 
-            frameIn.View[eye] = OvrFromXr(viewMat);
-            frameIn.Proj[eye] = OvrFromXr(projMat);
+            frameIn.view[eye] = OvrFromXr(viewMat);
+            frameIn.proj[eye] = OvrFromXr(projMat);
         }
 
         if (app.StageSpace != XR_NULL_HANDLE) {
@@ -1237,11 +1237,11 @@ void android_main(struct android_app* androidApp) {
                 app.StageSpace, app.LocalSpace, frameState.predictedDisplayTime, &loc));
             XrPosef xfLocalFromStage = loc.pose;
 
-            frameIn.HasStage = true;
-            frameIn.StagePose = OvrFromXr(xfLocalFromStage);
-            frameIn.StageScale = app.StageBounds;
+            frameIn.hasStage = true;
+            frameIn.stagePose = OvrFromXr(xfLocalFromStage);
+            frameIn.stageScale = app.StageBounds;
         } else {
-            frameIn.HasStage = false;
+            frameIn.hasStage = false;
         }
 
         XrSwapchainImageWaitInfo waitInfo;
@@ -1259,8 +1259,7 @@ void android_main(struct android_app* androidApp) {
                 waitInfo.timeout * (1E-9));
         }
 
-        app.appRenderer.RenderFrame(frameIn);
-        pia.render();
+        app.appRenderer.renderFrame(frameIn, pia);
 
         XrSwapchainImageReleaseInfo releaseInfo = {XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO, NULL};
         OXR(xrReleaseSwapchainImage(app.ColorSwapChain, &releaseInfo));
@@ -1328,7 +1327,7 @@ void android_main(struct android_app* androidApp) {
         OXR(xrEndFrame(app.Session, &endFrameInfo));
     }
 
-    app.appRenderer.Destroy();
+    app.appRenderer.destroy();
 
     AppInput_shutdown();
 

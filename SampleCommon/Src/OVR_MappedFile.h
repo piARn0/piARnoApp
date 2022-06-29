@@ -66,7 +66,7 @@ class MappedFile {
     size_t Length;
 };
 
-// View of a portion of the memory mapped file
+// view of a portion of the memory mapped file
 class MappedView {
    public:
     MappedView();

@@ -2395,7 +2395,7 @@ void BitmapFontSurfaceLocal::SetCullEnabled(const bool enabled) {
 }
 
 //==============================
-// BitmapFont::Create
+// BitmapFont::create
 BitmapFont* BitmapFont::Create() {
     return new BitmapFontLocal;
 }
@@ -2409,7 +2409,7 @@ void BitmapFont::Free(BitmapFont*& font) {
 }
 
 //==============================
-// BitmapFontSurface::Create
+// BitmapFontSurface::create
 BitmapFontSurface* BitmapFontSurface::Create() {
     return new BitmapFontSurfaceLocal();
 }

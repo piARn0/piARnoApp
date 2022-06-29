@@ -107,7 +107,7 @@ bool LoadModelFile_OvrScene_Json(
             LOGV("loading render model..");
 
             //
-            // Render Model Textures
+            // Render Model textures
             //
 
             enum TextureOcclusion {
@@ -136,7 +136,7 @@ bool LoadModelFile_OvrScene_Json(
                         }
                         if (i == static_cast<int>(modelFile.Textures.size())) {
                             ALOG("texture %s defaulted", name.c_str());
-                            // Create a default texture.
+                            // create a default texture.
                             LoadModelFileTexture(
                                 modelFile, name.c_str(), nullptr, 0, materialParms);
                         }

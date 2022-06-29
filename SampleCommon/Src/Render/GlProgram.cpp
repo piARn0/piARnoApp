@@ -54,7 +54,7 @@ uniform highp mat4 ModelMatrix;
 
 // Use a ubo in v300 path to workaround corruption issue on Adreno 420+v300
 // when uniform array of matrices used.
-uniform SceneMatrices
+uniform sceneMatrices
 {
 	highp mat4 ViewMatrix[NUM_VIEWS];
 	highp mat4 ProjectionMatrix[NUM_VIEWS];
@@ -194,7 +194,7 @@ GlProgram GlProgram::Build(
     GlProgram p;
 
     //--------------------------
-    // Compile and Create the Program
+    // Compile and create the Program
     //--------------------------
 
     int programVersion = requestedProgramVersion;
@@ -282,7 +282,7 @@ GlProgram GlProgram::Build(
         p.ViewID.Binding = p.ViewID.Location;
 
         p.SceneMatrices.Type = ovrProgramParmType::BUFFER_UNIFORM;
-        p.SceneMatrices.Location = glGetUniformBlockIndex(p.Program, "SceneMatrices");
+        p.SceneMatrices.Location = glGetUniformBlockIndex(p.Program, "sceneMatrices");
         if (p.SceneMatrices.Location >= 0) // this won't be present for v100 shaders.
         {
             p.SceneMatrices.Binding = p.numUniformBufferBindings++;
@@ -366,7 +366,7 @@ void GlProgram::SetUseMultiview(const bool useMultiview_) {
 }
 
 void ovrGraphicsCommand::BindUniformTextures() {
-    /// Late bind Textures to the right texture objects
+    /// Late bind textures to the right texture objects
     for (int i = 0; i < ovrUniform::MAX_UNIFORMS; ++i) {
         const ovrUniform& uniform = Program.Uniforms[i];
         if (uniform.Type == ovrProgramParmType::TEXTURE_SAMPLED) {

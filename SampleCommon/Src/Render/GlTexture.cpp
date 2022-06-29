@@ -1625,7 +1625,7 @@ GlTexture LoadTextureFromBuffer(
         ALOG("unsupported file extension '%s', for file '%s'", ext.c_str(), fileName);
     }
 
-    // Create a default texture if the load failed
+    // create a default texture if the load failed
     if (texId.texture == 0) {
         ALOGW("Failed to load %s", fileName);
         if ((flags & TEXTUREFLAG_NO_DEFAULT) == 0) {

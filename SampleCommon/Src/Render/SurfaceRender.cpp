@@ -407,7 +407,7 @@ ovrDrawCounters ovrSurfaceRender::RenderSurfaceList(
                 surfaceDef.geo.IndexType);
         }
 
-        // Bind all the vertex and element arrays
+        // bind all the vertex and element arrays
         {
             GL(glBindVertexArray(surfaceDef.geo.vertexArrayObject));
 

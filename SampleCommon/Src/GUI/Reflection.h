@@ -287,7 +287,7 @@ class ovrReflection {
     std::vector<ovrTypeInfo const*> TypeInfoLists;
     std::vector<ovrReflectionOverload*> Overloads;
 
-    // can only be allocated and deleted by ovrReflection::Create and ovrReflection::Destroy
+    // can only be allocated and deleted by ovrReflection::create and ovrReflection::destroy
     ovrReflection(){};
     virtual ~ovrReflection() {}
 };

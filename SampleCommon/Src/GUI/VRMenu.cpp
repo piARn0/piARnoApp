@@ -79,7 +79,7 @@ VRMenu::~VRMenu() {
 }
 
 //==============================
-// VRMenu::Create
+// VRMenu::create
 VRMenu* VRMenu::Create(char const* menuName) {
     return new VRMenu(menuName);
 }

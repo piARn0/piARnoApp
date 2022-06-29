@@ -168,7 +168,7 @@ void ovrArmModel::Update(
     Quatf elbowRot = Quatf().Slerp(localRemoteRot, 0.6f);
     Quatf wristRot = Quatf().Slerp(localRemoteRot, 0.4f);
 
-    /// Pose the skeleton
+    /// pose the skeleton
     Skeleton.UpdateLocalRotation(shoulderRot, ShoulderJointIdx);
     Skeleton.UpdateLocalRotation(elbowRot, ElbowJointIdx);
     Skeleton.UpdateLocalRotation(wristRot, WristJointIdx);

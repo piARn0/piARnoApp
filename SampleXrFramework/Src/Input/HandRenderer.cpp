@@ -212,14 +212,14 @@ bool HandRenderer::Init(const XrHandTrackingMeshFB* mesh, bool leftHand) {
     SkinUniformBuffer.Create(
         GLBUFFER_TYPE_UNIFORM, MAX_JOINTS * sizeof(Matrix4f), SkinMatrices.data());
 
-    /// Skeleton/Bind pose
+    /// Skeleton/bind pose
     for (int i = 0; i < XR_HAND_JOINT_COUNT_EXT; ++i) {
         const OVR::Posef pose = FromXrPosef(mesh->jointBindPoses[i]);
         TransformMatrices[i] = Matrix4f(pose);
         BindMatrices[i] = TransformMatrices[i].Inverted();
     }
 
-    /// Create surface definition
+    /// create surface definition
     HandSurfaceDef.surfaceName = leftHand ? "HandSurfaceL" : "HandkSurfaceR";
     HandSurfaceDef.geo.Create(attribs, indices);
     HandSurfaceDef.numInstances = 0;

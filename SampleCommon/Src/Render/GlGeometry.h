@@ -53,7 +53,7 @@ class GlGeometry {
         Create(attribs, indices);
     }
 
-    // Create the VAO and vertex and index buffers from arrays of data.
+    // create the VAO and vertex and index buffers from arrays of data.
     void Create(const VertexAttribs& attribs, const std::vector<TriangleIndex>& indices);
     void Update(const VertexAttribs& attribs, const bool updateBounds = true);
 

@@ -244,7 +244,7 @@ void OvrMetaData::InitFromDirectory(
 void OvrMetaData::InitFromFileList(
     const std::vector<std::string>& fileList,
     const OvrMetaDataFileExtensions& fileExtensions) {
-    // Create unique categories
+    // create unique categories
     std::unordered_map<std::string, int> uniqueCategoryList;
     for (int i = 0; i < static_cast<int>(fileList.size()); ++i) {
         const std::string& filePath = fileList[i];

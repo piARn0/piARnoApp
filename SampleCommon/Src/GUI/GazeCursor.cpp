@@ -572,7 +572,7 @@ void OvrGazeCursorLocal::SetTrailEnabled(bool const enabled) {
 //==============================================================================================
 
 //==============================
-// OvrGazeCursor::Create
+// OvrGazeCursor::create
 OvrGazeCursor* OvrGazeCursor::Create(ovrFileSys& fileSys) {
     OvrGazeCursorLocal* gc = new OvrGazeCursorLocal();
     gc->Init(fileSys);
@@ -580,7 +580,7 @@ OvrGazeCursor* OvrGazeCursor::Create(ovrFileSys& fileSys) {
 }
 
 //==============================
-// OvrGazeCursor::Destroy
+// OvrGazeCursor::destroy
 void OvrGazeCursor::Destroy(OvrGazeCursor*& gazeCursor) {
     if (gazeCursor != NULL) {
         static_cast<OvrGazeCursorLocal*>(gazeCursor)->Shutdown();

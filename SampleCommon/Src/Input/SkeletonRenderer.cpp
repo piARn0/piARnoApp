@@ -32,7 +32,7 @@ bool ovrSkeletonRenderer::Init(OVRFW::ovrFileSys* fs) {
     BoneWidth = 0.005f;
     DrawAxis = false;
 
-    /// Create Beam & Particle Renderers
+    /// create Beam & Particle Renderers
     SpriteAtlas = std::make_unique<OVRFW::ovrTextureAtlas>();
     if (SpriteAtlas) {
         SpriteAtlas->Init(FileSys, "apk:///assets/particles2.ktx");
@@ -55,7 +55,7 @@ bool ovrSkeletonRenderer::Init(OVRFW::ovrFileSys* fs) {
         return false;
     }
 
-    /// Create Axis program
+    /// create Axis program
     if (AxisRenderer.Init() == false) {
         ALOG("ovrSkeletonRenderer::Init FAILED -> could not create AxisRenderer.");
         return false;

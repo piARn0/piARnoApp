@@ -2192,7 +2192,7 @@ bool LoadModelFile_glTF_OvrScene(
                                 // #TODO: support bufferView index for image files.
                                 ALOGW(
                                     "Loading images from bufferView currently unsupported, defaulting image");
-                                // Create a default texture.
+                                // create a default texture.
                                 LoadModelFileTexture(
                                     modelFile, "DefaultImage", nullptr, 0, materialParms);
                             } else {
@@ -2512,7 +2512,7 @@ ModelFile* LoadModelFile_glB(
                                 } else {
                                     ALOGW(
                                         "Loading images from othen then bufferView currently unsupported in glBfd, defaulting image");
-                                    // Create a default texture.
+                                    // create a default texture.
                                     LoadModelFileTexture(
                                         modelFile, "DefaultImage", nullptr, 0, materialParms);
                                 }

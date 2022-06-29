@@ -1,5 +1,5 @@
 make: Entering directory 'C:/Users/JW/Desktop/JW/Projects/VR/piarno/XrSamples/XrPassthrough/Projects/Android'
-[arm64-v8a] Compile++      : xrpassthrough <= XrPassthrough.cpp
+[arm64-v8a] Compile++      : xrpassthrough <= piarno.cpp
 make: Leaving directory 'C:/Users/JW/Desktop/JW/Projects/VR/piarno/XrSamples/XrPassthrough/Projects/Android'
 make: Entering directory 'C:/Users/JW/Desktop/JW/Projects/VR/piarno/XrSamples/XrPassthrough/Projects/Android'
 [arm64-v8a] SharedLibrary  : libxrpassthrough.so

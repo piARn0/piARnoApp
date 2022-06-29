@@ -287,7 +287,7 @@ void HandMaskRenderer::Init(bool leftHand) {
     HandColorUniformBuffer.Create(
         GLBUFFER_TYPE_UNIFORM, MAX_JOINTS * sizeof(Vector3f), HandMaskColors.data());
 
-    /// Create surface definition
+    /// create surface definition
     HandMaskSurfaceDef.surfaceName = leftHand ? "HandMaskSurfaceL" : "HandMaskSurfaceR";
     HandMaskSurfaceDef.geo = BuildTesselatedQuad(1, 1, false);
     HandMaskSurfaceDef.numInstances = 0;

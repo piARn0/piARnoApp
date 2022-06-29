@@ -1,4 +1,0 @@
-#Fri Jun 24 21:43:40 CEST 2022
-base.0=C\:\\Users\\JW\\Desktop\\JW\\Projects\\VR\\piarno\\XrSamples\\XrPassthrough\\Projects\\Android\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\classes.dex
-renamed.0=classes.dex
-path.0=classes.dex

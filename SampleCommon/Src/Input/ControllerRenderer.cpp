@@ -176,7 +176,7 @@ bool ControllerRenderer::Init(
         UniformParms,
         sizeof(UniformParms) / sizeof(ovrProgramParm));
 
-    /// Create surface definition
+    /// create surface definition
     ControllerSurfaceDef.surfaceName =
         leftController ? "ControllerSurfaceL" : "ControllerkSurfaceR";
 

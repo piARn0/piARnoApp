@@ -505,7 +505,7 @@ typedef KTX_error_code
 
 /**
  * @~English
- * @brief Helper for calling the Destroy virtual method of a ktxTexture.
+ * @brief Helper for calling the destroy virtual method of a ktxTexture.
  * @copydoc ktxTexture2_Destroy
  */
 #define ktxTexture_Destroy(This) (This)->vtbl->Destroy(This)
@@ -816,7 +816,7 @@ KTX_API KTX_error_code KTX_APIENTRY
 ktxTexture_IterateLevelFaces(ktxTexture* This, PFNKTXITERCB iterCb,
                              void* userdata);
 /*
- * Create a new ktxTexture1.
+ * create a new ktxTexture1.
  */
 KTX_API KTX_error_code KTX_APIENTRY
 ktxTexture1_Create(ktxTextureCreateInfo* createInfo,
@@ -864,7 +864,7 @@ ktxTexture1_WriteKTX2ToMemory(ktxTexture1* This,
                              ktx_uint8_t** bytes, ktx_size_t* size);
 
 /*
- * Create a new ktxTexture2.
+ * create a new ktxTexture2.
  */
 KTX_API KTX_error_code KTX_APIENTRY
 ktxTexture2_Create(ktxTextureCreateInfo* createInfo,
@@ -872,7 +872,7 @@ ktxTexture2_Create(ktxTextureCreateInfo* createInfo,
                    ktxTexture2** newTex);
 
 /*
- * Create a new ktxTexture2 as a copy of an existing texture.
+ * create a new ktxTexture2 as a copy of an existing texture.
  */
 KTX_API KTX_error_code KTX_APIENTRY
 ktxTexture2_CreateCopy(ktxTexture2* orig, ktxTexture2** newTex);

@@ -284,13 +284,13 @@ Vector4f const OvrGuiSys::BUTTON_DEFAULT_TEXT_COLOR(0.098f, 0.6f, 0.96f, 1.0f);
 Vector4f const OvrGuiSys::BUTTON_HILIGHT_TEXT_COLOR(1.0f);
 
 //==============================
-// OvrGuiSys::Create
+// OvrGuiSys::create
 OvrGuiSys* OvrGuiSys::Create(const void* context) {
     return new OvrGuiSysLocal(context);
 }
 
 //==============================
-// OvrGuiSys::Destroy
+// OvrGuiSys::destroy
 void OvrGuiSys::Destroy(OvrGuiSys*& guiSys) {
     if (guiSys != nullptr) {
         guiSys->Shutdown();

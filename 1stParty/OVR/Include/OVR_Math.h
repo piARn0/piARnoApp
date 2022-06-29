@@ -2329,7 +2329,7 @@ OVR_MATH_STATIC_ASSERT((sizeof(Quatf) == 4 * sizeof(float)), "sizeof(Quatf) fail
 OVR_MATH_STATIC_ASSERT((sizeof(Quatd) == 4 * sizeof(double)), "sizeof(Quatd) failure");
 
 //-------------------------------------------------------------------------------------
-// ***** Pose
+// ***** pose
 //
 // Position and orientation combined.
 //
@@ -3195,7 +3195,7 @@ class Matrix4 {
     }
     // MERGE_MOBILE_SDK
 
-    // LookAtRH creates a View transformation matrix for right-handed coordinate system.
+    // LookAtRH creates a view transformation matrix for right-handed coordinate system.
     // The resulting matrix points camera from 'eye' towards 'at' direction, with 'up'
     // specifying the up vector. The resulting matrix should be used with PerspectiveRH
     // projection.
@@ -3225,7 +3225,7 @@ class Matrix4 {
         return m;
     }
 
-    // LookAtLH creates a View transformation matrix for left-handed coordinate system.
+    // LookAtLH creates a view transformation matrix for left-handed coordinate system.
     // The resulting matrix points camera from 'eye' towards 'at' direction, with 'up'
     // specifying the up vector.
     static Matrix4 LookAtLH(const Vector3<T>& eye, const Vector3<T>& at, const Vector3<T>& up) {
@@ -4461,7 +4461,7 @@ struct ScaleAndOffset2D {
 //-----------------------------------------------------------------------------------
 // ***** FovPort
 
-// FovPort describes Field Of View (FOV) of a viewport.
+// FovPort describes Field Of view (FOV) of a viewport.
 // This class has values for up, down, left and right, stored in
 // tangent of the angle units to simplify calculations.
 //

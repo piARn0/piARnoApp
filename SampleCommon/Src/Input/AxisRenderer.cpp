@@ -50,7 +50,7 @@ bool ovrAxisRenderer::Init(size_t count) {
     Count = count;
     AxisSize = 0.025f;
 
-    /// Create Axis program
+    /// create Axis program
     static ovrProgramParm AxisUniformParms[] = {
         {"JointMatrices", ovrProgramParmType::BUFFER_UNIFORM},
     };
@@ -64,7 +64,7 @@ bool ovrAxisRenderer::Init(size_t count) {
     InstancedBoneUniformBuffer.Create(
         GLBUFFER_TYPE_UNIFORM, Count * sizeof(Matrix4f), TransformMatrices.data());
 
-    /// Create Axis surface definition
+    /// create Axis surface definition
     AxisSurfaceDef.surfaceName = "AxisSurfaces";
     AxisSurfaceDef.geo = OVRFW::BuildAxis(AxisSize);
     AxisSurfaceDef.numInstances = 0;

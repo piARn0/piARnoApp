@@ -1,30 +1,25 @@
 //
 // Created by JW on 24/06/2022.
 //
+#pragma once
 
-#ifndef XRPASSTHROUGH_PIARNO_H
-#define XRPASSTHROUGH_PIARNO_H
+#include "Engine.h"
 
 
 class piarno {
 public:
-    void init() {
-
-    }
+    void init(Scene *scene);
 
     //run once per frame after input/state update and before rendering
-    void update() {
-
-    }
+    void update();
 
     //run once per frame to render
-    void render() {
-
-    }
+    void render();
 
 private:
+    int frame = 0;
+    Rectangle rect, r2;
 
+    Scene *scene;
 };
 
-
-#endif //XRPASSTHROUGH_PIARNO_H

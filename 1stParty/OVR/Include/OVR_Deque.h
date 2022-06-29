@@ -76,7 +76,7 @@ class Deque {
     virtual const Elem& PeekBack(int count = 0) const; // Returns count-th Item from the end
     virtual const Elem& PeekFront(int count = 0) const; // Returns count-th Item from the beginning
 
-    virtual inline size_t GetSize(void) const; // Returns Number of Elements
+    virtual inline size_t GetSize(void) const; // Returns Number of elements
     virtual inline size_t GetCapacity(
         void) const; // Returns the maximum possible number of elements
     virtual void Clear(void); // Remove all elements

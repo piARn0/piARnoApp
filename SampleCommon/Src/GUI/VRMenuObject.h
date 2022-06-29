@@ -604,7 +604,7 @@ class VRMenuObjectParms {
     bool Selected; // true to start selected
 
    private:
-    VRMenuObjectParms() // only VRMenuObjectParms::Create() can create a default object of this type
+    VRMenuObjectParms() // only VRMenuObjectParms::create() can create a default object of this type
         : Type(VRMENU_MAX),
           Flags(VRMENUOBJECT_RENDER_HIERARCHY_ORDER),
           InitFlags(VRMENUOBJECT_INIT_FORCE_POSITION),
@@ -890,7 +890,7 @@ class VRMenuSurface {
     // SURFACE_TEXTURE_DIFFUSE.  This is used to determine, based on surface types, which shaders
     // to use to render the surface, independent of how the texture maps are ordered.
     bool HasTexturesOfType(eSurfaceTextureType const t, int const requiredCount) const;
-    // Returns the index in Textures[] of the n-th occurence of type t.
+    // Returns the index in textures[] of the n-th occurence of type t.
     int IndexForTextureType(eSurfaceTextureType const t, int const occurenceCount) const;
     void SetTextureSampling(eGUIProgramType const pt);
 };

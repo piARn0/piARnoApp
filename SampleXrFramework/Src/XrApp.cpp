@@ -619,7 +619,7 @@ bool XrApp::Init(const xrJava* context) {
         }
     }
 
-    // Create the OpenXR instance.
+    // create the OpenXR instance.
     XrApplicationInfo appInfo;
     memset(&appInfo, 0, sizeof(appInfo));
     strcpy(appInfo.applicationName, "OpenXR_NativeActivity");
@@ -714,7 +714,7 @@ bool XrApp::Init(const xrJava* context) {
     OXR(pfnGetOpenGLGraphicsRequirementsKHR(Instance, systemId, &graphicsRequirements));
 #endif // defined(XR_USE_GRAPHICS_API_OPENGL_ES)
 
-    // Create the EGL Context
+    // create the EGL Context
     ovrEgl_CreateContext(&Egl, NULL);
 
     // Check the graphics requirements.
@@ -815,7 +815,7 @@ bool XrApp::Init(const xrJava* context) {
 }
 
 bool XrApp::InitSession() {
-    // Create the OpenXR Session.
+    // create the OpenXR Session.
 #if defined(XR_USE_GRAPHICS_API_OPENGL_ES)
     XrGraphicsBindingOpenGLESAndroidKHR graphicsBindingAndroidGLES = {};
     graphicsBindingAndroidGLES.type = XR_TYPE_GRAPHICS_BINDING_OPENGL_ES_ANDROID_KHR;
@@ -950,7 +950,7 @@ bool XrApp::InitSession() {
         }
     }
 
-    // Create a space to the first path
+    // create a space to the first path
     XrReferenceSpaceCreateInfo spaceCreateInfo = {};
     spaceCreateInfo.type = XR_TYPE_REFERENCE_SPACE_CREATE_INFO;
     spaceCreateInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_VIEW;
@@ -971,7 +971,7 @@ bool XrApp::InitSession() {
 
     EglInitExtensions();
 
-    // Create the frame buffers.
+    // create the frame buffers.
     for (int eye = 0; eye < MAX_NUM_EYES; eye++) {
         ovrFramebuffer_Create(
             Session,

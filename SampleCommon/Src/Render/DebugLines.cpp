@@ -362,7 +362,7 @@ void OvrDebugLinesLocal::RemoveExpired(const long long frameNum, DebugLines_t& l
 }
 
 //==============================
-// OvrDebugLines::Create
+// OvrDebugLines::create
 OvrDebugLines* OvrDebugLines::Create() {
     return new OvrDebugLinesLocal;
 }

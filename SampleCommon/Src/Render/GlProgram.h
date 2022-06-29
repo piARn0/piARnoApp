@@ -149,8 +149,8 @@ struct GlProgram {
     // Globally-defined system level uniforms.
     ovrUniform ViewID; // uniform for ViewID; is -1 if OVR_multiview unavailable or disabled
     ovrUniform ModelMatrix; // uniform for "uniform mat4 ModelMatrix;"
-    ovrUniform SceneMatrices; // uniform for "SceneMatrices" ubo :
-                              // uniform SceneMatrices {
+    ovrUniform SceneMatrices; // uniform for "sceneMatrices" ubo :
+                              // uniform sceneMatrices {
                               //   mat4 ViewMatrix[NUM_VIEWS];
                               //   mat4 ProjectionMatrix[NUM_VIEWS];
                               // } sm;
