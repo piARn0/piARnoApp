@@ -34,4 +34,4 @@ output.json
 #NDK
 obj/
 .externalNativeBuild
-.cxx
+.cxx/
