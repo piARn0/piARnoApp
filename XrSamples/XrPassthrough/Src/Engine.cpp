@@ -79,7 +79,8 @@ std::vector<Geometry> Engine::load_geometries() {
     return g;
 }
 
-// TODO: WTF is CHECK_XRCMD ?
+// FIXME: WTF is CHECK_XRCMD ?
+// TODO: this is inspired by https://github.com/KhronosGroup/OpenXR-SDK-Source/blob/main/src/tests/hello_xr/openxr_program.cpp
 void Engine::initializeActions() {
 // Create an action set.
     {
