@@ -15,14 +15,14 @@ Already a pro? Just edit this README.md and make it your own. Want to make it ea
 
 ```
 cd existing_repo
-git remote add origin https://gitlab.lrz.de/ge49yud/piarno.git
+git remote add origin https://gitlab.lrz.de/ge49yud/Piarno.git
 git branch -M main
 git push -uf origin main
 ```
 
 ## Integrate with your tools
 
-- [ ] [Set up project integrations](https://gitlab.lrz.de/ge49yud/piarno/-/settings/integrations)
+- [ ] [Set up project integrations](https://gitlab.lrz.de/ge49yud/Piarno/-/settings/integrations)
 
 ## Collaborate with your team
 

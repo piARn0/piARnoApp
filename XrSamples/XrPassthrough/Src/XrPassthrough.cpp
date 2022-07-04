@@ -27,7 +27,7 @@ Copyright : Copyright (c) Facebook Technologies, LLC and its affiliates. All rig
 #include "XrPassthroughInput.h"
 #include "XrPassthroughGl.h"
 
-#include "piarno.h"
+#include "Engine.h"
 
 using namespace OVR;
 
@@ -1063,9 +1063,14 @@ void android_main(struct android_app* androidApp) {
     style.edgeColor = {0.0f, 1.0f, 0.0f, 1.0f}; //WELCOME TO THE MATRIX
     OXR(xrPassthroughLayerSetStyleFB(passthroughLayer, &style));
 
-    //create piarno obj and initialize it
-    piarno pia;
-    pia.init(&app.appRenderer.scene);
+    // create the scene if not yet created.
+    if (!app.appRenderer.scene.isCreated()) {
+        // create the scene.
+        app.appRenderer.scene.create();
+    }
+
+    //create Engine obj and initialize it
+    Engine engine{&app.appRenderer.scene};
 
     while (androidApp->destroyRequested == 0) {
         frameCount++;
@@ -1102,21 +1107,6 @@ void android_main(struct android_app* androidApp) {
         if (boolState.type != 0 && boolState.changedSinceLastSync == XR_TRUE &&
             boolState.currentState != XR_FALSE) {
             cyclePaused = !cyclePaused;
-        }
-
-        /*if (cyclePaused) {
-            clearColor[0] = 0.3f;
-            framesCyclePaused++;
-        } else {
-            clearColor[0] = 0.0f;
-        }
-        app.appRenderer.scene.setClearColor(clearColor);*/
-
-        // create the scene if not yet created.
-        // The scene is created here to be able to show a loading icon.
-        if (!app.appRenderer.scene.isCreated()) {
-            // create the scene.
-            app.appRenderer.scene.create();
         }
 
         if (stageBoundsDirty) {
@@ -1202,7 +1192,7 @@ void android_main(struct android_app* androidApp) {
 
 
         //UPDATE
-        pia.update();
+        engine.update();
 
 
         //RENDER START
@@ -1259,7 +1249,7 @@ void android_main(struct android_app* androidApp) {
                 waitInfo.timeout * (1E-9));
         }
 
-        app.appRenderer.renderFrame(frameIn, pia);
+        app.appRenderer.renderFrame(frameIn, engine);
 
         XrSwapchainImageReleaseInfo releaseInfo = {XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO, NULL};
         OXR(xrReleaseSwapchainImage(app.ColorSwapChain, &releaseInfo));

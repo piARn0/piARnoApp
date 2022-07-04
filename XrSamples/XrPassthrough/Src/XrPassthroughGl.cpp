@@ -34,7 +34,7 @@ Copyright	:	Copyright (c) Facebook Technologies, LLC and its affiliates. All rig
 #include <GLES3/gl3ext.h>
 
 #include "XrPassthroughGl.h"
-#include "piarno.h"
+#include "Engine.h"
 
 using namespace OVR;
 
@@ -451,18 +451,30 @@ Geometry::Geometry(
         const std::vector<float> &vertexPositions,
         const std::vector<unsigned char> &colors,
         const std::vector<unsigned short> &indices,
-        GLenum mode) : draw_mode(mode) {
+        GLenum mode) : draw_mode(mode), global_color(false) {
 
     GL(glGenBuffers(1, &vertexBuffer));
     GL(glGenBuffers(1, &colorBuffer));
     GL(glGenBuffers(1, &indexBuffer));
 
-    update(vertexPositions, colors, indices);
+    updateVertices(vertexPositions);
+    updateColors(colors);
+    updateIndices(indices);
 }
+
+Geometry::Geometry(const std::vector<float> &vertexPositions,
+                   const std::vector<unsigned short> &indices,
+                   GLenum mode) : draw_mode(mode), global_color(true) {
+    GL(glGenBuffers(1, &vertexBuffer));
+    GL(glGenBuffers(1, &indexBuffer));
+
+    updateVertices(vertexPositions);
+    updateIndices(indices);}
 
 void Geometry::destroy() {
     GL(glDeleteBuffers(1, &indexBuffer));
-    GL(glDeleteBuffers(1, &colorBuffer));
+    if(!global_color)
+        GL(glDeleteBuffers(1, &colorBuffer));
     GL(glDeleteBuffers(1, &vertexBuffer));
 
     clear();
@@ -482,15 +494,17 @@ void Geometry::createVAO() {
             3 * sizeof(float), //stride
             (const GLvoid *) 0)); //offset
 
-    GL(glBindBuffer(GL_ARRAY_BUFFER, colorBuffer));
-    GL(glEnableVertexAttribArray(VERTEX_ATTRIBUTE_LOCATION_COLOR));
-    GL(glVertexAttribPointer(
-            VERTEX_ATTRIBUTE_LOCATION_COLOR, //index
-            4, //size
-            GL_UNSIGNED_BYTE, //type
-            true, //normalized
-            4 * sizeof(unsigned char), //stride
-            (const GLvoid *) 0)); //offset
+    if(!global_color) {
+        GL(glBindBuffer(GL_ARRAY_BUFFER, colorBuffer));
+        GL(glEnableVertexAttribArray(VERTEX_ATTRIBUTE_LOCATION_COLOR));
+        GL(glVertexAttribPointer(
+                VERTEX_ATTRIBUTE_LOCATION_COLOR, //index
+                4, //size
+                GL_UNSIGNED_BYTE, //type
+                true, //normalized
+                4 * sizeof(unsigned char), //stride
+                (const GLvoid *) 0)); //offset
+    }
 
     GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer));
 
@@ -501,24 +515,11 @@ void Geometry::destroyVAO() {
     GL(glDeleteVertexArrays(1, &vertexArrayObject));
 }
 
-void Geometry::update(const std::vector<float> &vertexPositions,
-                      const std::vector<unsigned char> &colors,
-                      const std::vector<unsigned short> &indices) {
+void Geometry::updateVertices(const std::vector<float> &vertexPositions) {
     GL(glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer));
     GL(glBufferData(GL_ARRAY_BUFFER, vertexPositions.size() * sizeof(float), vertexPositions.data(),
                     GL_STATIC_DRAW));
     GL(glBindBuffer(GL_ARRAY_BUFFER, 0));
-
-    GL(glBindBuffer(GL_ARRAY_BUFFER, colorBuffer));
-    GL(glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(unsigned char), colors.data(),
-                    GL_DYNAMIC_DRAW));
-    GL(glBindBuffer(GL_ARRAY_BUFFER, 0));
-
-    indexCount = indices.size();
-    GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer));
-    GL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned short),
-                    indices.data(), GL_STATIC_DRAW));
-    GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 }
 
 void Geometry::updateColors(const std::vector<unsigned char> &colors) {
@@ -527,6 +528,16 @@ void Geometry::updateColors(const std::vector<unsigned char> &colors) {
     GL(glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(unsigned char), colors.data(),
                     GL_DYNAMIC_DRAW));
     GL(glBindBuffer(GL_ARRAY_BUFFER, 0));
+}
+
+void Geometry::updateIndices(const std::vector<unsigned short> &indices) {
+
+
+    indexCount = indices.size();
+    GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer));
+    GL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned short),
+                    indices.data(), GL_STATIC_DRAW));
+    GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 }
 
 void Geometry::render(const Matrix4f &transform) {
@@ -550,123 +561,6 @@ void Geometry::render(const Matrix4f &transform) {
     glUseProgram(0);
 }
 
-
-Geometry Geometry::createBox() {
-    std::vector<float> positions = {
-            -1.0f, -1.0f, -1.0f,
-            1.0f, -1.0f, -1.0f,
-            -1.0f, 1.0f, -1.0f,
-            1.0f, 1.0f, -1.0f,
-
-            -1.0f, -1.0f, 1.0f,
-            1.0f, -1.0f, 1.0f,
-            -1.0f, 1.0f, 1.0f,
-            1.0f, 1.0f, 1.0f
-    };
-
-    std::vector<unsigned char> colors = {
-            255, 0, 0, 255,
-            250, 255, 0, 255,
-            250, 0, 255, 255,
-            255, 255, 0, 255,
-            255, 0, 0, 255,
-            250, 255, 0, 255,
-            250, 0, 255, 255,
-            255, 255, 0, 255,
-    };
-
-    //     6------7
-    //    /|     /|
-    //   2-+----3 |
-    //   | |    | |
-    //   | 4----+-5
-    //   |/     |/
-    //   0------1
-
-    std::vector<unsigned short> indices = {
-            0, 1, 3, 0, 3, 2,
-            5, 4, 6, 5, 6, 7,
-            4, 0, 2, 4, 2, 6,
-            1, 5, 7, 1, 7, 3,
-            4, 5, 1, 4, 1, 0,
-            2, 3, 7, 2, 7, 6
-    };
-
-    return Geometry(positions, colors, indices);
-}
-
-Geometry Geometry::createRect() {
-    std::vector<float> positions = {
-            -0.5f, -0.5f, 0.0f,
-            0.5f, -0.5f, 0.0f,
-            -0.5f, 0.5f, 0.0f,
-            0.5f, 0.5f, 0.0f
-    };
-
-    std::vector<unsigned char> colors = {
-            255, 255, 255, 255,
-            255, 255, 255, 255,
-            255, 255, 255, 255,
-            255, 255, 255, 255
-    };
-
-    std::vector<unsigned short> indices = {
-            0, 1, 2, 2, 1, 3
-    };
-
-    return Geometry(positions, colors, indices);
-}
-
-Geometry Geometry::createAxes() {
-
-    std::vector<float> positions = {
-            0, 0, 0,
-            1, 0, 0,
-            0, 0, 0,
-            0, 1, 0,
-            0, 0, 0,
-            0, 0, 1
-    };
-    std::vector<unsigned char> colors = {
-            255, 0, 0, 255,
-            255, 0, 0, 255,
-            0, 255, 0, 255,
-            0, 255, 0, 255,
-            0, 0, 255, 255,
-            0, 0, 255, 255
-    };
-
-    std::vector<unsigned short> indices = {
-            0, 1, // x axis - red
-            2, 3, // y axis - green
-            4, 5 // z axis - blue
-    };
-
-    return Geometry(positions, colors, indices, GL_LINES);
-}
-
-Geometry Geometry::createStage() {
-    std::vector<float> positions = {
-            -1.0f, -1.0f, 0.0f,
-            1.0f, -1.0f, 0.0f,
-            -1.0f, 1.0f, 0.0f,
-            1.0f, 1.0f, 0.0f
-    };
-
-    std::vector<unsigned char> colors = {
-            0, 0, 100, 100,
-            0, 0, 100, 100,
-            0, 0, 100, 100,
-            0, 0, 100, 100,
-    };
-
-    std::vector<unsigned short> indices = {
-            0, 1, 2,
-            2, 1, 3
-    };
-
-    return Geometry(positions, colors, indices);
-}
 
 
 /*
@@ -860,6 +754,7 @@ void Scene::destroyVAOs() {
     }
 }
 
+
 void Scene::create() {
     // Setup the scene matrices.
     GL(glGenBuffers(1, &sceneMatrices));
@@ -872,11 +767,7 @@ void Scene::create() {
             GL_STATIC_DRAW));
     GL(glBindBuffer(GL_UNIFORM_BUFFER, 0));
 
-    geometries.push_back(Geometry::createStage());
-    geometries.push_back(Geometry::createAxes());
-    geometries.push_back(Geometry::createBox());
-    geometries.push_back(Geometry::createRect());
-    Rectangle::geometry = &geometries.back();
+    geometries = Engine::load_geometries();
 
     createVAOs();
 
@@ -940,7 +831,7 @@ void AppRenderer::destroy() {
     framebuffer.destroy();
 }
 
-void AppRenderer::renderFrame(AppRenderer::FrameIn frameIn, piarno &pia) {
+void AppRenderer::renderFrame(AppRenderer::FrameIn frameIn, Engine &engine) {
     // Update the scene matrices.
     GL(glBindBuffer(GL_UNIFORM_BUFFER, scene.sceneMatrices));
     GL(Matrix4f *sceneMatrices = (Matrix4f *) glMapBufferRange(
@@ -1026,12 +917,12 @@ void AppRenderer::renderFrame(AppRenderer::FrameIn frameIn, piarno &pia) {
             GL(glUniform1i(prg.uniformLocation[Uniform::Index::VIEW_ID], 0));
         }
 
-        //piarno will render all objects
-        pia.render();
+        //Piarno will render all objects
+        engine.render();
     }
 
     {
-        // Controllers TODO: migrate this to engine/piarno
+        // Controllers TODO: migrate this to engine/Piarno
         auto &prg = scene.program;
         auto &geo = scene.geometries[2];
         GL(glUseProgram(prg.program));
@@ -1070,7 +961,6 @@ void AppRenderer::renderFrame(AppRenderer::FrameIn frameIn, piarno &pia) {
         GL(glBindVertexArray(0));
         GL(glUseProgram(0));
     }
-
 
     framebuffer.resolve();
     framebuffer.unbind();

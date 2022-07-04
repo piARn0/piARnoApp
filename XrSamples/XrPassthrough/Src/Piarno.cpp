@@ -2,22 +2,26 @@
 // Created by JW on 24/06/2022.
 //
 
-#include "piarno.h"
+#include "Piarno.h"
+#include "Engine.h"
 #include "XrPassthroughGl.h"
 
-void piarno::init(Scene *sc) {
-    scene = sc;
+void Piarno::init(Engine *e) {
+    engine = e;
+
+    rect.geometry = engine->getGeometry(Mesh::rect);
+    r2.geometry = engine->getGeometry(Mesh::rect);
 }
 
-void piarno::update() {
-    frame++;
+void Piarno::update() {
+    frame++; //TODO: move this to Engine::update()
 
-    auto t = scene->trackedController[0].pose.Translation;
+    auto t = engine->getControllerPose(0).Translation;
     rect.posX = t.x;
     rect.posY = t.y;
     rect.posZ = t.z;
 
-    scene->trackedController[0].pose.Rotation.GetYawPitchRoll(&rect.rotY, &rect.rotX, &rect.rotZ);
+    engine->getControllerPose(0).Rotation.GetYawPitchRoll(&rect.rotY, &rect.rotX, &rect.rotZ);
 
     rect.sclX = rect.sclY = rect.sclZ = 0.3 + sin(frame / 22.0) * 0.2;
 
@@ -35,14 +39,7 @@ void piarno::update() {
     r2.rotZ += 0.01;
 }
 
-void piarno::render() {
+void Piarno::render() {
     r2.render();
     rect.render();
-
-
-    float x = -2, y = -1, z = 1;
-    for (auto &g: scene->geometries) {
-        g.render(OVR::Matrix4f::Translation(x, y, z) * OVR::Matrix4f::Scaling(0.1));
-        x += 1;
-    }
 }

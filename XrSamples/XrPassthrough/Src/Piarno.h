@@ -3,12 +3,12 @@
 //
 #pragma once
 
-#include "Engine.h"
+#include "Object.h"
+class Engine;
 
-
-class piarno {
+class Piarno {
 public:
-    void init(Scene *scene);
+    void init(Engine *engine);
 
     //run once per frame after input/state update and before rendering
     void update();
@@ -17,9 +17,9 @@ public:
     void render();
 
 private:
-    int frame = 0;
-    Rectangle rect, r2;
+    Engine *engine;
+    int frame = 0; //TODO: move this to Engine
 
-    Scene *scene;
+    Object rect, r2;
 };
 

@@ -32,9 +32,14 @@ struct Program {
 struct Geometry {
     /// Interface
 
-    // create a new GL object with 3D vertexPositions, RGBA colors, and indices
+    // create a new GL object with 3D vertexPositions, (per-vertex) RGBA colors, and indices
     Geometry(const std::vector<float> &vertexPositions,
              const std::vector<unsigned char> &colors,
+             const std::vector<unsigned short> &indices,
+             GLenum draw_mode = GL_TRIANGLES);
+
+    // create a new GL object with 3D vertexPositions and indices
+    Geometry(const std::vector<float> &vertexPositions,
              const std::vector<unsigned short> &indices,
              GLenum draw_mode = GL_TRIANGLES);
 
@@ -46,22 +51,20 @@ struct Geometry {
 
     void destroyVAO();
 
-    void update(const std::vector<float> &vertexPositions,
-                const std::vector<unsigned char> &colors,
-                const std::vector<unsigned short> &indices);
-
+    void updateVertices(const std::vector<float> &vertexPositions);
     void updateColors(const std::vector<unsigned char> &colors);
+    void updateIndices(const std::vector<unsigned short> &indices);
 
     void render(const OVR::Matrix4f &transform);
 
     /// Static Preset Creators
-    static Geometry createBox();
+    /*static Geometry createBox();
 
     static Geometry createRect();
 
     static Geometry createAxes();
 
-    static Geometry createStage();
+    static Geometry createStage();*/
 
     /// Internal
     GLuint vertexBuffer;
@@ -73,6 +76,7 @@ struct Geometry {
 
     Program *program = nullptr;
     GLenum draw_mode;
+    bool global_color;
 };
 
 struct Framebuffer {
@@ -139,7 +143,7 @@ struct Scene {
     TrackedController trackedController[4]; // left aim, left grip, right aim, right grip
 };
 
-class piarno;
+class Engine;
 
 struct AppRenderer {
     void clear();
@@ -163,7 +167,7 @@ struct AppRenderer {
         OVR::Vector3f stageScale;
     };
 
-    void renderFrame(FrameIn frameIn, piarno &pia);
+    void renderFrame(FrameIn frameIn, Engine &engine);
 
     Framebuffer framebuffer;
     Scene scene;
