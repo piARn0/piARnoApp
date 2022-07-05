@@ -1069,7 +1069,7 @@ void android_main(struct android_app* androidApp) {
     }
 
     //create Engine obj and initialize it
-    Engine engine{&app.appRenderer.scene};
+    Engine engine{&app.appRenderer.scene, &app.Session};
 
     while (androidApp->destroyRequested == 0) {
         frameCount++;

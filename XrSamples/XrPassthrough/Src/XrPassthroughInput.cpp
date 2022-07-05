@@ -110,6 +110,16 @@ XrActionStateBoolean GetActionStateBoolean(App& app, XrAction action) {
     return state;
 }
 
+//XrHapticVibration Foo(App& app, XrAction action) {
+//    XrHapticActionInfo info = {};
+//    info.type = XR_TYPE_HAPTIC_ACTION_INFO;
+//    info.action = action;
+//
+//    XrHapticVibration vibration = {};
+//    vibration.amplitude = 1;
+//    vibration.duration = 10;
+//}
+
 XrActionStateFloat GetActionStateFloat(App& app, XrAction action) {
     XrActionStateGetInfo getInfo = {};
     getInfo.type = XR_TYPE_ACTION_STATE_GET_INFO;
@@ -150,6 +160,8 @@ XrAction rightSqueezePressAction = XR_NULL_HANDLE;
 
 XrAction rightTriggerHoldAction = XR_NULL_HANDLE;
 
+XrAction vibrateAction = XR_NULL_HANDLE;
+
 } // namespace
 
 // Action-associated states
@@ -159,6 +171,8 @@ XrActionStateBoolean leftSqueezeState;
 XrActionStateBoolean rightSqueezeState;
 
 XrActionStateFloat rightTriggerHoldState;
+//XrHapticVibration vibration;
+
 
 bool leftControllerActive = false;
 bool rightControllerActive = false;
@@ -178,6 +192,8 @@ void AppInput_init(App& app) {
     rightSqueezePressAction = CreateAction(runningActionSet, XR_ACTION_TYPE_BOOLEAN_INPUT, "right_squeeze", "Right Squeeze");
 
     rightTriggerHoldAction = CreateAction(runningActionSet, XR_ACTION_TYPE_FLOAT_INPUT, "right_trigger_hold", "Right Trigger Hold");
+
+    vibrateAction = CreateAction(runningActionSet, XR_ACTION_TYPE_VIBRATION_OUTPUT, "vibrate_right", "Right Vibrate");
 
     OXR(xrStringToPath(app.Instance, "/user/hand/left", &leftHandPath));
     OXR(xrStringToPath(app.Instance, "/user/hand/right", &rightHandPath));
@@ -220,6 +236,8 @@ void AppInput_init(App& app) {
         bindings.push_back(
                 ActionSuggestedBinding(app, rightTriggerHoldAction, "/user/hand/right/input/trigger/value"));
 
+        bindings.push_back(
+                ActionSuggestedBinding(app, vibrateAction, "/user/hand/right/output/haptic"));
 
         bindings.push_back(
             ActionSuggestedBinding(app, aimPoseAction, "/user/hand/left/input/aim/pose"));

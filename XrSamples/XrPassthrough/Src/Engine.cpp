@@ -9,7 +9,7 @@
 using namespace OVR;
 
 
-Engine::Engine(Scene *scene) : scene(scene) {
+Engine::Engine(Scene *scene, XrSession *session) : scene(scene), session(session) {
     piarno.init(this);
 }
 
@@ -39,6 +39,11 @@ bool Engine::getRightSqueezeState() {
 
 float Engine::getRightTriggerHoldLevel() {
     return scene->rightTriggerHoldLevel;
+}
+
+void Engine::vibrate() {
+    xrApplyHapticFeedback()
+//    xrApplyHapticFeedback(session, "someinformation", "")
 }
 
 void Engine::update() {

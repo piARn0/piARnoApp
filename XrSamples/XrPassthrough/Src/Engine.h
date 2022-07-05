@@ -23,7 +23,7 @@ enum class Mesh : size_t {
 class Engine {
 
 public:
-    Engine(Scene *scene);
+    Engine(Scene *scene, XrSession *session);
     OVR::Posef getControllerPose(int index);
 
     Geometry* getGeometry(Mesh mesh);
@@ -42,7 +42,10 @@ public:
 
     float getRightTriggerHoldLevel();
 
+    void vibrate();
+
 protected:
     Scene *scene;
+    XrSession *session;
     Piarno piarno;
 };
