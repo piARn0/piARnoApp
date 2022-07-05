@@ -127,13 +127,22 @@ XrActionSet runningActionSet = XR_NULL_HANDLE;
 XrAction aimPoseAction = XR_NULL_HANDLE;
 XrAction gripPoseAction = XR_NULL_HANDLE;
 
-XrAction boolAction = XR_NULL_HANDLE;
 XrPath leftHandPath = XR_NULL_PATH;
 XrPath rightHandPath = XR_NULL_PATH;
+
+// TODO: remove when done
+//XrAction boolAction = XR_NULL_HANDLE;
+// Buttons actions
+XrAction leftTriggerPressAction = XR_NULL_HANDLE;
+XrAction rightTriggerPressAction = XR_NULL_HANDLE;
 } // namespace
 
-XrActionStateBoolean boolState;
+// Action-associated states
+XrActionStateBoolean leftTriggerState;
+XrActionStateBoolean rightTriggerState;
 
+// TODO: remove when done
+//XrActionStateBoolean boolState;
 bool leftControllerActive = false;
 bool rightControllerActive = false;
 
@@ -146,7 +155,8 @@ void AppInput_init(App& app) {
     // Actions
     runningActionSet =
         CreateActionSet(app.Instance, 1, "running_action_set", "Action Set used on main loop");
-    boolAction = CreateAction(runningActionSet, XR_ACTION_TYPE_BOOLEAN_INPUT, "toggle", "Toggle");
+    leftTriggerPressAction = CreateAction(runningActionSet, XR_ACTION_TYPE_BOOLEAN_INPUT, "left_toggle", "Left Toggle");
+    rightTriggerPressAction = CreateAction(runningActionSet, XR_ACTION_TYPE_BOOLEAN_INPUT, "right_toggle", "Right Toggle");
 
     OXR(xrStringToPath(app.Instance, "/user/hand/left", &leftHandPath));
     OXR(xrStringToPath(app.Instance, "/user/hand/right", &rightHandPath));
@@ -178,9 +188,9 @@ void AppInput_init(App& app) {
 
         std::vector<XrActionSuggestedBinding> bindings;
         bindings.push_back(
-            ActionSuggestedBinding(app, boolAction, "/user/hand/left/input/trigger"));
+            ActionSuggestedBinding(app, leftTriggerPressAction, "/user/hand/left/input/trigger"));
         bindings.push_back(
-            ActionSuggestedBinding(app, boolAction, "/user/hand/right/input/trigger"));
+            ActionSuggestedBinding(app, rightTriggerPressAction, "/user/hand/right/input/trigger"));
         bindings.push_back(
             ActionSuggestedBinding(app, aimPoseAction, "/user/hand/left/input/aim/pose"));
         bindings.push_back(
@@ -238,7 +248,9 @@ void AppInput_syncActions(App& app) {
     getInfo.next = nullptr;
     getInfo.subactionPath = XR_NULL_PATH;
 
-    boolState = GetActionStateBoolean(app, boolAction);
+    //
+    leftTriggerState = GetActionStateBoolean(app, leftTriggerPressAction);
+    rightTriggerState = GetActionStateBoolean(app, rightTriggerPressAction);
 
     if (leftControllerAimSpace == XR_NULL_HANDLE && app.SessionActive == true) {
         leftControllerAimSpace = CreateActionSpace(app, aimPoseAction, leftHandPath);

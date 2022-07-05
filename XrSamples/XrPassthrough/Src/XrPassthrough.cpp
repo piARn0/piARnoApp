@@ -1049,7 +1049,6 @@ void android_main(struct android_app* androidApp) {
 
     int frameCount = -1;
     int framesCyclePaused = 0;
-    bool cyclePaused = false;
 
     //color of the clear color of the layer on top of passthrough but just use the one in scene directly?
     //float clearColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
@@ -1104,9 +1103,11 @@ void android_main(struct android_app* androidApp) {
         }
 
         AppInput_syncActions(app);
-        if (boolState.type != 0 && boolState.changedSinceLastSync == XR_TRUE &&
-            boolState.currentState != XR_FALSE) {
-            cyclePaused = !cyclePaused;
+
+        // Set up
+        {
+            app.appRenderer.scene.leftTriggerPressed = leftTriggerState.currentState;
+            app.appRenderer.scene.rightTriggerPressed = rightTriggerState.currentState;
         }
 
         if (stageBoundsDirty) {

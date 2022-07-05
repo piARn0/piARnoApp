@@ -3,6 +3,7 @@
 #include <GLES3/gl3.h>
 #include "OVR_Math.h"
 #include <vector>
+#include <openxr/openxr.h>
 
 #ifndef NUM_EYES
 #define NUM_EYES 2
@@ -141,6 +142,10 @@ struct Scene {
 
     float clearColor[4];
     TrackedController trackedController[4]; // left aim, left grip, right aim, right grip
+
+    // States for all defined actions
+    XrBool32 leftTriggerPressed;
+    XrBool32 rightTriggerPressed;
 };
 
 class Engine;

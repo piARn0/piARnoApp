@@ -6,6 +6,13 @@
 #include "Engine.h"
 #include "XrPassthroughGl.h"
 
+#include <android/log.h>
+
+#define ALOGE(...) __android_log_print(ANDROID_LOG_ERROR, OVR_LOG_TAG, __VA_ARGS__)
+#define ALOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, OVR_LOG_TAG, __VA_ARGS__)
+
+#define OVR_LOG_TAG "PIARNO"
+
 void Piarno::init(Engine *e) {
     engine = e;
 
@@ -22,6 +29,18 @@ void Piarno::update() {
     rect.posZ = t.z;
 
     engine->getControllerPose(0).Rotation.GetYawPitchRoll(&rect.rotY, &rect.rotX, &rect.rotZ);
+
+    if (engine->getLeftTriggerState() == XR_TRUE) {
+        ALOGE("LEFTLEFTLEFT TRIGGER TRUE\n");
+    } else {
+        ALOGE("LEFTLEFTLEFT TRIGGER FALSE\n");
+    }
+
+    if (engine->getRightTriggerState() == XR_TRUE) {
+        ALOGE("RIGHTRIGHTRIGHT TRIGGER TRUE\n");
+    } else {
+        ALOGE("RIGHTRIGHTRIGHT TRIGGER FALSE\n");
+    }
 
     rect.sclX = rect.sclY = rect.sclZ = 0.3 + sin(frame / 22.0) * 0.2;
 
