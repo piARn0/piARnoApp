@@ -17,7 +17,7 @@ OVR::Posef Engine::getControllerPose(int index) {
 }
 
 Geometry* Engine::getGeometry(Mesh mesh) {
-    return &scene->geometries[static_cast<size_t>(mesh)];
+    return &scene->geometries[mesh];
 }
 
 void Engine::update() {
@@ -34,6 +34,7 @@ void Engine::render() {
         x += 1;
     }
 }
+
 
 std::vector<Geometry> Engine::load_geometries() {
     std::vector<Geometry> g;

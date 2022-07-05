@@ -7,7 +7,7 @@
 #include "XrPassthroughGl.h"
 #include "Piarno.h"
 
-enum class Mesh : size_t {
+enum Mesh : size_t {
     axis,
     cube,
     rect,

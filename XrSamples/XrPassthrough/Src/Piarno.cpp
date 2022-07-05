@@ -2,44 +2,134 @@
 // Created by JW on 24/06/2022.
 //
 
+#include <sstream>
+
 #include "Piarno.h"
 #include "Engine.h"
 #include "XrPassthroughGl.h"
 
+//DEBUG
+#include <android/log.h>
+#define OVR_LOG_TAG "XrPassthrough"
+
+#define ALOGE(...) __android_log_print(ANDROID_LOG_ERROR, OVR_LOG_TAG, __VA_ARGS__)
+#define ALOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, OVR_LOG_TAG, __VA_ARGS__)
+
+
+
+bool is_black(int index) {
+    static const bool black_index[12] = {0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0};
+
+    return black_index[(index + 12 - 3) % 12];
+}
+
+void log(std::string s) {
+    ALOGE("%s", s.c_str());
+}
+
+
 void Piarno::init(Engine *e) {
     engine = e;
 
-    rect.geometry = engine->getGeometry(Mesh::rect);
-    r2.geometry = engine->getGeometry(Mesh::rect);
+    float x = 0;
+    float width_white = 0.02215, width_black = 0.011;
+    float gap = 0.0005; //gap between keys
+    for (size_t i = 0; i < piano_keys.size(); i++) {
+        auto &k = piano_keys[i];
+
+        k.geometry = engine->getGeometry(Mesh::rect);
+
+        k.rotX = M_PI / 2;
+        k.rotY = 0;
+        k.rotZ = 0;
+
+        k.a = 200;
+
+        if(!is_black(i)) //white key
+        {
+            k.posX = x;
+            k.posY = -1;
+            k.posZ = -1;
+
+            k.sclX = width_white - gap;
+            k.sclY = 1;
+            k.sclZ = 0.126;
+
+            k.r = k.g = k.b = 255;
+
+            x += width_white;
+        }
+        else //black key
+        {
+            k.posX = x - width_white / 2;
+            k.posY = -1 + 0.005; //float above
+            k.posZ = -1 - 0.024;
+
+            k.sclX = width_black - gap;
+            k.sclY = 1;
+            k.sclZ = 0.08;
+
+            k.r = k.g = k.b = 0;
+        }
+    }
+
+    //load midi file
+    //log()
+
+#include "songs/supermario.h"
+    std::stringstream file(std::string(bytes, bytes + sizeof(bytes)));
+    log(file.str());
+    ALOGE("!!!!!!!!parsing MIDI file...\n");
+    midi = smf::MidiFile(file);
+    midi.absoluteTicks();
+    midi.joinTracks();
+    log("!!!!!!!!!!done:\n");
+    log("!!!!!!!!!!!!numEvents = " + std::to_string(midi.getNumEvents(0)) + "\n");
+
+
+    for(int i=0; i< midi.getNumEvents(0); i++){
+        log("tick="+std::to_string(midi[0][i].tick));
+        log("command="+std::to_string(midi[0][i][0]));
+        log("key="+std::to_string(midi[0][i][1]));
+    }
 }
+
+
+
 
 void Piarno::update() {
     frame++; //TODO: move this to Engine::update()
 
-    auto t = engine->getControllerPose(0).Translation;
-    rect.posX = t.x;
-    rect.posY = t.y;
-    rect.posZ = t.z;
+    int begin_tick = 72 * 2;
+    for(int i = 0; i < midi.getNumEvents(0); i++) {
+        int command = midi[0][i][0];
+        int key = midi[0][i][1];
+        //int vel = midi[0][i][2];
 
-    engine->getControllerPose(0).Rotation.GetYawPitchRoll(&rect.rotY, &rect.rotX, &rect.rotZ);
-
-    rect.sclX = rect.sclY = rect.sclZ = 0.3 + sin(frame / 22.0) * 0.2;
-
-    rect.r = (sin(frame / 22.0) + 1.0) / 2 * 255;
-    rect.g = rect.b = 100;
-    rect.a = 200;
-    //rect.r = rect.g = rect.b = rect.a = 255;
-
-    r2.b = 255;
-    r2.a = 255;
-    r2.sclX = r2.sclY = r2.sclZ = 0.1;
-    r2.posX = r2.posY = r2.posZ = 0;
-    r2.rotX += 0.01;
-    r2.rotY += 0.01;
-    r2.rotZ += 0.01;
+        if(frame - begin_tick == midi[0][i].tick / 10)
+        {
+            if(command == 0x90) //key press
+            {
+                auto &k = piano_keys[key];
+                k.r = 255;
+                k.g = 0;
+                k.b = 0;
+            }
+            if(command == 0x80) //key release
+            {
+                auto &k = piano_keys[key];
+                if(!is_black(key)) {
+                    k.r = k.g = k.b = 255;
+                }
+                else {
+                    k.r = k.g = k.b = 0;
+                }
+            }
+        }
+    }
 }
 
 void Piarno::render() {
-    r2.render();
-    rect.render();
+    for (auto &k: piano_keys)
+        k.render();
 }
