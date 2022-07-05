@@ -37,6 +37,10 @@ bool Engine::getRightSqueezeState() {
     return scene->rightSqueezePressed == XR_TRUE;
 }
 
+float Engine::getRightTriggerHoldLevel() {
+    return scene->rightTriggerHoldLevel;
+}
+
 void Engine::update() {
     //TODO: update controller pos, update system timer, etc...
     piarno.update();
@@ -47,7 +51,7 @@ void Engine::render() {
 
     float x = -2, y = 0, z = -1;
     for (auto &g: scene->geometries) {
-        g.render(OVR::Matrix4f::Translation(x, y, z) * OVR::Matrix4f::Scaling(getLeftSqueezeState() ? 1 : 0.1));
+        g.render(OVR::Matrix4f::Translation(x, y, z) * OVR::Matrix4f::Scaling(getRightTriggerHoldLevel()));
         x += 1;
     }
 }

@@ -148,6 +148,8 @@ struct Scene {
     XrBool32 rightTriggerPressed;
     XrBool32 leftSqueezePressed;
     XrBool32 rightSqueezePressed;
+
+    float rightTriggerHoldLevel;
 };
 
 class Engine;

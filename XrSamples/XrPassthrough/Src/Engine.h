@@ -40,6 +40,8 @@ public:
     bool getLeftSqueezeState();
     bool getRightSqueezeState();
 
+    float getRightTriggerHoldLevel();
+
 protected:
     Scene *scene;
     Piarno piarno;

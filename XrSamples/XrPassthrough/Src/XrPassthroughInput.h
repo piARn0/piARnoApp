@@ -21,6 +21,8 @@ extern XrActionStateBoolean rightTriggerState;
 extern XrActionStateBoolean leftSqueezeState;
 extern XrActionStateBoolean rightSqueezeState;
 
+extern XrActionStateFloat rightTriggerHoldState;
+
 extern bool leftControllerActive;
 extern bool rightControllerActive;
 
