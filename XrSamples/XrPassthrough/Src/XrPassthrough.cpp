@@ -1108,6 +1108,8 @@ void android_main(struct android_app* androidApp) {
         {
             app.appRenderer.scene.leftTriggerPressed = leftTriggerState.currentState;
             app.appRenderer.scene.rightTriggerPressed = rightTriggerState.currentState;
+            app.appRenderer.scene.leftSqueezePressed = leftSqueezeState.currentState;
+            app.appRenderer.scene.rightSqueezePressed = rightSqueezeState.currentState;
         }
 
         if (stageBoundsDirty) {

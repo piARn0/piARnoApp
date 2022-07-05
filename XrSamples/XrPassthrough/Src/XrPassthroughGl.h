@@ -146,6 +146,8 @@ struct Scene {
     // States for all defined actions
     XrBool32 leftTriggerPressed;
     XrBool32 rightTriggerPressed;
+    XrBool32 leftSqueezePressed;
+    XrBool32 rightSqueezePressed;
 };
 
 class Engine;

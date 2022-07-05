@@ -16,10 +16,10 @@ void AppInput_init(App& app);
 void AppInput_shutdown();
 void AppInput_syncActions(App& app);
 
-// TODO: remove when done
-//extern XrActionStateBoolean boolState;
 extern XrActionStateBoolean leftTriggerState;
 extern XrActionStateBoolean rightTriggerState;
+extern XrActionStateBoolean leftSqueezeState;
+extern XrActionStateBoolean rightSqueezeState;
 
 extern bool leftControllerActive;
 extern bool rightControllerActive;

@@ -21,12 +21,20 @@ Geometry* Engine::getGeometry(Mesh mesh) {
     return &scene->geometries[static_cast<size_t>(mesh)];
 }
 
-XrBool32 Engine::getLeftTriggerState() {
-    return scene->leftTriggerPressed;
+bool Engine::getLeftTriggerState() {
+    return scene->leftTriggerPressed == XR_TRUE;
 }
 
-XrBool32 Engine::getRightTriggerState() {
-    return scene->rightTriggerPressed;
+bool Engine::getRightTriggerState() {
+    return scene->rightTriggerPressed == XR_TRUE;
+}
+
+bool Engine::getLeftSqueezeState() {
+    return scene->leftSqueezePressed == XR_TRUE;
+}
+
+bool Engine::getRightSqueezeState() {
+    return scene->rightSqueezePressed == XR_TRUE;
 }
 
 void Engine::update() {
@@ -39,7 +47,7 @@ void Engine::render() {
 
     float x = -2, y = 0, z = -1;
     for (auto &g: scene->geometries) {
-        g.render(OVR::Matrix4f::Translation(x, y, z) * OVR::Matrix4f::Scaling(0.1));
+        g.render(OVR::Matrix4f::Translation(x, y, z) * OVR::Matrix4f::Scaling(getLeftSqueezeState() ? 1 : 0.1));
         x += 1;
     }
 }

@@ -130,19 +130,20 @@ XrAction gripPoseAction = XR_NULL_HANDLE;
 XrPath leftHandPath = XR_NULL_PATH;
 XrPath rightHandPath = XR_NULL_PATH;
 
-// TODO: remove when done
-//XrAction boolAction = XR_NULL_HANDLE;
 // Buttons actions
 XrAction leftTriggerPressAction = XR_NULL_HANDLE;
 XrAction rightTriggerPressAction = XR_NULL_HANDLE;
+XrAction leftSqueezePressAction = XR_NULL_HANDLE;
+XrAction rightSqueezePressAction = XR_NULL_HANDLE;
+
 } // namespace
 
 // Action-associated states
 XrActionStateBoolean leftTriggerState;
 XrActionStateBoolean rightTriggerState;
+XrActionStateBoolean leftSqueezeState;
+XrActionStateBoolean rightSqueezeState;
 
-// TODO: remove when done
-//XrActionStateBoolean boolState;
 bool leftControllerActive = false;
 bool rightControllerActive = false;
 
@@ -157,6 +158,9 @@ void AppInput_init(App& app) {
         CreateActionSet(app.Instance, 1, "running_action_set", "Action Set used on main loop");
     leftTriggerPressAction = CreateAction(runningActionSet, XR_ACTION_TYPE_BOOLEAN_INPUT, "left_toggle", "Left Toggle");
     rightTriggerPressAction = CreateAction(runningActionSet, XR_ACTION_TYPE_BOOLEAN_INPUT, "right_toggle", "Right Toggle");
+    leftSqueezePressAction = CreateAction(runningActionSet, XR_ACTION_TYPE_BOOLEAN_INPUT, "left_squeeze", "Left Squeeze");
+    rightSqueezePressAction = CreateAction(runningActionSet, XR_ACTION_TYPE_BOOLEAN_INPUT, "right_squeeze", "Right Squeeze");
+
 
     OXR(xrStringToPath(app.Instance, "/user/hand/left", &leftHandPath));
     OXR(xrStringToPath(app.Instance, "/user/hand/right", &rightHandPath));
@@ -191,6 +195,11 @@ void AppInput_init(App& app) {
             ActionSuggestedBinding(app, leftTriggerPressAction, "/user/hand/left/input/trigger"));
         bindings.push_back(
             ActionSuggestedBinding(app, rightTriggerPressAction, "/user/hand/right/input/trigger"));
+        bindings.push_back(
+                ActionSuggestedBinding(app, leftSqueezePressAction, "/user/hand/left/input/squeeze"));
+        bindings.push_back(
+                ActionSuggestedBinding(app, rightSqueezePressAction, "/user/hand/right/input/squeeze"));
+
         bindings.push_back(
             ActionSuggestedBinding(app, aimPoseAction, "/user/hand/left/input/aim/pose"));
         bindings.push_back(
@@ -251,6 +260,9 @@ void AppInput_syncActions(App& app) {
     //
     leftTriggerState = GetActionStateBoolean(app, leftTriggerPressAction);
     rightTriggerState = GetActionStateBoolean(app, rightTriggerPressAction);
+    leftSqueezeState = GetActionStateBoolean(app, leftSqueezePressAction);
+    rightSqueezeState = GetActionStateBoolean(app, rightSqueezePressAction);
+
 
     if (leftControllerAimSpace == XR_NULL_HANDLE && app.SessionActive == true) {
         leftControllerAimSpace = CreateActionSpace(app, aimPoseAction, leftHandPath);

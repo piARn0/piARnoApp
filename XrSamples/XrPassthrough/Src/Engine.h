@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <openxr/openxr.h>
 #include <array>
 #include "XrPassthroughGl.h"
 #include "Piarno.h"
@@ -25,20 +24,21 @@ class Engine {
 
 public:
     Engine(Scene *scene);
-    //getInputState()
     OVR::Posef getControllerPose(int index);
 
     Geometry* getGeometry(Mesh mesh);
     //etc...
-
 
     //API calls for lower level stuff (OpenXR and OpenGL)
     void update();
     void render();
     static std::vector<Geometry> load_geometries();
 
-    XrBool32 getLeftTriggerState();
-    XrBool32 getRightTriggerState();
+    // Button presses callbacks
+    bool getLeftTriggerState();
+    bool getRightTriggerState();
+    bool getLeftSqueezeState();
+    bool getRightSqueezeState();
 
 protected:
     Scene *scene;
