@@ -30,17 +30,22 @@ void Piarno::update() {
 
     engine->getControllerPose(0).Rotation.GetYawPitchRoll(&rect.rotY, &rect.rotX, &rect.rotZ);
 
-//    if (engine->getLeftSqueezeState() == XR_TRUE) {
-//        ALOGE("LEFTLEFTLEFT SQUEEZE TRUE\n");
-//    } else {
-//        ALOGE("LEFTLEFTLEFT SQUEEZE FALSE\n");
-//    }
-//
-//    if (engine->getRightSqueezeState() == XR_TRUE) {
-//        ALOGE("RIGHTRIGHTRIGHT SQUEEZE TRUE\n");
-//    } else {
-//        ALOGE("RIGHTRIGHTRIGHT SQUEEZE FALSE\n");
-//    }
+    if (engine->getLeftSqueezeState())
+        ALOGE("LEFT SQUEEZE\n");
+    if (engine->getRightSqueezeState())
+        ALOGE("RIGHT SQUEEZE\n");
+    if (engine->getLeftTriggerState())
+        ALOGE("LEFT TRIGGER\n");
+    if (engine->getRightTriggerState())
+        ALOGE("RIGHT TRIGGER\n");
+    if (engine->getAButtonState())
+        ALOGE("A BUTTON\n");
+    if (engine->getBButtonState())
+        ALOGE("B BUTTON\n");
+    if (engine->getYButtonState())
+        ALOGE("Y BUTTON\n");
+    if (engine->getXButtonState())
+        ALOGE("X BUTTON\n");
 
     rect.sclX = rect.sclY = rect.sclZ = 0.3 + sin(frame / 22.0) * 0.2;
 

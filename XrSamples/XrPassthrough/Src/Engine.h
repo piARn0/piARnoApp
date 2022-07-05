@@ -34,12 +34,17 @@ public:
     void render();
     static std::vector<Geometry> load_geometries();
 
-    // Button presses callbacks
+    // Button presses getters
     bool getLeftTriggerState();
     bool getRightTriggerState();
     bool getLeftSqueezeState();
     bool getRightSqueezeState();
+    bool getXButtonState();
+    bool getYButtonState();
+    bool getAButtonState();
+    bool getBButtonState();
 
+    // Button holding getters
     float getRightTriggerHoldLevel();
 
 protected:

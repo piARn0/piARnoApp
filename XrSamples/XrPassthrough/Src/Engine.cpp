@@ -37,6 +37,22 @@ bool Engine::getRightSqueezeState() {
     return scene->rightSqueezePressed == XR_TRUE;
 }
 
+bool Engine::getYButtonState() {
+    return scene->yButtonPressed == XR_TRUE;
+}
+
+bool Engine::getXButtonState() {
+    return scene->xButtonPressed == XR_TRUE;
+}
+
+bool Engine::getAButtonState() {
+    return scene->aButtonPressed == XR_TRUE;
+}
+
+bool Engine::getBButtonState() {
+    return scene->bButtonPressed == XR_TRUE;
+}
+
 float Engine::getRightTriggerHoldLevel() {
     return scene->rightTriggerHoldLevel;
 }

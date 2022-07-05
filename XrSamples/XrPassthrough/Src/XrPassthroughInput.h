@@ -18,8 +18,15 @@ void AppInput_syncActions(App& app);
 
 extern XrActionStateBoolean leftTriggerState;
 extern XrActionStateBoolean rightTriggerState;
+
 extern XrActionStateBoolean leftSqueezeState;
 extern XrActionStateBoolean rightSqueezeState;
+
+extern XrActionStateBoolean xButtonPressState;
+extern XrActionStateBoolean yButtonPressState;
+
+extern XrActionStateBoolean aButtonPressState;
+extern XrActionStateBoolean bButtonPressState;
 
 extern XrActionStateFloat rightTriggerHoldState;
 

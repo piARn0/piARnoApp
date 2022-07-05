@@ -1106,11 +1106,20 @@ void android_main(struct android_app* androidApp) {
 
         // Set up
         {
+            // Button press
             app.appRenderer.scene.leftTriggerPressed = leftTriggerState.currentState;
             app.appRenderer.scene.rightTriggerPressed = rightTriggerState.currentState;
+
             app.appRenderer.scene.leftSqueezePressed = leftSqueezeState.currentState;
             app.appRenderer.scene.rightSqueezePressed = rightSqueezeState.currentState;
 
+            app.appRenderer.scene.xButtonPressed = xButtonPressState.currentState;
+            app.appRenderer.scene.yButtonPressed = yButtonPressState.currentState;
+
+            app.appRenderer.scene.aButtonPressed = aButtonPressState.currentState;
+            app.appRenderer.scene.bButtonPressed = bButtonPressState.currentState;
+
+            // Button hold
             app.appRenderer.scene.rightTriggerHoldLevel = rightTriggerHoldState.currentState;
         }
 

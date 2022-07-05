@@ -143,12 +143,20 @@ struct Scene {
     float clearColor[4];
     TrackedController trackedController[4]; // left aim, left grip, right aim, right grip
 
-    // States for all defined actions
+    // States for all defined pressing actions
     XrBool32 leftTriggerPressed;
     XrBool32 rightTriggerPressed;
+
     XrBool32 leftSqueezePressed;
     XrBool32 rightSqueezePressed;
 
+    XrBool32 xButtonPressed;
+    XrBool32 yButtonPressed;
+
+    XrBool32 aButtonPressed;
+    XrBool32 bButtonPressed;
+
+    // States for all defined holding actions
     float rightTriggerHoldLevel;
 };
 
