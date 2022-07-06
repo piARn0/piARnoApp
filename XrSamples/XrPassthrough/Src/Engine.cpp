@@ -49,7 +49,7 @@ void Engine::render() {
 
     float x = -2, y = 0, z = -1;
     for (auto &g: scene->geometries) {
-        g.render(OVR::Matrix4f::Translation(x, y, z) * OVR::Matrix4f::Scaling(std::max(0.1f, getRightTriggerHoldLevel())));
+        g.render(OVR::Matrix4f::Translation(x, y, z) * OVR::Matrix4f::Scaling(0.2));
         x += 1;
     }
 }

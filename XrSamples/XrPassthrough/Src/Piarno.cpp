@@ -25,23 +25,29 @@ void Piarno::init(Engine *e) {
 void Piarno::update() {
     frame++; //TODO: move this to Engine::update()
 
-    //TODO: use controller to define this pos
+    // TODO: use controller to define this pos
     auto ctrl_l = engine->getControllerPose(0).Translation;
     auto ctrl_r = engine->getControllerPose(2).Translation;
-    piano_surface.posX = (ctrl_l.x + ctrl_r.x) / 2;
-    piano_surface.posY = (ctrl_l.y + ctrl_r.y) / 2; //TODO: make relative to stage pos (floor)
-    piano_surface.posZ = (ctrl_l.z + ctrl_r.z) / 2;
 
     // make piano surface flat
     piano_surface.rotX = M_PI / 2;
     piano_surface.rotZ = 0;
-    
-    // make it follow one controller
-    piano_surface.rotY = atan2(ctrl_r.x - ctrl_l.x, ctrl_r.z - ctrl_l.z) + M_PI / 2;
 
     piano_surface.sclX = 1.0; //width in meters
     piano_surface.sclY = 0.126;
     piano_surface.sclZ = 1.0; //height of key in meters
+
+    //TODO: make relative to stage pos (floor)
+    if (engine->getButtonState(IO::rightTrigger) && engine->getButtonState(IO::leftTrigger)) {
+        piano_surface.posX = (ctrl_l.x + ctrl_r.x) / 2;
+        piano_surface.posY = (ctrl_l.y + ctrl_r.y) / 2;
+        piano_surface.posZ = (ctrl_l.z + ctrl_r.z) / 2;
+
+        // make it follow one controller
+        piano_surface.rotY = atan2(ctrl_r.x - ctrl_l.x, ctrl_r.z - ctrl_l.z) + M_PI / 2;
+
+        piano_surface.r = piano_surface.g = piano_surface.b = piano_surface.a = 255;
+    }
 
     if (engine->getButtonState(IO::leftSqueeze))
         ALOGE("LEFT SQUEEZE\n");
