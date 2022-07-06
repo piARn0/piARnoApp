@@ -20,6 +20,6 @@ private:
     Engine *engine;
     int frame = 0; //TODO: move this to Engine
 
-    Object rect, r2;
+    Object piano_surface, notes_background;
 };
 

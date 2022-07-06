@@ -924,7 +924,7 @@ void AppRenderer::renderFrame(AppRenderer::FrameIn frameIn, Engine &engine) {
     {
         // Controllers TODO: migrate this to engine/Piarno
         auto &prg = scene.program;
-        auto &geo = scene.geometries[2];
+        auto &geo = scene.geometries[1];
         GL(glUseProgram(prg.program));
         GL(glBindVertexArray(geo.vertexArrayObject));
         GL(glBindBufferBase(

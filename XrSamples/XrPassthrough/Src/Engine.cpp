@@ -41,7 +41,7 @@ std::vector<Geometry> Engine::load_geometries() {
     //TODO: RN THIS REQUIRES U TO LOAD AND PUSH OBJS IN THE EXACT SAME ORDER AS DEFINED IN THE ENUM
     {
 #include "models/axes.h"
-        g.emplace_back(std::move(vertices), std::move(colors), std::move(indices));
+        g.emplace_back(std::move(vertices), std::move(colors), std::move(indices), GL_LINES);
     }
 
     {
