@@ -4,6 +4,8 @@
 #pragma once
 
 #include "Object.h"
+#include "midi/MidiFile.h"
+
 class Engine;
 
 class Piarno {
@@ -20,6 +22,7 @@ private:
     Engine *engine;
     int frame = 0; //TODO: move this to Engine
 
-    Object piano_surface, notes_background;
+    std::vector<Object> piano_keys{88};
+    smf::MidiFile midi;
 };
 
