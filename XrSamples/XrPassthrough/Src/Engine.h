@@ -18,36 +18,49 @@ enum class Mesh : size_t {
     NUM
 };
 
+enum class IO : size_t {
+    leftTrigger,
+    rightTrigger,
+    leftSqueeze,
+    rightSqueeze,
+    xButton,
+    yButton,
+    aButton,
+    bButton,
+    NUM
+};
+
 //a layer that abstracts away a lot of the confusing OpenXR implementation details
 //use this class to communicate with the rest of the openxr stuffs
 class Engine {
 
 public:
-    Engine(Scene *scene);
+    /// API calls for higher level stuff (piARno)
+
+    //input
+
     OVR::Posef getControllerPose(int index);
 
-    Geometry* getGeometry(Mesh mesh);
-    //etc...
-
-    //API calls for lower level stuff (OpenXR and OpenGL)
-    void update();
-    void render();
-    static std::vector<Geometry> load_geometries();
-
     // Button presses getters
-    bool getLeftTriggerState();
-    bool getRightTriggerState();
-    bool getLeftSqueezeState();
-    bool getRightSqueezeState();
-    bool getXButtonState();
-    bool getYButtonState();
-    bool getAButtonState();
-    bool getBButtonState();
+    bool getButtonState(IO button);
 
     // Button holding getters
     float getRightTriggerHoldLevel();
 
+    Geometry* getGeometry(Mesh mesh);
+
+    /**************** YOU ARE NOW ENTERING LOW LEVEL ****************/
+
+    //API calls for lower level stuff (OpenXR and OpenGL)
+    Engine(Scene *scene);
+    void update();
+    void render();
+    static std::vector<Geometry> loadGeometries();
+
+
 protected:
     Scene *scene;
     Piarno piarno;
+
+    std::array<XrBool32*, (size_t) IO::NUM> buttonStates;
 };

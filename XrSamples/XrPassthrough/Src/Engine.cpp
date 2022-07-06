@@ -10,6 +10,16 @@ using namespace OVR;
 
 
 Engine::Engine(Scene *scene) : scene(scene) {
+#define register_io(button) buttonStates[(size_t) IO::button] = &scene-> button##Pressed;
+    register_io(leftTrigger);
+    register_io(rightTrigger);
+    register_io(leftSqueeze);
+    register_io(rightSqueeze);
+    register_io(xButton);
+    register_io(yButton);
+    register_io(aButton);
+    register_io(bButton);
+
     piarno.init(this);
 }
 
@@ -18,39 +28,11 @@ OVR::Posef Engine::getControllerPose(int index) {
 }
 
 Geometry* Engine::getGeometry(Mesh mesh) {
-    return &scene->geometries[static_cast<size_t>(mesh)];
+    return &scene->geometries[(size_t) mesh];
 }
 
-bool Engine::getLeftTriggerState() {
-    return scene->leftTriggerPressed == XR_TRUE;
-}
-
-bool Engine::getRightTriggerState() {
-    return scene->rightTriggerPressed == XR_TRUE;
-}
-
-bool Engine::getLeftSqueezeState() {
-    return scene->leftSqueezePressed == XR_TRUE;
-}
-
-bool Engine::getRightSqueezeState() {
-    return scene->rightSqueezePressed == XR_TRUE;
-}
-
-bool Engine::getYButtonState() {
-    return scene->yButtonPressed == XR_TRUE;
-}
-
-bool Engine::getXButtonState() {
-    return scene->xButtonPressed == XR_TRUE;
-}
-
-bool Engine::getAButtonState() {
-    return scene->aButtonPressed == XR_TRUE;
-}
-
-bool Engine::getBButtonState() {
-    return scene->bButtonPressed == XR_TRUE;
+bool Engine::getButtonState(IO button) {
+    return *buttonStates[(size_t) button] == XR_TRUE;
 }
 
 float Engine::getRightTriggerHoldLevel() {
@@ -72,7 +54,7 @@ void Engine::render() {
     }
 }
 
-std::vector<Geometry> Engine::load_geometries() {
+std::vector<Geometry> Engine::loadGeometries() {
     std::vector<Geometry> g;
 
     //TODO: RN THIS REQUIRES U TO LOAD AND PUSH OBJS IN THE EXACT SAME ORDER AS DEFINED IN THE ENUM

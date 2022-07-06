@@ -767,7 +767,7 @@ void Scene::create() {
             GL_STATIC_DRAW));
     GL(glBindBuffer(GL_UNIFORM_BUFFER, 0));
 
-    geometries = Engine::load_geometries();
+    geometries = Engine::loadGeometries();
 
     createVAOs();
 

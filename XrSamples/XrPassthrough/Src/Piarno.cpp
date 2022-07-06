@@ -38,21 +38,9 @@ void Piarno::update() {
     piano_surface.sclX = 1.0; //width in meters
     piano_surface.sclZ = 0.126; //height of key in meters
 
-    if (engine->getLeftSqueezeState())
+    if (engine->getButtonState(IO::leftSqueeze))
         ALOGE("LEFT SQUEEZE\n");
-    if (engine->getRightSqueezeState())
-        ALOGE("RIGHT SQUEEZE\n");
-    if (engine->getLeftTriggerState())
-        ALOGE("LEFT TRIGGER\n");
-    if (engine->getRightTriggerState())
-        ALOGE("RIGHT TRIGGER\n");
-    if (engine->getAButtonState())
-        ALOGE("A BUTTON\n");
-    if (engine->getBButtonState())
-        ALOGE("B BUTTON\n");
-    if (engine->getYButtonState())
-        ALOGE("Y BUTTON\n");
-    if (engine->getXButtonState())
+    if (engine->getButtonState(IO::xButton))
         ALOGE("X BUTTON\n");
 }
 
