@@ -69,9 +69,6 @@ void Piarno::init(Engine *e) {
         }
     }
 
-    //load midi file
-    //log()
-
 #include "songs/supermario.h"
 
     std::stringstream file(std::string(bytes, bytes + sizeof(bytes)));
@@ -89,10 +86,18 @@ void Piarno::init(Engine *e) {
         log("command=" + std::to_string(midi[0][i][0]));
         log("key=" + std::to_string(midi[0][i][1]));
     }
+
+    pauseButton.geometry = engine->getGeometry(Mesh::teapot);
+    pauseButton.posX = -0.2;
+    pauseButton.posY = -1;
+    pauseButton.posZ = -1;
+    pauseButton.r = pauseButton.b = pauseButton.g = pauseButton.a = 255;
+    pauseButton.sclX = pauseButton.sclY = pauseButton.sclZ = 0.1;
 }
 
 void Piarno::update() {
-    frame++;
+    if(!isPaused)
+        frame++;
     // TODO: use controller to define this pos
 //    auto ctrl_l = engine->getControllerPose(0).Translation;
 //    auto ctrl_r = engine->getControllerPose(2).Translation;
@@ -106,7 +111,7 @@ void Piarno::update() {
 //    piano_surface.sclZ = 1.0; //height of key in meters
 
     //TODO: make relative to stage pos (floor)
-    if (engine->getButtonState(IO::rightTrigger) && engine->getButtonState(IO::leftTrigger)) {
+    if (engine->isButtonPressed(IO::rightTrigger) && engine->isButtonPressed(IO::leftTrigger)) {
 //        piano_surface.posX = (ctrl_l.x + ctrl_r.x) / 2;
 //        piano_surface.posY = (ctrl_l.y + ctrl_r.y) / 2;
 //        piano_surface.posZ = (ctrl_l.z + ctrl_r.z) / 2;
@@ -117,9 +122,9 @@ void Piarno::update() {
 //        piano_surface.r = piano_surface.g = piano_surface.b = piano_surface.a = 255;
     }
 
-    if (engine->getButtonState(IO::leftSqueeze))
+    if (engine->isButtonPressed(IO::leftSqueeze))
         ALOGE("LEFT SQUEEZE\n");
-    if (engine->getButtonState(IO::xButton))
+    if (engine->isButtonPressed(IO::xButton))
         ALOGE("X BUTTON\n");
 
 
@@ -153,6 +158,8 @@ void Piarno::update() {
 }
 
 void Piarno::render() {
+    pauseButton.render();
+
     for (auto &k: piano_keys)
         k.render();
 }

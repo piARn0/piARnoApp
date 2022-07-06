@@ -516,6 +516,7 @@ void Geometry::destroyVAO() {
 }
 
 void Geometry::updateVertices(const std::vector<float> &vertexPositions) {
+    vertexCount = vertexPositions.size();
     GL(glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer));
     GL(glBufferData(GL_ARRAY_BUFFER, vertexPositions.size() * sizeof(float), vertexPositions.data(),
                     GL_STATIC_DRAW));
@@ -531,8 +532,6 @@ void Geometry::updateColors(const std::vector<unsigned char> &colors) {
 }
 
 void Geometry::updateIndices(const std::vector<unsigned short> &indices) {
-
-
     indexCount = indices.size();
     GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer));
     GL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned short),

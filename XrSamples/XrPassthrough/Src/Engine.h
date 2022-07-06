@@ -42,7 +42,7 @@ public:
     OVR::Posef getControllerPose(int index);
 
     // Button presses getters
-    bool getButtonState(IO button);
+    bool isButtonPressed(IO button);
 
     // Button holding getters
     float getRightTriggerHoldLevel();

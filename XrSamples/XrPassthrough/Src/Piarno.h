@@ -22,6 +22,9 @@ private:
     Engine *engine;
     int frame = 0; //TODO: move this to Engine
 
+    bool isPaused = true;
+    Object pauseButton;
+
     std::vector<Object> piano_keys{88};
     smf::MidiFile midi;
 };

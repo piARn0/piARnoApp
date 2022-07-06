@@ -31,7 +31,7 @@ Geometry* Engine::getGeometry(Mesh mesh) {
     return &scene->geometries[(size_t) mesh];
 }
 
-bool Engine::getButtonState(IO button) {
+bool Engine::isButtonPressed(IO button) {
     return *buttonStates[(size_t) button] == XR_TRUE;
 }
 

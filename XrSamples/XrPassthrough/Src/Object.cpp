@@ -14,12 +14,14 @@ Object::Object(Geometry *geometry) : geometry(geometry) {
 
 void Object::render() {
     //color per vertex (each corner)
-    geometry->updateColors(std::vector<unsigned char> {
-            r, g, b, a,
-            r, g, b, a,
-            r, g, b, a,
-            r, g, b, a,
-    });
+    std::vector<unsigned char> colors(geometry->vertexCount * 4 / 3);
+    for(size_t i = 0; i < colors.size(); i+=4) {
+        colors[i+0] = r;
+        colors[i+1] = g;
+        colors[i+2] = b;
+        colors[i+3] = a;
+    }
+    geometry->updateColors(std::move(colors));
 
     //set the transformation matrix and render
     auto trans =
