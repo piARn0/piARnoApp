@@ -16,7 +16,19 @@ void AppInput_init(App& app);
 void AppInput_shutdown();
 void AppInput_syncActions(App& app);
 
-extern XrActionStateBoolean boolState;
+extern XrActionStateBoolean leftTriggerState;
+extern XrActionStateBoolean rightTriggerState;
+
+extern XrActionStateBoolean leftSqueezeState;
+extern XrActionStateBoolean rightSqueezeState;
+
+extern XrActionStateBoolean xButtonPressState;
+extern XrActionStateBoolean yButtonPressState;
+
+extern XrActionStateBoolean aButtonPressState;
+extern XrActionStateBoolean bButtonPressState;
+
+extern XrActionStateFloat rightTriggerHoldState;
 
 extern bool leftControllerActive;
 extern bool rightControllerActive;

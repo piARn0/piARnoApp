@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <array>
 #include "XrPassthroughGl.h"
 #include "Piarno.h"
 
@@ -17,26 +18,36 @@ enum class Mesh : size_t {
     NUM
 };
 
-
 //a layer that abstracts away a lot of the confusing OpenXR implementation details
 //use this class to communicate with the rest of the openxr stuffs
 class Engine {
+
 public:
     Engine(Scene *scene);
-    //getInputState()
     OVR::Posef getControllerPose(int index);
 
     Geometry* getGeometry(Mesh mesh);
     //etc...
-
 
     //API calls for lower level stuff (OpenXR and OpenGL)
     void update();
     void render();
     static std::vector<Geometry> load_geometries();
 
+    // Button presses getters
+    bool getLeftTriggerState();
+    bool getRightTriggerState();
+    bool getLeftSqueezeState();
+    bool getRightSqueezeState();
+    bool getXButtonState();
+    bool getYButtonState();
+    bool getAButtonState();
+    bool getBButtonState();
+
+    // Button holding getters
+    float getRightTriggerHoldLevel();
+
 protected:
     Scene *scene;
     Piarno piarno;
 };
-

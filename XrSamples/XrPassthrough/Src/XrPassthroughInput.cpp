@@ -110,6 +110,18 @@ XrActionStateBoolean GetActionStateBoolean(App& app, XrAction action) {
     return state;
 }
 
+XrActionStateFloat GetActionStateFloat(App& app, XrAction action) {
+    XrActionStateGetInfo getInfo = {};
+    getInfo.type = XR_TYPE_ACTION_STATE_GET_INFO;
+    getInfo.action = action;
+
+    XrActionStateFloat state = {};
+    state.type = XR_TYPE_ACTION_STATE_FLOAT;
+
+    OXR(xrGetActionStateFloat(app.Session, &getInfo, &state));
+    return state;
+}
+
 bool ActionPoseIsActive(App& app, XrAction action, XrPath subactionPath) {
     XrActionStateGetInfo getInfo = {};
     getInfo.type = XR_TYPE_ACTION_STATE_GET_INFO;
@@ -127,12 +139,42 @@ XrActionSet runningActionSet = XR_NULL_HANDLE;
 XrAction aimPoseAction = XR_NULL_HANDLE;
 XrAction gripPoseAction = XR_NULL_HANDLE;
 
-XrAction boolAction = XR_NULL_HANDLE;
 XrPath leftHandPath = XR_NULL_PATH;
 XrPath rightHandPath = XR_NULL_PATH;
+
+// Buttons pressed actions
+XrAction leftTriggerPressAction = XR_NULL_HANDLE;
+XrAction rightTriggerPressAction = XR_NULL_HANDLE;
+
+XrAction leftSqueezePressAction = XR_NULL_HANDLE;
+XrAction rightSqueezePressAction = XR_NULL_HANDLE;
+
+XrAction xButtonPressAction = XR_NULL_HANDLE;
+XrAction yButtonPressAction = XR_NULL_HANDLE;
+
+XrAction aButtonPressAction = XR_NULL_HANDLE;
+XrAction bButtonPressAction = XR_NULL_HANDLE;
+
+// Buttons hold actions
+XrAction rightTriggerHoldAction = XR_NULL_HANDLE;
+
 } // namespace
 
-XrActionStateBoolean boolState;
+// Press action-associated states
+XrActionStateBoolean leftTriggerState;
+XrActionStateBoolean rightTriggerState;
+
+XrActionStateBoolean leftSqueezeState;
+XrActionStateBoolean rightSqueezeState;
+
+XrActionStateBoolean xButtonPressState;
+XrActionStateBoolean yButtonPressState;
+
+XrActionStateBoolean aButtonPressState;
+XrActionStateBoolean bButtonPressState;
+
+// Hold action-associated states
+XrActionStateFloat rightTriggerHoldState;
 
 bool leftControllerActive = false;
 bool rightControllerActive = false;
@@ -146,7 +188,22 @@ void AppInput_init(App& app) {
     // Actions
     runningActionSet =
         CreateActionSet(app.Instance, 1, "running_action_set", "Action Set used on main loop");
-    boolAction = CreateAction(runningActionSet, XR_ACTION_TYPE_BOOLEAN_INPUT, "toggle", "Toggle");
+
+    // Button press
+    leftTriggerPressAction = CreateAction(runningActionSet, XR_ACTION_TYPE_BOOLEAN_INPUT, "left_trigger", "Left Trigger");
+    rightTriggerPressAction = CreateAction(runningActionSet, XR_ACTION_TYPE_BOOLEAN_INPUT, "right_trigger", "Right Trigger");
+
+    leftSqueezePressAction = CreateAction(runningActionSet, XR_ACTION_TYPE_BOOLEAN_INPUT, "left_squeeze", "Left Squeeze");
+    rightSqueezePressAction = CreateAction(runningActionSet, XR_ACTION_TYPE_BOOLEAN_INPUT, "right_squeeze", "Right Squeeze");
+
+    xButtonPressAction = CreateAction(runningActionSet, XR_ACTION_TYPE_BOOLEAN_INPUT, "x_press", "X Press");
+    yButtonPressAction = CreateAction(runningActionSet, XR_ACTION_TYPE_BOOLEAN_INPUT, "y_press", "Y Press");
+
+    aButtonPressAction = CreateAction(runningActionSet, XR_ACTION_TYPE_BOOLEAN_INPUT, "a_press", "A Press");
+    bButtonPressAction = CreateAction(runningActionSet, XR_ACTION_TYPE_BOOLEAN_INPUT, "b_press", "B Press");
+
+    // Button hold
+    rightTriggerHoldAction = CreateAction(runningActionSet, XR_ACTION_TYPE_FLOAT_INPUT, "right_trigger_hold", "Right Trigger Hold");
 
     OXR(xrStringToPath(app.Instance, "/user/hand/left", &leftHandPath));
     OXR(xrStringToPath(app.Instance, "/user/hand/right", &rightHandPath));
@@ -176,11 +233,33 @@ void AppInput_init(App& app) {
     {
         // Map bindings
 
+        // Button press
         std::vector<XrActionSuggestedBinding> bindings;
         bindings.push_back(
-            ActionSuggestedBinding(app, boolAction, "/user/hand/left/input/trigger"));
+            ActionSuggestedBinding(app, leftTriggerPressAction, "/user/hand/left/input/trigger"));
         bindings.push_back(
-            ActionSuggestedBinding(app, boolAction, "/user/hand/right/input/trigger"));
+            ActionSuggestedBinding(app, rightTriggerPressAction, "/user/hand/right/input/trigger"));
+
+        bindings.push_back(
+                ActionSuggestedBinding(app, leftSqueezePressAction, "/user/hand/left/input/squeeze"));
+        bindings.push_back(
+                ActionSuggestedBinding(app, rightSqueezePressAction, "/user/hand/right/input/squeeze"));
+
+        bindings.push_back(
+                ActionSuggestedBinding(app, xButtonPressAction, "/user/hand/left/input/x/click"));
+        bindings.push_back(
+                ActionSuggestedBinding(app, yButtonPressAction, "/user/hand/left/input/y/click"));
+
+        bindings.push_back(
+                ActionSuggestedBinding(app, aButtonPressAction, "/user/hand/right/input/a/click"));
+        bindings.push_back(
+                ActionSuggestedBinding(app, bButtonPressAction, "/user/hand/right/input/b/click"));
+
+        // Button hold
+        bindings.push_back(
+                ActionSuggestedBinding(app, rightTriggerHoldAction, "/user/hand/right/input/trigger/value"));
+
+
         bindings.push_back(
             ActionSuggestedBinding(app, aimPoseAction, "/user/hand/left/input/aim/pose"));
         bindings.push_back(
@@ -238,7 +317,21 @@ void AppInput_syncActions(App& app) {
     getInfo.next = nullptr;
     getInfo.subactionPath = XR_NULL_PATH;
 
-    boolState = GetActionStateBoolean(app, boolAction);
+    // Button press states
+    leftTriggerState = GetActionStateBoolean(app, leftTriggerPressAction);
+    rightTriggerState = GetActionStateBoolean(app, rightTriggerPressAction);
+
+    leftSqueezeState = GetActionStateBoolean(app, leftSqueezePressAction);
+    rightSqueezeState = GetActionStateBoolean(app, rightSqueezePressAction);
+
+    xButtonPressState = GetActionStateBoolean(app, xButtonPressAction);
+    yButtonPressState = GetActionStateBoolean(app, yButtonPressAction);
+
+    aButtonPressState = GetActionStateBoolean(app, aButtonPressAction);
+    bButtonPressState = GetActionStateBoolean(app, bButtonPressAction);
+
+    // Button hold states
+    rightTriggerHoldState = GetActionStateFloat(app, rightTriggerHoldAction);
 
     if (leftControllerAimSpace == XR_NULL_HANDLE && app.SessionActive == true) {
         leftControllerAimSpace = CreateActionSpace(app, aimPoseAction, leftHandPath);

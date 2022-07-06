@@ -4,6 +4,7 @@
 
 #include "Engine.h"
 #include <vector>
+#include <openxr/openxr.h>
 
 using namespace OVR;
 
@@ -20,6 +21,42 @@ Geometry* Engine::getGeometry(Mesh mesh) {
     return &scene->geometries[static_cast<size_t>(mesh)];
 }
 
+bool Engine::getLeftTriggerState() {
+    return scene->leftTriggerPressed == XR_TRUE;
+}
+
+bool Engine::getRightTriggerState() {
+    return scene->rightTriggerPressed == XR_TRUE;
+}
+
+bool Engine::getLeftSqueezeState() {
+    return scene->leftSqueezePressed == XR_TRUE;
+}
+
+bool Engine::getRightSqueezeState() {
+    return scene->rightSqueezePressed == XR_TRUE;
+}
+
+bool Engine::getYButtonState() {
+    return scene->yButtonPressed == XR_TRUE;
+}
+
+bool Engine::getXButtonState() {
+    return scene->xButtonPressed == XR_TRUE;
+}
+
+bool Engine::getAButtonState() {
+    return scene->aButtonPressed == XR_TRUE;
+}
+
+bool Engine::getBButtonState() {
+    return scene->bButtonPressed == XR_TRUE;
+}
+
+float Engine::getRightTriggerHoldLevel() {
+    return scene->rightTriggerHoldLevel;
+}
+
 void Engine::update() {
     //TODO: update controller pos, update system timer, etc...
     piarno.update();
@@ -30,7 +67,7 @@ void Engine::render() {
 
     float x = -2, y = 0, z = -1;
     for (auto &g: scene->geometries) {
-        g.render(OVR::Matrix4f::Translation(x, y, z) * OVR::Matrix4f::Scaling(0.1));
+        g.render(OVR::Matrix4f::Translation(x, y, z) * OVR::Matrix4f::Scaling(getRightTriggerHoldLevel()));
         x += 1;
     }
 }
@@ -77,4 +114,3 @@ std::vector<Geometry> Engine::load_geometries() {
 
     return g;
 }
-

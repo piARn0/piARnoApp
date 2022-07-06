@@ -6,6 +6,13 @@
 #include "Engine.h"
 #include "XrPassthroughGl.h"
 
+#include <android/log.h>
+
+#define ALOGE(...) __android_log_print(ANDROID_LOG_ERROR, OVR_LOG_TAG, __VA_ARGS__)
+#define ALOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, OVR_LOG_TAG, __VA_ARGS__)
+
+#define OVR_LOG_TAG "PIARNO"
+
 void Piarno::init(Engine *e) {
     engine = e;
 
@@ -30,6 +37,23 @@ void Piarno::update() {
 
     piano_surface.sclX = 1.0; //width in meters
     piano_surface.sclZ = 0.126; //height of key in meters
+
+    if (engine->getLeftSqueezeState())
+        ALOGE("LEFT SQUEEZE\n");
+    if (engine->getRightSqueezeState())
+        ALOGE("RIGHT SQUEEZE\n");
+    if (engine->getLeftTriggerState())
+        ALOGE("LEFT TRIGGER\n");
+    if (engine->getRightTriggerState())
+        ALOGE("RIGHT TRIGGER\n");
+    if (engine->getAButtonState())
+        ALOGE("A BUTTON\n");
+    if (engine->getBButtonState())
+        ALOGE("B BUTTON\n");
+    if (engine->getYButtonState())
+        ALOGE("Y BUTTON\n");
+    if (engine->getXButtonState())
+        ALOGE("X BUTTON\n");
 }
 
 void Piarno::render() {
