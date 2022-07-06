@@ -22,9 +22,9 @@ void Object::render() {
     });
 
     //set the transformation matrix and render
-    auto trans = Matrix4f::Translation(posX, posY, posZ) *
-                 Matrix4f::Scaling(sclX, sclY, sclZ) *
-                 Matrix4f::RotationX(rotX) * Matrix4f::RotationY(rotY) * Matrix4f::RotationZ(rotZ);
+    auto trans =
+            Matrix4f::Translation(posX, posY, posZ) *
+             (Matrix4f::RotationZ(rotZ) * (Matrix4f::RotationY(rotY) * (Matrix4f::RotationX(rotX) * Matrix4f::Scaling(sclX, sclY, sclZ))));
 
     geometry->render(trans);
 }

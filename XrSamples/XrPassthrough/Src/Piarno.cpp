@@ -32,11 +32,16 @@ void Piarno::update() {
     piano_surface.posY = (ctrl_l.y + ctrl_r.y) / 2; //TODO: make relative to stage pos (floor)
     piano_surface.posZ = (ctrl_l.z + ctrl_r.z) / 2;
 
-    piano_surface.rotX = M_PI / 2; //make piano surface flat
-    //piano_surface.rotY = atan2(ctrl_r.x - ctrl_l.x, ctrl_r.z - ctrl_l.z); //make it go from one controller
+    // make piano surface flat
+    piano_surface.rotX = M_PI / 2;
+    piano_surface.rotZ = 0;
+    
+    // make it follow one controller
+    piano_surface.rotY = atan2(ctrl_r.x - ctrl_l.x, ctrl_r.z - ctrl_l.z) + M_PI / 2;
 
     piano_surface.sclX = 1.0; //width in meters
-    piano_surface.sclZ = 0.126; //height of key in meters
+    piano_surface.sclY = 0.126;
+    piano_surface.sclZ = 1.0; //height of key in meters
 
     if (engine->getButtonState(IO::leftSqueeze))
         ALOGE("LEFT SQUEEZE\n");
