@@ -6,12 +6,6 @@
 #include "Engine.h"
 #include "XrPassthroughGl.h"
 
-#include <android/log.h>
-
-#define ALOGE(...) __android_log_print(ANDROID_LOG_ERROR, OVR_LOG_TAG, __VA_ARGS__)
-#define ALOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, OVR_LOG_TAG, __VA_ARGS__)
-
-#define OVR_LOG_TAG "PIARNO"
 
 void Piarno::init(Engine *e) {
     engine = e;
@@ -20,11 +14,12 @@ void Piarno::init(Engine *e) {
     notes_background.geometry = engine->getGeometry(Mesh::rect);
 
     piano_surface.r = piano_surface.g = piano_surface.b = piano_surface.a = 150;
+    notes_background.r = notes_background.a = 255;
+    notes_background.g = notes_background.b = 0;
+    notes_background.posX = notes_background.posY = notes_background.posZ = 0;
 }
 
 void Piarno::update() {
-    frame++; //TODO: move this to Engine::update()
-
     //TODO: use controller to define this pos
     auto ctrl_l = engine->getControllerPose(0).Translation;
     auto ctrl_r = engine->getControllerPose(2).Translation;
@@ -39,12 +34,13 @@ void Piarno::update() {
     piano_surface.sclZ = 0.126; //height of key in meters
 
     if (engine->getButtonState(IO::leftSqueeze))
-        ALOGE("LEFT SQUEEZE\n");
+        Engine::log("LEFT SQUEEZE\n");
     if (engine->getButtonState(IO::xButton))
-        ALOGE("X BUTTON\n");
+        Engine::log("X BUTTON\n");
 }
 
 void Piarno::render() {
+    engine->renderText("WELCOME TO PIARNO", -1, 1, -2, 0.5, 0.5, 0.1, 0, 0, 0, 255, 255, 255, 255);
     //notes_background.render();
-    piano_surface.render();
+    //piano_surface.render();
 }

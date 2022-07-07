@@ -33,6 +33,9 @@ struct Program {
 struct Geometry {
     /// Interface
 
+    // creates an UNINITIALIZED(!) object, you MUST manually call create() and updateX before use!
+    Geometry();
+
     // create a new GL object with 3D vertexPositions, (per-vertex) RGBA colors, and indices
     Geometry(const std::vector<float> &vertexPositions,
              const std::vector<unsigned char> &colors,
@@ -43,6 +46,8 @@ struct Geometry {
     Geometry(const std::vector<float> &vertexPositions,
              const std::vector<unsigned short> &indices,
              GLenum draw_mode = GL_TRIANGLES);
+
+    void create(bool global_color, GLenum draw_mode = GL_TRIANGLES);
 
     void clear();
 
@@ -57,15 +62,6 @@ struct Geometry {
     void updateIndices(const std::vector<unsigned short> &indices);
 
     void render(const OVR::Matrix4f &transform);
-
-    /// Static Preset Creators
-    /*static Geometry createBox();
-
-    static Geometry createRect();
-
-    static Geometry createAxes();
-
-    static Geometry createStage();*/
 
     /// Internal
     GLuint vertexBuffer;

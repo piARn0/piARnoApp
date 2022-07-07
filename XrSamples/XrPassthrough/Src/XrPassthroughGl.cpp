@@ -440,12 +440,7 @@ Geometry
 ================================================================================
 */
 
-void Geometry::clear() {
-    vertexBuffer = 0;
-    colorBuffer = 0;
-    indexBuffer = 0;
-    vertexArrayObject = 0;
-}
+Geometry::Geometry() {}
 
 Geometry::Geometry(
         const std::vector<float> &vertexPositions,
@@ -469,7 +464,25 @@ Geometry::Geometry(const std::vector<float> &vertexPositions,
     GL(glGenBuffers(1, &indexBuffer));
 
     updateVertices(vertexPositions);
-    updateIndices(indices);}
+    updateIndices(indices);
+}
+
+void Geometry::create(bool g_color, GLenum d_mode) {
+    global_color = g_color;
+    draw_mode = d_mode;
+
+    GL(glGenBuffers(1, &vertexBuffer));
+    if(!global_color)
+        GL(glGenBuffers(1, &colorBuffer));
+    GL(glGenBuffers(1, &indexBuffer));
+}
+
+void Geometry::clear() {
+    vertexBuffer = 0;
+    colorBuffer = 0;
+    indexBuffer = 0;
+    vertexArrayObject = 0;
+}
 
 void Geometry::destroy() {
     GL(glDeleteBuffers(1, &indexBuffer));
@@ -531,8 +544,6 @@ void Geometry::updateColors(const std::vector<unsigned char> &colors) {
 }
 
 void Geometry::updateIndices(const std::vector<unsigned short> &indices) {
-
-
     indexCount = indices.size();
     GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer));
     GL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned short),
@@ -919,47 +930,6 @@ void AppRenderer::renderFrame(AppRenderer::FrameIn frameIn, Engine &engine) {
 
         //Piarno will render all objects
         engine.render();
-    }
-
-    {
-        // Controllers TODO: migrate this to engine/Piarno
-        auto &prg = scene.program;
-        auto &geo = scene.geometries[1];
-        GL(glUseProgram(prg.program));
-        GL(glBindVertexArray(geo.vertexArrayObject));
-        GL(glBindBufferBase(
-                GL_UNIFORM_BUFFER,
-                prg.uniformBinding[Uniform::Index::SCENE_MATRICES],
-                scene.sceneMatrices));
-        if (prg.uniformLocation[Uniform::Index::VIEW_ID] >=
-            0) // NOTE: will not be present when multiview path is enabled.
-        {
-            GL(glUniform1i(prg.uniformLocation[Uniform::Index::VIEW_ID], 0));
-        }
-        GL(glDepthMask(GL_TRUE));
-        GL(glEnable(GL_DEPTH_TEST));
-        GL(glDepthFunc(GL_LEQUAL));
-        GL(glDisable(GL_CULL_FACE));
-        GL(glEnable(GL_BLEND));
-        GL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-        for (int i = 0; i < 4; i++) {
-            if (scene.trackedController[i].active == false) {
-                continue;
-            }
-            Matrix4f pose(scene.trackedController[i].pose);
-            Matrix4f scale;
-            if (i & 1) {
-                scale = Matrix4f::Scaling(0.03f, 0.03f, 0.03f);
-            } else {
-                scale = Matrix4f::Scaling(0.02f, 0.02f, 0.06f);
-            }
-            Matrix4f model = pose * scale;
-            glUniformMatrix4fv(
-                    prg.uniformLocation[Uniform::Index::MODEL_MATRIX], 1, GL_TRUE, &model.M[0][0]);
-            GL(glDrawElements(GL_TRIANGLES, geo.indexCount, GL_UNSIGNED_SHORT, NULL));
-        }
-        GL(glBindVertexArray(0));
-        GL(glUseProgram(0));
     }
 
     framebuffer.resolve();

@@ -18,7 +18,6 @@ public:
 
 private:
     Engine *engine;
-    int frame = 0; //TODO: move this to Engine
 
     Object piano_surface, notes_background;
 };

@@ -5,16 +5,25 @@
 #pragma once
 
 #include <array>
+#include <string>
+
 #include "XrPassthroughGl.h"
 #include "Piarno.h"
 
+//DEBUG LOGGING
+#include "android/log.h"
+#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "PIARNO", __VA_ARGS__)
+
+using vertex_t = float;
+using color_t = uint8_t;
+using index_t = uint16_t;
+
 enum class Mesh : size_t {
-    axis,
+    axes = 26, //ranges 0-25 are for alphabets A-Z
     cube,
     rect,
     //line,
     teapot,
-    alphabet,
     NUM
 };
 
@@ -37,17 +46,25 @@ class Engine {
 public:
     /// API calls for higher level stuff (piARno)
 
-    //input
+    // General
+    uint64_t getFrame();
 
+    // Input
     OVR::Posef getControllerPose(int index);
-
-    // Button presses getters
     bool getButtonState(IO button);
-
-    // Button holding getters
     float getRightTriggerHoldLevel();
 
+    // Render related
     Geometry* getGeometry(Mesh mesh);
+    void renderText(std::string text,
+                    float x, float y, float z,
+                    float sX, float sY, float sZ,
+                    float rX, float rY, float rZ,
+                    color_t r, color_t g, color_t b, color_t a
+                    );
+
+    // Debug
+    static void log(std::string s);
 
     /**************** YOU ARE NOW ENTERING LOW LEVEL ****************/
 
@@ -62,5 +79,8 @@ protected:
     Scene *scene;
     Piarno piarno;
 
+    uint64_t frame = 0;
     std::array<XrBool32*, (size_t) IO::NUM> buttonStates;
+
+    static std::array<float, 26> fontWidth;
 };
