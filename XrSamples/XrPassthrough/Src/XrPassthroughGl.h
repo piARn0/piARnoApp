@@ -67,6 +67,7 @@ struct Geometry {
     GLuint vertexBuffer;
     GLuint colorBuffer;
     GLuint indexBuffer;
+    size_t vertexCount;
     size_t indexCount;
 
     GLuint vertexArrayObject;

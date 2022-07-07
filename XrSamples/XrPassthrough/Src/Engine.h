@@ -13,6 +13,7 @@
 //DEBUG LOGGING
 #include "android/log.h"
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "PIARNO", __VA_ARGS__)
+void log(std::string s);
 
 using vertex_t = float;
 using color_t = uint8_t;
@@ -51,7 +52,7 @@ public:
 
     // Input
     OVR::Posef getControllerPose(int index);
-    bool getButtonState(IO button);
+    bool isButtonPressed(IO button);
     float getRightTriggerHoldLevel();
 
     // Render related
@@ -62,9 +63,6 @@ public:
                     float rX, float rY, float rZ,
                     color_t r, color_t g, color_t b, color_t a
                     );
-
-    // Debug
-    static void log(std::string s);
 
     /**************** YOU ARE NOW ENTERING LOW LEVEL ****************/
 

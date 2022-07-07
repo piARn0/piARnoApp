@@ -21,6 +21,11 @@ LOCAL_SRC_FILES := ../../../Src/XrPassthrough.cpp \
     ../../../Src/Engine.cpp \
     ../../../Src/Piarno.cpp \
     ../../../Src/Object.cpp \
+    ../../../Src/midi/Binasc.cpp \
+    ../../../Src/midi/MidiEvent.cpp \
+    ../../../Src/midi/MidiEventList.cpp \
+    ../../../Src/midi/MidiFile.cpp \
+    ../../../Src/midi/MidiMessage.cpp \
 
 LOCAL_LDLIBS 			:= -llog -landroid -lGLESv3 -lEGL
 LOCAL_STATIC_LIBRARIES 	:= samplexrframework

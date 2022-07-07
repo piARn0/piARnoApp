@@ -10,6 +10,11 @@
 using namespace OVR;
 
 
+void log(std::string s) {
+    LOGE("%s", s.c_str());
+}
+
+
 Engine::Engine(Scene *scene) : scene(scene) {
 #define register_io(button) buttonStates[(size_t) IO::button] = &scene-> button##Pressed;
     register_io(leftTrigger);
@@ -32,7 +37,7 @@ OVR::Posef Engine::getControllerPose(int index) {
     return scene->trackedController[index].pose;
 }
 
-bool Engine::getButtonState(IO button) {
+bool Engine::isButtonPressed(IO button) {
     return *buttonStates[(size_t) button] == XR_TRUE;
 }
 
@@ -66,10 +71,6 @@ void Engine::renderText(std::string text, float x, float y, float z, float sX, f
             }
         }
     }
-}
-
-void Engine::log(std::string s) {
-    LOGE("%s", s.c_str());
 }
 
 void Engine::update() {

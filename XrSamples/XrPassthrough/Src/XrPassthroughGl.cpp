@@ -529,6 +529,7 @@ void Geometry::destroyVAO() {
 }
 
 void Geometry::updateVertices(const std::vector<float> &vertexPositions) {
+    vertexCount = vertexPositions.size();
     GL(glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer));
     GL(glBufferData(GL_ARRAY_BUFFER, vertexPositions.size() * sizeof(float), vertexPositions.data(),
                     GL_STATIC_DRAW));

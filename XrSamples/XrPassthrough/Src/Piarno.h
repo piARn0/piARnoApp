@@ -4,6 +4,8 @@
 #pragma once
 
 #include "Object.h"
+#include "midi/MidiFile.h"
+
 class Engine;
 
 class Piarno {
@@ -19,6 +21,11 @@ public:
 private:
     Engine *engine;
 
-    Object piano_surface, notes_background;
+    bool isPaused = false; //TODO: default to true
+    Object pauseButton;
+
+    std::vector<Object> pianoKeys{88};
+    smf::MidiFile midi;
+    int currentTick = 0;
 };
 
