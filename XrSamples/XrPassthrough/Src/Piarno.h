@@ -21,7 +21,7 @@ public:
 private:
     Engine *engine;
 
-    bool isPaused = false; //TODO: default to true
+    bool isPaused = true; //TODO: default to true
     Object pauseButton;
 
     std::vector<Object> pianoKeys{88};

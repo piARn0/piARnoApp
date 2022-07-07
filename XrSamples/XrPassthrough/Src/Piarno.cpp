@@ -8,6 +8,13 @@
 #include "Engine.h"
 #include "XrPassthroughGl.h"
 
+#include <android/log.h>
+
+#define OVR_LOG_TAG "PiARno"
+
+#define ALOGE(...) __android_log_print(ANDROID_LOG_ERROR, OVR_LOG_TAG, __VA_ARGS__)
+#define ALOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, OVR_LOG_TAG, __VA_ARGS__)
+
 
 bool isBlack(int index) {
     static const bool blackIndex[12] = {0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0};
@@ -88,8 +95,8 @@ void Piarno::update() {
     if(!isPaused)
         currentTick++;
     // TODO: use controller to define this pos
-//    auto ctrl_l = engine->getControllerPose(0).Translation;
-//    auto ctrl_r = engine->getControllerPose(2).Translation;
+    auto ctrl_l = engine->getControllerPose(0).Translation;
+    auto ctrl_r = engine->getControllerPose(2).Translation;
 
     // make piano surface flat
 //    piano_surface.rotX = M_PI / 2;
@@ -98,19 +105,6 @@ void Piarno::update() {
 //    piano_surface.sclX = 1.0; //width in meters
 //    piano_surface.sclY = 0.126;
 //    piano_surface.sclZ = 1.0; //height of key in meters
-
-    //TODO: make relative to stage pos (floor)
-//    if (engine->isButtonPressed(IO::rightTrigger) && engine->isButtonPressed(IO::leftTrigger)) {
-//        piano_surface.posX = (ctrl_l.x + ctrl_r.x) / 2;
-//        piano_surface.posY = (ctrl_l.y + ctrl_r.y) / 2;
-//        piano_surface.posZ = (ctrl_l.z + ctrl_r.z) / 2;
-//
-//        // make it follow one controller
-//        piano_surface.rotY = atan2(ctrl_r.x - ctrl_l.x, ctrl_r.z - ctrl_l.z) + M_PI / 2;
-//
-//        piano_surface.r = piano_surface.g = piano_surface.b = piano_surface.a = 255;
-//    }
-
 
     int beginTick = 72 * 2;
     for(int i = 0; i < midi.getNumEvents(0); i++) {
@@ -138,6 +132,28 @@ void Piarno::update() {
                 }
             }
         }
+    }
+
+    if (engine->isButtonPressed(IO::rightTrigger) && engine->isButtonPressed(IO::leftTrigger)) {
+        pauseButton.posX = (ctrl_l.x + ctrl_r.x) / 2;
+        pauseButton.posY = (ctrl_l.y + ctrl_r.y) / 2;
+        pauseButton.posZ = (ctrl_l.z + ctrl_r.z) / 2;
+
+        // make it follow one controller
+        pauseButton.rotY = atan2(ctrl_r.x - ctrl_l.x, ctrl_r.z - ctrl_l.z) + M_PI / 2;
+
+//        pianoKeys[0].r = piano_surface.g = piano_surface.b = piano_surface.a = 255;
+    }
+
+    auto dist = hypot(hypot(ctrl_r.x - pauseButton.posX, ctrl_r.y - pauseButton.posY), ctrl_r.z - pauseButton.posZ);
+
+    if (dist < 0.1) {
+        isPaused = false;
+        ALOGE("Distance 0.1");
+    } else if (dist <= 1) {
+        ALOGE("0.1<...<1 Meter distance");
+    } else {
+        ALOGE("Too far");
     }
 }
 
