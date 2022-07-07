@@ -141,19 +141,30 @@ void Piarno::update() {
 
         // make it follow one controller
         pauseButton.rotY = atan2(ctrl_r.x - ctrl_l.x, ctrl_r.z - ctrl_l.z) + M_PI / 2;
-
-//        pianoKeys[0].r = piano_surface.g = piano_surface.b = piano_surface.a = 255;
     }
 
+    // compute the euclidean distance between the right joystick and the pause button
     auto dist = hypot(hypot(ctrl_r.x - pauseButton.posX, ctrl_r.y - pauseButton.posY), ctrl_r.z - pauseButton.posZ);
 
-    if (dist < 0.1) {
-        isPaused = false;
-        ALOGE("Distance 0.1");
-    } else if (dist <= 1) {
-        ALOGE("0.1<...<1 Meter distance");
+    // if the joystick is in the proximity of the pauseButton, flip the `isPaused` state (=press the button)
+    // and lock it until the joystick leaves that area far enough to be allowed to press the button once again
+    // this approach prevents continuously flipping the `isPaused` when the joystick remains in the vicinity of the button
+    if (dist < 0.1 && !pauseAlreadyChanged) {
+        isPaused = !isPaused;
+        pauseAlreadyChanged = true;
+//        ALOGE("You are now in pause button area, changing the state and locking");
+    } else if (dist > 0.1) {
+        pauseAlreadyChanged = false;
+//        ALOGE("The lock is now released");
+    }
+
+    // make the pauseButton either red or green displaying the current `isPaused` state
+    if (isPaused) {
+        pauseButton.r = 255;
+        pauseButton.g = pauseButton.b = 0;
     } else {
-        ALOGE("Too far");
+        pauseButton.g = 255;
+        pauseButton.r = pauseButton.b = 0;
     }
 }
 

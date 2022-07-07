@@ -21,6 +21,7 @@ public:
 private:
     Engine *engine;
 
+    bool pauseAlreadyChanged = false;
     bool isPaused = true; //TODO: default to true
     Object pauseButton;
 
