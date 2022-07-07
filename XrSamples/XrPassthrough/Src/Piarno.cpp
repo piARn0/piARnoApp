@@ -19,6 +19,7 @@ bool isBlack(int index) {
 void Piarno::init(Engine *e) {
     engine = e;
 
+    //TODO: create a GeometryBuilder class that you "render to" once to create a single geometry like this for efficiency and simplicity of object rotation, effectively grouping operation
     float x = 0;
     float widthWhite = 0.02215, widthBlack = 0.011;
     float gap = 0.0005; //gap between keys
@@ -141,7 +142,11 @@ void Piarno::update() {
 }
 
 void Piarno::render() {
-    engine->renderText("WELCOME TO PIARNO", -1, 1, -2, 0.5, 0.5, 0.1, 0, 0, 0, 255, 255, 255, 255);
+    engine->renderText("WELCOME TO PIARNO",
+                       -1, 1, -2,
+                       0.5, 0.5, 0.1,
+                       0, 0, 0,
+                       255, 255, 255, 255);
 
     pauseButton.render();
 

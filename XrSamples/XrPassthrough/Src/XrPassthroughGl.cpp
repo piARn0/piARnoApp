@@ -443,9 +443,9 @@ Geometry
 Geometry::Geometry() {}
 
 Geometry::Geometry(
-        const std::vector<float> &vertexPositions,
-        const std::vector<unsigned char> &colors,
-        const std::vector<unsigned short> &indices,
+        const std::vector<vertex_t> &vertexPositions,
+        const std::vector<color_t> &colors,
+        const std::vector<index_t> &indices,
         GLenum mode) : draw_mode(mode), global_color(false) {
 
     GL(glGenBuffers(1, &vertexBuffer));
@@ -457,8 +457,8 @@ Geometry::Geometry(
     updateIndices(indices);
 }
 
-Geometry::Geometry(const std::vector<float> &vertexPositions,
-                   const std::vector<unsigned short> &indices,
+Geometry::Geometry(const std::vector<vertex_t> &vertexPositions,
+                   const std::vector<index_t> &indices,
                    GLenum mode) : draw_mode(mode), global_color(true) {
     GL(glGenBuffers(1, &vertexBuffer));
     GL(glGenBuffers(1, &indexBuffer));
@@ -528,7 +528,7 @@ void Geometry::destroyVAO() {
     GL(glDeleteVertexArrays(1, &vertexArrayObject));
 }
 
-void Geometry::updateVertices(const std::vector<float> &vertexPositions) {
+void Geometry::updateVertices(const std::vector<vertex_t> &vertexPositions) {
     vertexCount = vertexPositions.size();
     GL(glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer));
     GL(glBufferData(GL_ARRAY_BUFFER, vertexPositions.size() * sizeof(float), vertexPositions.data(),
@@ -536,7 +536,7 @@ void Geometry::updateVertices(const std::vector<float> &vertexPositions) {
     GL(glBindBuffer(GL_ARRAY_BUFFER, 0));
 }
 
-void Geometry::updateColors(const std::vector<unsigned char> &colors) {
+void Geometry::updateColors(const std::vector<color_t> &colors) {
     GL(glBindVertexArray(vertexArrayObject));
     GL(glBindBuffer(GL_ARRAY_BUFFER, colorBuffer));
     GL(glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(unsigned char), colors.data(),
@@ -544,7 +544,7 @@ void Geometry::updateColors(const std::vector<unsigned char> &colors) {
     GL(glBindBuffer(GL_ARRAY_BUFFER, 0));
 }
 
-void Geometry::updateIndices(const std::vector<unsigned short> &indices) {
+void Geometry::updateIndices(const std::vector<index_t> &indices) {
     indexCount = indices.size();
     GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer));
     GL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned short),

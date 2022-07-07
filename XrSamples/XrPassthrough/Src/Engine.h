@@ -15,9 +15,6 @@
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "PIARNO", __VA_ARGS__)
 void log(std::string s);
 
-using vertex_t = float;
-using color_t = uint8_t;
-using index_t = uint16_t;
 
 enum class Mesh : size_t {
     axes = 26, //ranges 0-25 are for alphabets A-Z

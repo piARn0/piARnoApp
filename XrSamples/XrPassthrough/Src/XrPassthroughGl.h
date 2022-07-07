@@ -29,6 +29,11 @@ struct Program {
     GLint textures[MAX_PROGRAM_TEXTURES]; // Texture%i
 };
 
+
+using vertex_t = float;
+using color_t = uint8_t;
+using index_t = uint16_t;
+
 // Represents a mesh loaded into the GPU
 struct Geometry {
     /// Interface
@@ -37,14 +42,14 @@ struct Geometry {
     Geometry();
 
     // create a new GL object with 3D vertexPositions, (per-vertex) RGBA colors, and indices
-    Geometry(const std::vector<float> &vertexPositions,
-             const std::vector<unsigned char> &colors,
-             const std::vector<unsigned short> &indices,
+    Geometry(const std::vector<vertex_t> &vertexPositions,
+             const std::vector<color_t> &colors,
+             const std::vector<index_t> &indices,
              GLenum draw_mode = GL_TRIANGLES);
 
     // create a new GL object with 3D vertexPositions and indices
-    Geometry(const std::vector<float> &vertexPositions,
-             const std::vector<unsigned short> &indices,
+    Geometry(const std::vector<vertex_t> &vertexPositions,
+             const std::vector<index_t> &indices,
              GLenum draw_mode = GL_TRIANGLES);
 
     void create(bool global_color, GLenum draw_mode = GL_TRIANGLES);
@@ -57,9 +62,9 @@ struct Geometry {
 
     void destroyVAO();
 
-    void updateVertices(const std::vector<float> &vertexPositions);
-    void updateColors(const std::vector<unsigned char> &colors);
-    void updateIndices(const std::vector<unsigned short> &indices);
+    void updateVertices(const std::vector<vertex_t> &vertexPositions);
+    void updateColors(const std::vector<color_t> &colors);
+    void updateIndices(const std::vector<index_t> &indices);
 
     void render(const OVR::Matrix4f &transform);
 
