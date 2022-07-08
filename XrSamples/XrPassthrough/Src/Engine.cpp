@@ -49,7 +49,8 @@ Geometry *Engine::getGeometry(Mesh mesh) {
 }
 
 void Engine::renderText(std::string text, vec3 pos, vec3 scl, vec3 rot, color col) {
-    //TODO: apply color
+    scene->geometries[0].updateColors(std::vector<color_t>{col.r, col.g, col.b, col.a});
+
     float xOff = 0;
     for (const auto &c: text) {
         if (isspace(c)) {

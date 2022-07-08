@@ -67,13 +67,13 @@ ObjectGroup::ObjectGroup()
 
 void ObjectGroup::render() {
     mat4 trans = translate(pos) * rotate(rot) * scale(scl);
-    for(auto &o : objects) {
-        o.render(trans * translate(o.pos) * rotate(o.rot) * scale(o.scl));
+    for(auto o : objects) {
+        o->render(trans * translate(o->pos) * rotate(o->rot) * scale(o->scl));
     }
 }
 
 Object& ObjectGroup::operator[](size_t i) {
-    return objects[i];
+    return *objects[i];
 }
 
 

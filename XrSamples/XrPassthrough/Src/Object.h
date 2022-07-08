@@ -46,7 +46,7 @@ public:
     vec3 rot{0, 0, 0};
     vec3 scl{1, 1, 1};
 
-    std::vector<Object> objects;
+    std::vector<Object*> objects;
 };
 
 //represents an object with a cubic bounding box that can detect collision with another rigid

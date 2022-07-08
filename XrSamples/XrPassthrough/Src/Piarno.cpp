@@ -15,16 +15,17 @@ bool isBlack(int index) {
     return blackIndex[(index + 12 - 3) % 12];
 }
 
-ObjectGroup Piarno::buildPiano(int numKeys) {
-    ObjectGroup pianoKeys;
-    pianoKeys.objects.reserve(numKeys);
+void Piarno::buildPiano(int numKeys) {
+    pianoKeys.resize(numKeys);
+    pianoScene.objects.reserve(numKeys);
 
     float x = 0;
-    float widthWhite = 0.02215, widthBlack = 0.011;
+    float widthWhite = 0.0236, widthBlack = 0.011;
     float gap = 0.0005; //gap between keys
 
-    for (size_t i = 0; i < numKeys; i++) {
-        Object k(engine->getGeometry(Mesh::rect));
+    for (int i = 0; i < numKeys; i++) {
+        auto &k = pianoKeys[i];
+        k.geometry = engine->getGeometry(Mesh::rect);
 
         k.rot = vec3{M_PI / 2, 0, 0};
 
@@ -32,37 +33,37 @@ ObjectGroup Piarno::buildPiano(int numKeys) {
         {
             k.pos = vec3{x, 0, 0};
             k.scl = vec3{widthWhite - gap, 0.126, 1};
-            k.col = color{255, 255, 255, 200};
+            k.col = color{255, 255, 255, 150};
 
             x += widthWhite;
         } else //black key
         {
             k.pos = vec3{x - widthWhite / 2, 0.005, -0.024};
             k.scl = vec3{widthBlack - gap, 0.08, 1};
-            k.col = color{0, 0, 0, 200};
+            k.col = color{0, 0, 0, 150};
         }
 
-        pianoKeys.objects.push_back(std::move(k));
+        pianoScene.objects.push_back(&k);
     }
 
     //center
     float width = x;
-    for(auto &k : pianoKeys.objects) {
+    for(auto &k : pianoKeys) {
         k.pos.x -= width/2;
     }
-
-    return pianoKeys;
 }
 
 void Piarno::init(Engine *e) {
     engine = e;
 
-    pianoKeys = buildPiano(88);
+    buildPiano(88);
 
     pauseButton.geometry = engine->getGeometry(Mesh::teapot);
-    pauseButton.pos = vec3{-0.2, 0, 0};
+    pauseButton.pos = pianoKeys[0].pos;
+    pauseButton.pos.x -= 0.1;
     pauseButton.scl = vec3{0.1, 0.1, 0.1};
     pauseButton.col = color{255, 255, 255, 255};
+    pianoScene.objects.push_back(&pauseButton);
 
     loadMidi();
 }
@@ -75,10 +76,10 @@ void Piarno::update() {
     int beginTick = 72 * 2;
     for(int i = 0; i < midi.getNumEvents(0); i++) {
         int command = midi[0][i][0];
-        int key = midi[0][i][1];
+        int key = midi[0][i][1] + 3 - 12;
         //int vel = midi[0][i][2];
 
-        if(currentTick - beginTick == midi[0][i].tick / 10)
+        if((currentTick - beginTick) == midi[0][i].tick / 2)
         {
             if(command == 0x90) //key press
             {
@@ -102,15 +103,14 @@ void Piarno::update() {
     auto ctrl_l = engine->getControllerPose(0).Translation;
     auto ctrl_r = engine->getControllerPose(2).Translation;
     if (engine->isButtonPressed(IO::rightTrigger) && engine->isButtonPressed(IO::leftTrigger)) {
-        pianoKeys.pos = (ctrl_l + ctrl_r) / 2;
-        pianoKeys.rot.y = atan2(ctrl_r.x - ctrl_l.x, ctrl_r.z - ctrl_l.z) - M_PI/2;
-
-        pauseButton.pos = pianoKeys.pos;
-        pauseButton.pos.x -= 1;
+        pianoScene.pos = (ctrl_l + ctrl_r) / 2;
+        pianoScene.pos.y -= 0.1;
+        pianoScene.rot.y = atan2(ctrl_r.x - ctrl_l.x, ctrl_r.z - ctrl_l.z) - M_PI/2;
     }
 
     // compute the euclidean distance between the right joystick and the pause button
-    auto dist = hypot(hypot(ctrl_r.x - pauseButton.pos.x, ctrl_r.y - pauseButton.pos.y), ctrl_r.z - pauseButton.pos.z);
+    auto buttonPos = pianoScene.pos + pauseButton.pos;
+    auto dist = hypot(hypot(ctrl_r.x - buttonPos.x, ctrl_r.y - buttonPos.y), ctrl_r.z - buttonPos.z);
 
     // if the joystick is in the proximity of the pauseButton, flip the `isPaused` state (=press the button)
     // and lock it until the joystick leaves that area far enough to be allowed to press the button once again
@@ -128,6 +128,11 @@ void Piarno::update() {
     } else {
         pauseButton.col = color{0, 255, 0, pauseButton.col.a};
     }
+//
+//    //debug wavy piano
+//    for(auto &k : pianoKeys.objects) {
+//        k.pos.y = sin(k.pos.x*10.0f + currentTick / 10.f) * 0.005;
+//    }
 }
 
 void Piarno::render() {
@@ -138,10 +143,9 @@ void Piarno::render() {
                        color{255, 255, 255, 255});
 
     //NON-TRANSLUCENT OBJECTS:
-    pauseButton.render();
 
     //TRANSLUCENT OBJECTS:
-    pianoKeys.render();
+    pianoScene.render();
 }
 
 
@@ -149,7 +153,7 @@ void Piarno::render() {
 void Piarno::loadMidi() {
     //load midi file
     {
-#include "songs/supermario.h"
+#include "songs/jacque.h"
 
         std::stringstream file(std::string(bytes, bytes + sizeof(bytes)));
         midi = smf::MidiFile(file);

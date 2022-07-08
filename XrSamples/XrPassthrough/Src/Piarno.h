@@ -19,16 +19,17 @@ public:
     void render();
 
 private:
-    ObjectGroup buildPiano(int numKeys);
+    //internal helpers
+    void buildPiano(int numKeys);
     void loadMidi();
 
     Engine *engine;
 
     bool pauseAlreadyChanged = false;
-    bool isPaused = false;
+    bool isPaused = true;
     Object pauseButton;
-
-    ObjectGroup pianoKeys;
+    std::vector<Object> pianoKeys;
+    ObjectGroup pianoScene;
     smf::MidiFile midi;
     int currentTick = 0;
 };
