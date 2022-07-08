@@ -54,12 +54,7 @@ public:
 
     // Render related
     Geometry* getGeometry(Mesh mesh);
-    void renderText(std::string text,
-                    float x, float y, float z,
-                    float sX, float sY, float sZ,
-                    float rX, float rY, float rZ,
-                    color_t r, color_t g, color_t b, color_t a
-                    );
+    void renderText(std::string text, vec3 pos, vec3 scl, vec3 rot, color col);
 
     /**************** YOU ARE NOW ENTERING LOW LEVEL ****************/
 

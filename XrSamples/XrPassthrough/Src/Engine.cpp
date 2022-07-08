@@ -7,7 +7,6 @@
 #include <openxr/openxr.h>
 #include <string>
 
-using namespace OVR;
 
 
 void log(std::string s) {
@@ -49,8 +48,7 @@ Geometry *Engine::getGeometry(Mesh mesh) {
     return &scene->geometries[(size_t) mesh];
 }
 
-void Engine::renderText(std::string text, float x, float y, float z, float sX, float sY, float sZ,
-                        float rX, float rY, float rZ, color_t r, color_t g, color_t b, color_t a) {
+void Engine::renderText(std::string text, vec3 pos, vec3 scl, vec3 rot, color col) {
     //TODO: apply color
     float xOff = 0;
     for (const auto &c: text) {
@@ -60,16 +58,10 @@ void Engine::renderText(std::string text, float x, float y, float z, float sX, f
         }
         auto alpha = toupper(c) - 'A';
         if (0 <= alpha && alpha < 26) {
-            Matrix4f trans =
-                    Matrix4f::Translation(x, y, z) *
-                    (Matrix4f::RotationZ(rZ) * (Matrix4f::RotationY(rY) * (Matrix4f::RotationX(rX) *
-                                                                           (Matrix4f::Scaling(sX,
-                                                                                              sY,
-                                                                                              sZ) *
-                                                                            Matrix4f::Translation(
-                                                                                    xOff, 0, 0)))));
+            mat4 trans = translate(pos) * rotate(rot) * scale(scl) * translate(vec3{xOff, 0, 0});
+
             scene->geometries[alpha].render(trans);
-            xOff += fontWidth[alpha] + sX * 0.2;
+            xOff += fontWidth[alpha] + scl.x * 0.2;
         }
     }
 }
@@ -87,24 +79,24 @@ void Engine::render() {
     for (int i = 0; i < 4; i++) {
         if (!scene->trackedController[i].active)
             continue;
-        Matrix4f pose(scene->trackedController[i].pose);
-        Matrix4f scale;
+        mat4 p(scene->trackedController[i].pose);
+        mat4 s;
         if (i & 1) {
-            scale = Matrix4f::Scaling(0.03f, 0.03f, 0.03f);
+            s = scale(vec3{0.03f, 0.03f, 0.03f});
         } else {
-            scale = Matrix4f::Scaling(0.02f, 0.02f, 0.06f);
+            s = scale(vec3{0.02f, 0.02f, 0.06f});
         }
-        getGeometry(Mesh::cube)->render(pose * scale);
+        getGeometry(Mesh::cube)->render(p * s);
     }
 
 
     //DEBUG render all loaded meshes
     /*float x = -1, y = 0, z = -1;
-    getGeometry(Mesh::axes)->render(Matrix4f::Translation(x, y, z));
+    getGeometry(Mesh::axes)->render(mat4::Translation(x, y, z));
     int i = 0;
     for (auto &g: scene->geometries) {
         if (i > 25) {
-            g.render(OVR::Matrix4f::Translation(x, y, z));
+            g.render(mat4::Translation(x, y, z));
             x += i > 25 ? 1 : fontWidth[i] + 0.01;
         }
         i++;
@@ -153,31 +145,24 @@ std::vector <Geometry> Engine::loadGeometries() {
         float scale = 1 / (alphabetHeight / 26);
         for (size_t i = 0; i < 26; i++) {
             //measure sizes/pos
-            float minX, minY, minZ;
-            float maxX = std::numeric_limits<float>::lowest();
-            minX = minY = minZ = std::numeric_limits<float>::max();
+            vec3 min{std::numeric_limits<float>::max()}, max{std::numeric_limits<float>::lowest()};
 
             for (size_t j = 0; j < allVertices[i].size(); j += 3) {
-                if (allVertices[i][j + 0] < minX)
-                    minX = allVertices[i][j + 0];
-                if (maxX < allVertices[i][j + 0])
-                    maxX = allVertices[i][j + 0];
-                if (allVertices[i][j + 1] < minY)
-                    minY = allVertices[i][j + 1];
-                if (allVertices[i][j + 2] < minZ)
-                    minZ = allVertices[i][j + 2];
+                vec3 v{allVertices[i][j], allVertices[i][j+1], allVertices[i][j+2]};
+                min = vec3::Min(min, v);
+                max = vec3::Max(max, v);
             }
             //align to lower left corner
             for (size_t j = 0; j < allVertices[i].size(); j += 3) {
-                allVertices[i][j + 0] -= minX;
-                allVertices[i][j + 1] -= minY;
-                allVertices[i][j + 2] -= minZ;
+                allVertices[i][j + 0] -= min.x;
+                allVertices[i][j + 1] -= min.y;
+                allVertices[i][j + 2] -= min.z;
             }
             //scale to 1m height
             for (auto &v: allVertices[i])
                 v *= scale;
 
-            fontWidth[i] = (maxX - minX) * scale;
+            fontWidth[i] = (max.x - min.x) * scale;
         }
 
         //find which indices belong to which alphabet
