@@ -12,8 +12,8 @@ struct color {
     color_t r, g, b, a;
 };
 
-mat4 translate(vec3 rot);
-mat4 scale(vec3 rot);
+mat4 translate(vec3 pos);
+mat4 scale(vec3 scl);
 mat4 rotate(vec3 rot);
 
 
