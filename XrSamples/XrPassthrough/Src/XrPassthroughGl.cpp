@@ -340,6 +340,9 @@ bool Program::create(const char *vertexSource, const char *fragmentSource) {
         }
     }
 
+    // Get the uniform color location
+    colorLocation = glGetUniformLocation(program, "fragmentColor");
+
     GL(glUseProgram(0));
 
     return true;
@@ -388,49 +391,30 @@ static const char FRAGMENT_SHADER[] =
         "   outColor = fragmentColor;\n"
         "}\n";
 
-/*static const char CIRCLE_VERTEX_SHADER[] =
+static const char VERTEX_SHADER_UNIFORM_COLOR[] =
         "#define NUM_VIEWS 2\n"
         "#define VIEW_ID gl_ViewID_OVR\n"
         "#extension GL_OVR_multiview2 : require\n"
         "layout(num_views=NUM_VIEWS) in;\n"
         "in vec3 vertexPosition;\n"
-        "in vec4 vertexColor;\n"
         "uniform mat4 ModelMatrix;\n"
         "uniform sceneMatrices\n"
         "{\n"
         "   uniform mat4 ViewMatrix[NUM_VIEWS];\n"
         "   uniform mat4 ProjectionMatrix[NUM_VIEWS];\n"
         "} sm;\n"
-        "out highp vec3 fragPosEye;\n"
-        "out highp vec3 circleCenter;\n"
         "void main()\n"
         "{\n"
         "   gl_Position = sm.ProjectionMatrix[VIEW_ID] * ( sm.ViewMatrix[VIEW_ID] * ( ModelMatrix * ( vec4( vertexPosition, 1.0 ) ) ) );\n"
-        "   fragPosEye = (sm.ViewMatrix[VIEW_ID] * ( ModelMatrix * ( vec4( vertexPosition, 1.0 ) ) ) ).xyz;\n"
-        "   circleCenter = (sm.ViewMatrix[VIEW_ID] * ( ModelMatrix * ( vec4( 0.0, 0.0, 0.0, 1.0 ) ) ) ).xyz;\n"
         "}\n";
 
-static const char CIRCLE_FRAGMENT_SHADER[] =
-        "in highp vec3 fragPosEye;\n"
-        "in highp vec3 circleCenter;\n"
-        "out highp vec4 outColor;\n"
+static const char FRAGMENT_SHADER_UNIFORM_COLOR[] =
+        "uniform lowp vec4 fragmentColor;\n"
+        "out lowp vec4 outColor;\n"
         "void main()\n"
         "{\n"
-        "   highp vec3 dir = fragPosEye / length(fragPosEye);\n"
-        "   highp float a = dot(dir, dir);\n"
-        "   highp float b = 2.0 * dot(dir, -circleCenter);\n"
-        "   highp float r = 0.2;\n"
-        "   highp float c = dot(circleCenter, circleCenter) - r * r;\n"
-        "   highp float discr = b * b - 4.0 * a * c;\n"
-        "   if (discr < 0.0) { discard; }\n"
-        "   highp float t = (-b - sqrt(discr)) / (2.0 * a);\n"
-        "   highp vec3 n = (t * dir) - circleCenter;\n"
-        "   n = n / length(n);\n"
-        "   highp float ndote = dot(n, -dir);\n"
-        "   highp float alpha = 0.5 + 0.5 * smoothstep(0.35, 0.5, 1.0 - ndote);\n"
-        "   outColor = vec4(1.0, 0.0, 0.0, alpha);\n"
+        "   outColor = fragmentColor;\n"
         "}\n";
-*/
 
 /*
 ================================================================================
@@ -537,11 +521,18 @@ void Geometry::updateVertices(const std::vector<vertex_t> &vertexPositions) {
 }
 
 void Geometry::updateColors(const std::vector<color_t> &colors) {
-    GL(glBindVertexArray(vertexArrayObject));
-    GL(glBindBuffer(GL_ARRAY_BUFFER, colorBuffer));
-    GL(glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(unsigned char), colors.data(),
-                    GL_DYNAMIC_DRAW));
-    GL(glBindBuffer(GL_ARRAY_BUFFER, 0));
+    if(!global_color) {
+        GL(glBindVertexArray(vertexArrayObject));
+        GL(glBindBuffer(GL_ARRAY_BUFFER, colorBuffer));
+        GL(glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(unsigned char), colors.data(),
+                        GL_DYNAMIC_DRAW));
+        GL(glBindBuffer(GL_ARRAY_BUFFER, 0));
+    }
+    else {
+        glUseProgram(program->program);
+        glUniform4f(program->colorLocation, colors[0]/255.0, colors[1]/255.0, colors[2]/255.0, colors[3]/255.0);
+        glUseProgram(0);
+    }
 }
 
 void Geometry::updateIndices(const std::vector<index_t> &indices) {
@@ -783,13 +774,22 @@ void Scene::create() {
 
     createVAOs();
 
-    // Generic program
+    // Generic program (color per vertex)
     if (!program.create(VERTEX_SHADER, FRAGMENT_SHADER)) {
         ALOGE("Failed to compile generic program");
     }
 
-    for (auto &g: geometries)
-        g.program = &program;
+    // Uniform color program (everything has 1 color)
+    if (!program_uniform_color.create(VERTEX_SHADER_UNIFORM_COLOR, FRAGMENT_SHADER_UNIFORM_COLOR)) {
+        ALOGE("Failed to compile uniform color program");
+    }
+
+    for (auto &g: geometries) {
+        if(g.global_color)
+            g.program = &program_uniform_color;
+        else
+            g.program = &program;
+    }
 
     createdScene = true;
 

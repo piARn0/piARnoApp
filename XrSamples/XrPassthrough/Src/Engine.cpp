@@ -63,8 +63,11 @@ void Engine::renderText(std::string text, float x, float y, float z, float sX, f
             Matrix4f trans =
                     Matrix4f::Translation(x, y, z) *
                     (Matrix4f::RotationZ(rZ) * (Matrix4f::RotationY(rY) * (Matrix4f::RotationX(rX) *
-                    (Matrix4f::Scaling(sX,sY,sZ) *
-                    Matrix4f::Translation(xOff, 0,0)))));
+                                                                           (Matrix4f::Scaling(sX,
+                                                                                              sY,
+                                                                                              sZ) *
+                                                                            Matrix4f::Translation(
+                                                                                    xOff, 0, 0)))));
             scene->geometries[alpha].render(trans);
             xOff += fontWidth[alpha] + sX * 0.2;
         }
@@ -111,8 +114,8 @@ void Engine::render() {
 std::array<float, 26> Engine::fontWidth;
 
 
-std::vector<Geometry> Engine::loadGeometries() {
-    std::vector<Geometry> g((size_t) Mesh::NUM);
+std::vector <Geometry> Engine::loadGeometries() {
+    std::vector <Geometry> g((size_t) Mesh::NUM);
 
     {
 #include "models/alphabet.h"
@@ -130,7 +133,7 @@ std::vector<Geometry> Engine::loadGeometries() {
 
         double alphabetHeight = (yMax - yMin);
         std::array<std::vector<vertex_t>, 26> allVertices;
-        std::vector<uint8_t> vertexAlphabetLookup(vertices.size() / 3);
+        std::vector <uint8_t> vertexAlphabetLookup(vertices.size() / 3);
         std::array<std::vector<index_t>, 26> allIndices;
         std::array<int, 26> firstVertexIndexPerAlphabet;
         firstVertexIndexPerAlphabet.fill(-1);
@@ -189,30 +192,25 @@ std::vector<Geometry> Engine::loadGeometries() {
         }
 
         for (size_t i = 0; i < 26; i++)
-            g[i] = Geometry(allVertices[i],
-                            std::vector<color_t>(allVertices[i].size() * 4 / 3, 255),
-                            allIndices[i]);
+            g[i] = Geometry(allVertices[i], allIndices[i]);
     }
 
     {
 #include "models/axes.h"
 
-        g[(size_t) Mesh::axes] = Geometry(vertices, colors,
-                                          indices, GL_LINES);
+        g[(size_t) Mesh::axes] = Geometry(vertices, colors, indices, GL_LINES);
     }
 
     {
 #include "models/cube.h"
 
-        g[(size_t) Mesh::cube] = Geometry(vertices, colors,
-                                          indices);
+        g[(size_t) Mesh::cube] = Geometry(vertices, colors, indices);
     }
 
     {
 #include "models/rect.h"
 
-        g[(size_t) Mesh::rect] = Geometry(vertices, colors,
-                                          indices);
+        g[(size_t) Mesh::rect] = Geometry(vertices, indices);
     }
 
 //    {
@@ -225,10 +223,8 @@ std::vector<Geometry> Engine::loadGeometries() {
 
         for (auto &v: vertices)
             v /= 100.0;
-        std::vector<unsigned char> colors(vertices.size() * 4 / 3, 255);
 
-        g[(size_t) Mesh::teapot] = Geometry(vertices, colors,
-                                            indices);
+        g[(size_t) Mesh::teapot] = Geometry(vertices, indices);
     }
 
     return g;

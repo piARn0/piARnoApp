@@ -27,6 +27,7 @@ struct Program {
     GLint uniformLocation[MAX_PROGRAM_UNIFORMS]; // ProgramUniforms[].name
     GLint uniformBinding[MAX_PROGRAM_UNIFORMS]; // ProgramUniforms[].name
     GLint textures[MAX_PROGRAM_TEXTURES]; // Texture%i
+    GLint colorLocation; //fragmentColor
 };
 
 
@@ -139,7 +140,7 @@ struct Scene {
     bool createdVAOs;
     GLuint sceneMatrices;
 
-    Program program;
+    Program program, program_uniform_color;
     std::vector<Geometry> geometries;
 
     float clearColor[4];
