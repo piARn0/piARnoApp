@@ -66,6 +66,41 @@ void Piarno::init(Engine *e) {
     pianoScene.attach(pauseButton);
 
     loadMidi();
+
+    drawSong();
+}
+
+void Piarno::drawSong() {
+    // count the total number of key presses (=notes being played)
+    int keyPressNum = 0;
+
+    std::vector<smf::MidiEvent> keyEvents;
+    for (int i = 0; i < midi.getNumEvents(0); i++) {
+        int command = midi[0][i][0];
+        if (command == 0x90) {
+            keyEvents.push_back(midi[0][i]);
+            keyPressNum++;
+        }
+    }
+
+    log("Number of notes in this song: " + std::to_string(keyPressNum));
+
+    allTiles.resize(keyPressNum);
+
+    float widthWhite = 0.0236, widthBlack = 0.011;
+    float gap = 0.0005; //gap between keys
+
+    for (int i = 0; i < keyPressNum; i++) {
+        auto &tile = allTiles[i];
+        auto key = keyEvents[i][1] + 3 - 12;
+        tile.geometry =  engine->getGeometry(Mesh::rect);
+        tile.pos = pianoKeys[key].pos;
+        tile.pos.z = -0.2f * (i + 1);
+        tile.rot = vec3{M_PI / 2, 0, 0};
+        tile.scl = vec3{isBlack(key) ? widthBlack - gap : widthWhite - gap, 0.126, 1};
+        tile.col = color{0, 0, 255, 255};
+        pianoScene.attach(tile);
+    }
 }
 
 void Piarno::update() {
@@ -80,6 +115,7 @@ void Piarno::update() {
     for(; currentEvent < midi.getNumEvents(0); currentEvent++) {
         int i = currentEvent;
         int command = midi[0][i][0];
+        // TODO: replace magic numbers for piano-specific offset with something more intuitive?
         int key = midi[0][i][1] + 3 - 12;
         //int vel = midi[0][i][2];
 
@@ -146,6 +182,7 @@ void Piarno::render() {
 
     //TRANSLUCENT OBJECTS:
     pianoScene.render();
+//    songPlane.render();
 }
 
 

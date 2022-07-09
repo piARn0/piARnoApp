@@ -22,6 +22,7 @@ private:
     //internal helpers
     void buildPiano(int numKeys);
     void loadMidi();
+    void drawSong();
 
     Engine *engine;
 
@@ -35,5 +36,9 @@ private:
     int currentEvent = 0;
     bool isPaused = true;
     Button pauseButton;
+
+    //song visualization
+    ObjectGroup songPlane;
+    std::vector<Object> allTiles;
 };
 
