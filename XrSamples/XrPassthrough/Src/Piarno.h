@@ -31,7 +31,8 @@ private:
 
     //playback & UI
     smf::MidiFile midi;
-    int currentTick = 0;
+    double currentTime = 0, speedMultiplier = 0.5;
+    int currentEvent = 0;
     bool isPaused = true;
     Button pauseButton;
 };

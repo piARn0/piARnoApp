@@ -58,8 +58,8 @@ void Piarno::init(Engine *e) {
     buildPiano(88);
 
     pauseButton.geometry = engine->getGeometry(Mesh::teapot);
-    pauseButton.pos = pianoKeys[0].pos;
-    pauseButton.pos.x -= 0.1;
+    pauseButton.pos = pianoKeys[5].pos;
+    pauseButton.pos.z += 0.2;
     pauseButton.scl = vec3{0.1, 0.1, 0.1};
     pauseButton.col = color{255, 255, 255, 255};
     pauseButton.radius = 0.05;
@@ -70,18 +70,20 @@ void Piarno::init(Engine *e) {
 
 void Piarno::update() {
     if(!isPaused)
-        currentTick++;
+        currentTime += 1.0/72.0 * speedMultiplier;
 
     pauseButton.update(engine->getControllers());
 
     //Process Midi events
-    int beginTick = 72 * 2;
-    for(int i = 0; i < midi.getNumEvents(0); i++) {
+    double beginTime = 2;
+
+    for(; currentEvent < midi.getNumEvents(0); currentEvent++) {
+        int i = currentEvent;
         int command = midi[0][i][0];
         int key = midi[0][i][1] + 3 - 12;
         //int vel = midi[0][i][2];
 
-        if((currentTick - beginTick) == midi[0][i].tick / 2)
+        if((currentTime - beginTime) >= midi[0][i].seconds)
         {
             if(command == 0x90) //key press
             {
@@ -99,6 +101,8 @@ void Piarno::update() {
                 }
             }
         }
+        else //no more events to process rn...
+            break;
     }
 
     //Follow controller
@@ -149,17 +153,19 @@ void Piarno::render() {
 void Piarno::loadMidi() {
     //load midi file
     {
-#include "songs/elise.h"
+#include "songs/jacque.h"
 
         std::stringstream file(std::string(bytes, bytes + sizeof(bytes)));
         midi = smf::MidiFile(file);
-        midi.absoluteTicks();
+        //midi.absoluteTicks();
         midi.joinTracks();
+        midi.doTimeAnalysis(); //calculate seconds for each event
         log("!!!!!!!!!!!!numEvents = " + std::to_string(midi.getNumEvents(0)) + "\n");
 
 
         for (int i = 0; i < midi.getNumEvents(0); i++) {
             log("tick=" + std::to_string(midi[0][i].tick));
+            log("second=" + std::to_string(midi[0][i].seconds));
             log("command=" + std::to_string(midi[0][i][0]));
             log("key=" + std::to_string(midi[0][i][1]));
         }
