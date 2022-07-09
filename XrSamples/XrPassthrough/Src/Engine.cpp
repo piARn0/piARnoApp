@@ -25,6 +25,16 @@ Engine::Engine(Scene *scene) : scene(scene) {
     register_io(aButton);
     register_io(bButton);
 
+    for(auto &c : scene->trackedController) {
+        Rigid r{getGeometry(Mesh::cube)};
+        r.pos = c.pose.Translation;
+        r.rot = vec3{c.pose.Rotation.x, c.pose.Rotation.y, c.pose.Rotation.z};
+        r.scl = vec3{0.02f, 0.02f, 0.02f};
+        r.col = color{100, 100, 100, 255};
+        r.radius = 0.02;
+        controllers.push_back(std::move(r));
+    }
+
     piarno.init(this);
 }
 
@@ -32,8 +42,8 @@ uint64_t Engine::getFrame() {
     return frame;
 }
 
-OVR::Posef Engine::getControllerPose(int index) {
-    return scene->trackedController[index].pose;
+const std::vector<Rigid>& Engine::getControllers() {
+    return controllers;
 }
 
 bool Engine::isButtonPressed(IO button) {
@@ -70,6 +80,15 @@ void Engine::renderText(std::string text, vec3 pos, vec3 scl, vec3 rot, color co
 void Engine::update() {
     frame++;
 
+    for(int i=0; i<4; i++) {
+        auto &c = scene->trackedController[i];
+        if(c.active) {
+            auto &r = controllers[i];
+            r.pos = c.pose.Translation;
+            r.rot = vec3{c.pose.Rotation.x, c.pose.Rotation.y, c.pose.Rotation.z};
+        }
+    }
+
     piarno.update();
 }
 
@@ -77,18 +96,8 @@ void Engine::render() {
     piarno.render();
 
     //render controllers
-    for (int i = 0; i < 4; i++) {
-        if (!scene->trackedController[i].active)
-            continue;
-        mat4 p(scene->trackedController[i].pose);
-        mat4 s;
-        if (i & 1) {
-            s = scale(vec3{0.03f, 0.03f, 0.03f});
-        } else {
-            s = scale(vec3{0.02f, 0.02f, 0.06f});
-        }
-        getGeometry(Mesh::cube)->render(p * s);
-    }
+    for(auto &c : controllers)
+        c.render();
 
 
     //DEBUG render all loaded meshes

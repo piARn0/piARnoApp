@@ -25,12 +25,14 @@ private:
 
     Engine *engine;
 
-    bool pauseAlreadyChanged = false;
-    bool isPaused = true;
-    Object pauseButton;
-    std::vector<Object> pianoKeys;
+    //piano overlay & tiles
     ObjectGroup pianoScene;
+    std::vector<Object> pianoKeys;
+
+    //playback & UI
     smf::MidiFile midi;
     int currentTick = 0;
+    bool isPaused = true;
+    Button pauseButton;
 };
 

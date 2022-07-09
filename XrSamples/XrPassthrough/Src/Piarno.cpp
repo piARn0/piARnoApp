@@ -17,7 +17,6 @@ bool isBlack(int index) {
 
 void Piarno::buildPiano(int numKeys) {
     pianoKeys.resize(numKeys);
-    pianoScene.objects.reserve(numKeys);
 
     float x = 0;
     float widthWhite = 0.0236, widthBlack = 0.011;
@@ -43,7 +42,7 @@ void Piarno::buildPiano(int numKeys) {
             k.col = color{0, 0, 0, 150};
         }
 
-        pianoScene.objects.push_back(&k);
+        pianoScene.attach(k);
     }
 
     //center
@@ -63,7 +62,8 @@ void Piarno::init(Engine *e) {
     pauseButton.pos.x -= 0.1;
     pauseButton.scl = vec3{0.1, 0.1, 0.1};
     pauseButton.col = color{255, 255, 255, 255};
-    pianoScene.objects.push_back(&pauseButton);
+    pauseButton.radius = 0.05;
+    pianoScene.attach(pauseButton);
 
     loadMidi();
 }
@@ -71,6 +71,8 @@ void Piarno::init(Engine *e) {
 void Piarno::update() {
     if(!isPaused)
         currentTick++;
+
+    pauseButton.update(engine->getControllers());
 
     //Process Midi events
     int beginTick = 72 * 2;
@@ -100,27 +102,20 @@ void Piarno::update() {
     }
 
     //Follow controller
-    auto ctrl_l = engine->getControllerPose(0).Translation;
-    auto ctrl_r = engine->getControllerPose(2).Translation;
+    auto ctrl_l = engine->getControllers()[0].pos;
+    auto ctrl_r = engine->getControllers()[2].pos;
     if (engine->isButtonPressed(IO::rightTrigger) && engine->isButtonPressed(IO::leftTrigger)) {
         pianoScene.pos = (ctrl_l + ctrl_r) / 2;
         pianoScene.pos.y -= 0.1;
         pianoScene.rot.y = atan2(ctrl_r.x - ctrl_l.x, ctrl_r.z - ctrl_l.z) - M_PI/2;
     }
 
-    // compute the euclidean distance between the right joystick and the pause button
-    auto buttonPos = pianoScene.pos + pauseButton.pos;
-    auto dist = hypot(hypot(ctrl_r.x - buttonPos.x, ctrl_r.y - buttonPos.y), ctrl_r.z - buttonPos.z);
 
     // if the joystick is in the proximity of the pauseButton, flip the `isPaused` state (=press the button)
     // and lock it until the joystick leaves that area far enough to be allowed to press the button once again
     // this approach prevents continuously flipping the `isPaused` when the joystick remains in the vicinity of the button
-    if (dist < 0.1 && !pauseAlreadyChanged) {
+    if (pauseButton.isPressed())
         isPaused = !isPaused;
-        pauseAlreadyChanged = true;
-    } else if (dist > 0.1) {
-        pauseAlreadyChanged = false;
-    }
 
     // make the pauseButton either red or green displaying the current `isPaused` state
     if (isPaused) {
@@ -130,7 +125,7 @@ void Piarno::update() {
     }
 //
 //    //debug wavy piano
-//    for(auto &k : pianoKeys.objects) {
+//    for(auto &k : pianoKeys) {
 //        k.pos.y = sin(k.pos.x*10.0f + currentTick / 10.f) * 0.005;
 //    }
 }
@@ -143,6 +138,7 @@ void Piarno::render() {
                        color{255, 255, 255, 255});
 
     //NON-TRANSLUCENT OBJECTS:
+    //pauseButton.render();
 
     //TRANSLUCENT OBJECTS:
     pianoScene.render();
@@ -153,7 +149,7 @@ void Piarno::render() {
 void Piarno::loadMidi() {
     //load midi file
     {
-#include "songs/jacque.h"
+#include "songs/elise.h"
 
         std::stringstream file(std::string(bytes, bytes + sizeof(bytes)));
         midi = smf::MidiFile(file);

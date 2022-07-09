@@ -18,13 +18,17 @@ mat4 rotate(vec3 rot);
 
 
 /// OBJECTS
+class ObjectGroup;
 
 //represents a single stateful rectangle that can be rendered
 class Object {
 public:
     Object(Geometry *geometry = nullptr);
-    void render();
-    void render(const mat4 &transformation);
+    virtual void render(mat4 *postTransform = nullptr);
+
+    vec3 globalPos() const;
+    vec3 globalRot() const;
+    vec3 globalScl() const;
 
     vec3 pos{0, 0, 0};
     vec3 rot{0, 0, 0};
@@ -32,38 +36,73 @@ public:
     color col{255, 255, 255, 255};
 
     Geometry *geometry;
+
+protected:
+    friend ObjectGroup; //allow it to access parent attribute
+    ObjectGroup *parent = nullptr;
 };
 
 //represents a group of objects that are stuck together (their positions and rotations are local)
 class ObjectGroup {
 public:
+    using iterator = std::vector<Object*>::iterator;
+
     ObjectGroup();
     void render();
 
     Object& operator[](size_t i);
+    iterator begin();
+    iterator end();
+    size_t size();
+    void attach(Object &obj);
 
     vec3 pos{0, 0, 0};
     vec3 rot{0, 0, 0};
     vec3 scl{1, 1, 1};
 
+protected:
     std::vector<Object*> objects;
 };
 
-//represents an object with a cubic bounding box that can detect collision with another rigid
+//represents an object with a spherical collision body that can detect collision with another rigid
 class Rigid : public Object {
 public:
     Rigid(Geometry *geometry = nullptr);
 
-    bool doesCollide(const Rigid &other);
+    bool isColliding(const Rigid &other);
 
-    //offset position (center of bounding box) relative to Object.pos
-    vec3 offset{0, 0, 0};
-    //size of bounding box in meters
-    vec3 size{1, 1, 1};
+    //offset position (center of body) relative to Object.pos
+    //vec3 offset{0, 0, 0}; //TODO: i think this is not needed...
+    //radius of body in meters
+    float radius = 0.01;
 };
 
 //represents a push button UI element
 class Button : public Rigid {
 public:
     Button(Geometry *geometry = nullptr);
+
+    //run this once per frame
+    void update(const std::vector<Rigid> &controllers);
+
+    //returns true when button is pressed once
+    bool isPressed();
+    //returns true when button is released once
+    bool isReleased();
+    //returns current status
+    bool isBeingPressed();
+
+    void render(mat4 *postTransform = nullptr) override;
+
+private:
+    bool pressed = false, pressedPrev = false;
+    float maxPress = radius * 2;
+    float currentPress = 0;
+
+    //TODO: add cooldown timer if press gets triggered multiple times at boundary
+};
+
+//a slider that can be moved along a set track (left and right)
+class Slider : public Button {
+
 };

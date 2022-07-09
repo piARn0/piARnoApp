@@ -48,7 +48,7 @@ public:
     uint64_t getFrame();
 
     // Input
-    OVR::Posef getControllerPose(int index);
+    const std::vector<Rigid>& getControllers();
     bool isButtonPressed(IO button);
     float getRightTriggerHoldLevel();
 
@@ -68,6 +68,7 @@ public:
 protected:
     Scene *scene;
     Piarno piarno;
+    std::vector<Rigid> controllers;
 
     uint64_t frame = 0;
     std::array<XrBool32*, (size_t) IO::NUM> buttonStates;
