@@ -1,8 +1,9 @@
 #pragma once
 
 #include "XrPassthroughGl.h"
-
-struct Geometry;
+#include "Global.h"
+#include <string>
+#include <optional>
 
 /// USEFUL TYPES AND FUNCTIONS
 using vec3 = OVR::Vector3f;
@@ -18,7 +19,6 @@ mat4 rotate(vec3 rot);
 
 
 /// OBJECTS
-class ObjectGroup;
 
 //represents a single stateful rectangle that can be rendered
 class Object {
@@ -26,9 +26,9 @@ public:
     Object(Geometry *geometry = nullptr);
     virtual void render(mat4 *postTransform = nullptr);
 
-    vec3 globalPos() const;
-    vec3 globalRot() const;
-    vec3 globalScl() const;
+    vec3 globalPos(std::optional<vec3> p = std::nullopt) const;
+    vec3 globalRot(std::optional<vec3> r = std::nullopt) const;
+    vec3 globalScl(std::optional<vec3> s = std::nullopt) const;
 
     vec3 pos{0, 0, 0};
     vec3 rot{0, 0, 0};
@@ -72,7 +72,7 @@ public:
     bool isColliding(const Rigid &other);
 
     //offset position (center of body) relative to Object.pos
-    //vec3 offset{0, 0, 0}; //TODO: i think this is not needed...
+    vec3 offset{0, 0, 0};
     //radius of body in meters
     float radius = 0.01;
 };
@@ -94,15 +94,34 @@ public:
 
     void render(mat4 *postTransform = nullptr) override;
 
-private:
+    std::string label;
+
+protected:
     bool pressed = false, pressedPrev = false;
     float maxPress = radius * 2;
-    float currentPress = 0;
 
     //TODO: add cooldown timer if press gets triggered multiple times at boundary
 };
 
 //a slider that can be moved along a set track (left and right)
 class Slider : public Button {
+public:
+    Slider(Geometry *geometry = nullptr);
 
+    //run this once per frame
+    void update(const std::vector<Rigid> &controllers);
+
+    float getVal();
+    void setVal(float val);
+
+    void render(mat4 *postTransform = nullptr) override;
+
+    float min = -0.25f, max = 0.25f;
+    vec3 trackDir{1.0f, 0.0f, 0.0f}; //direction of the track (make sure it's normalized!)
+
+protected:
+    vec3 calculateOffset(vec3 controllerPos);
+
+    float val = 0;
+    vec3 controllerOffset{0,0,0}; //when pressed by controller, save its position so we can move along it
 };

@@ -7,7 +7,9 @@
 #include <openxr/openxr.h>
 #include <string>
 
-
+Scene* global::scene = nullptr;
+Engine* global::engine = nullptr;
+Piarno* global::piarno = nullptr;
 
 void log(std::string s) {
     LOGE("%s", s.c_str());
@@ -15,6 +17,10 @@ void log(std::string s) {
 
 
 Engine::Engine(Scene *scene) : scene(scene) {
+    global::scene = scene;
+    global::engine = this;
+    global::piarno = &piarno;
+
 #define register_io(button) buttonStates[(size_t) IO::button] = &scene-> button##Pressed;
     register_io(leftTrigger);
     register_io(rightTrigger);
@@ -31,11 +37,11 @@ Engine::Engine(Scene *scene) : scene(scene) {
         r.rot = vec3{c.pose.Rotation.x, c.pose.Rotation.y, c.pose.Rotation.z};
         r.scl = vec3{0.02f, 0.02f, 0.02f};
         r.col = color{100, 100, 100, 255};
-        r.radius = 0.02;
+        r.radius = 0.03;
         controllers.push_back(std::move(r));
     }
 
-    piarno.init(this);
+    piarno.init();
 }
 
 uint64_t Engine::getFrame() {
@@ -58,10 +64,22 @@ Geometry *Engine::getGeometry(Mesh mesh) {
     return &scene->geometries[(size_t) mesh];
 }
 
-void Engine::renderText(std::string text, vec3 pos, vec3 scl, vec3 rot, color col) {
+float Engine::textWidth(const std::string &text) {
+    float xOff = 0;
+    for (const auto &c: text) {
+        if (isspace(c))
+            xOff += fontWidth[0];
+        else if (auto alpha = toupper(c) - 'A'; 0 <= alpha && alpha < 26)
+            xOff += fontWidth[alpha] + 0.1;
+    }
+    return xOff - (text.size() == 0 ? 0 : 0.1);
+}
+
+void Engine::renderText(const std::string &text, vec3 pos, vec3 scl, vec3 rot, color col, bool centered) {
     scene->geometries[0].updateColors(std::vector<color_t>{col.r, col.g, col.b, col.a});
 
-    float xOff = 0;
+    float xOff = centered ? -textWidth(text)/2 : 0;
+    float yOff = centered ? -0.4 : 0;
     for (const auto &c: text) {
         if (isspace(c)) {
             xOff += fontWidth[0];
@@ -69,10 +87,10 @@ void Engine::renderText(std::string text, vec3 pos, vec3 scl, vec3 rot, color co
         }
         auto alpha = toupper(c) - 'A';
         if (0 <= alpha && alpha < 26) {
-            mat4 trans = translate(pos) * rotate(rot) * scale(scl) * translate(vec3{xOff, 0, 0});
+            mat4 trans = translate(pos) * rotate(rot) * scale(scl) * translate(vec3{xOff, yOff, 0});
 
             scene->geometries[alpha].render(trans);
-            xOff += fontWidth[alpha] + scl.x * 0.2;
+            xOff += fontWidth[alpha] + 0.1;
         }
     }
 }

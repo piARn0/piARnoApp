@@ -3,6 +3,9 @@
 //
 
 #include "Object.h"
+#include "Engine.h"
+
+using namespace global;
 
 mat4 translate(vec3 pos) {
     return mat4::Translation(pos);
@@ -45,26 +48,26 @@ void Object::render(mat4 *postTransform) {
         geometry->render(trans);
 }
 
-vec3 Object::globalPos() const {
+vec3 Object::globalPos(std::optional<vec3> p) const {
     if(parent)
-        return (translate(parent->pos) * rotate(parent->rot) * scale(parent->scl)).Transform(pos);
+        return (translate(parent->pos) * rotate(parent->rot) * scale(parent->scl)).Transform(p.value_or(pos));
     else
-        return pos;
+        return p.value_or(pos);
 }
 
-vec3 Object::globalRot() const {
+vec3 Object::globalRot(std::optional<vec3> r) const {
     if(parent)
         //FIXME: this is correct... right???
-        return parent->rot + rot;
+        return parent->rot + r.value_or(rot);
     else
-        return rot;
+        return r.value_or(rot);
 }
 
-vec3 Object::globalScl() const {
+vec3 Object::globalScl(std::optional<vec3> s) const {
     if(parent)
-        return parent->scl * scl;
+        return parent->scl * s.value_or(scl);
     else
-        return scl;
+        return s.value_or(scl);
 }
 
 ObjectGroup::ObjectGroup()
@@ -104,8 +107,8 @@ Rigid::Rigid(Geometry *geometry) : Object(geometry) {
 }
 
 bool Rigid::isColliding(const Rigid &other) {
-    vec3 a = globalPos();
-    vec3 b = other.globalPos();
+    vec3 a = globalPos(pos + offset);
+    vec3 b = other.globalPos(other.pos + other.offset);
     float radiusSq = (radius + other.radius) * (radius + other.radius);
 
     return a.DistanceSq(b) <= radiusSq;
@@ -118,24 +121,24 @@ Button::Button(Geometry *geometry) : Rigid(geometry) {
 
 void Button::update(const std::vector<Rigid> &controllers) {
     pressedPrev = pressed;
-    currentPress = 0;
 
+    float currentPress = 0;
     vec3 p1 = globalPos();
     for(auto &c : controllers) {
         vec3 p2 = c.globalPos();
-        if(p2.y > p1.y && isColliding(c)) { //is pushing down from above
+        if(isColliding(c)) { //is pushing down from above
             //calculate press distance
             float radiusSq = (radius + c.radius) * (radius + c.radius);
             float horizontalDistSq = (p1.x - p2.x) * (p1.x - p2.x) + (p1.z - p2.z) * (p1.z - p2.z);
             float verticalDist = p2.y - p1.y;
-            float pressDist = sqrt(radiusSq - horizontalDistSq) - verticalDist;
+            float pressDist = sqrt(radiusSq - horizontalDistSq) - verticalDist - 0.01;
             currentPress = std::max(currentPress, pressDist);
         }
     }
 
     currentPress = std::min(currentPress, maxPress);
     pressed = currentPress >= maxPress / 2;
-
+    offset.y = -currentPress;
     //TODO: vibration for feedback?
 }
 
@@ -168,9 +171,85 @@ void Button::render(mat4 *postTransform) {
     }
 
     //set the transformation matrix and render
-    mat4 trans = translate(vec3{pos.x, pos.y - currentPress, pos.z}) * rotate(rot) * scale(scl);
+    mat4 trans = translate(pos + offset) * rotate(rot) * scale(scl);
     if(postTransform)
         geometry->render(*postTransform * trans);
     else
         geometry->render(trans);
+
+    if(label != "") {
+        auto p = globalPos(pos + offset + vec3{0, scl.y, 0}), s = globalScl(scl * vec3{0.5, 0.5, 2}), r = globalRot(rot + vec3{-M_PI/2, 0, 0});
+        engine->renderText(label, p, s, r, color{255, 255, 255, 255});
+    }
+}
+
+
+Slider::Slider(Geometry *geometry) : Button(geometry) {
+}
+
+void Slider::update(const std::vector<Rigid> &controllers) {
+    pressedPrev = pressed;
+
+    float currentPress = 0;
+    int controllerIndex = -1;
+    vec3 p1 = globalPos(pos + vec3{offset.x, 0, offset.z});
+    for(size_t i = 0; i < controllers.size(); i++) {
+        auto &c = controllers[i];
+        vec3 p2 = c.globalPos();
+        if(isColliding(c)) { //is pushing down from above
+            //calculate press distance
+            float radiusSq = (radius + c.radius) * (radius + c.radius);
+            float horizontalDistSq = (p1.x - p2.x) * (p1.x - p2.x) + (p1.z - p2.z) * (p1.z - p2.z);
+            float verticalDist = p2.y - p1.y;
+            float pressDist = sqrt(radiusSq - horizontalDistSq) - verticalDist - 0.01;
+
+            if(pressDist > currentPress) {
+                controllerIndex = i;
+                currentPress = pressDist;
+            }
+        }
+    }
+
+    currentPress = std::min(currentPress, maxPress);
+    pressed = currentPress >= maxPress / 2;
+
+    if(pressed && !pressedPrev) {
+        controllerOffset = calculateOffset(controllers[controllerIndex].pos) - offset;
+    }
+
+    if(controllerIndex != -1 && pressed) {
+        offset = vec3::Max(min * trackDir, vec3::Min(calculateOffset(controllers[controllerIndex].pos) - controllerOffset, max * trackDir));
+        val = sqrt((offset.x * offset.x) + (offset.z * offset.z));
+    }
+    offset.y = -currentPress;
+}
+
+float Slider::getVal() {
+    return val;
+}
+
+void Slider::setVal(float val) {
+    offset = val * trackDir;
+}
+
+void Slider::render(mat4 *postTransform) {
+    Button::render(postTransform);
+
+    //render slider track
+    auto track = engine->getGeometry(Mesh::rect);
+    track->updateColors(std::vector<color_t> {100, 100, 100, 255});
+
+    //set the transformation matrix and render
+    mat4 trans = translate(pos + vec3{(min+max)/2, -scl.y/2, 0}) * rotate(rot + vec3{(float)-M_PI/2, 0, 0}) * scale(vec3{max - min, 0.01, 1});
+    if(postTransform)
+        track->render(*postTransform * trans);
+    else
+        track->render(trans);
+}
+
+vec3 Slider::calculateOffset(vec3 controllerPos) {
+    vec3 c = (controllerPos - globalPos());
+    vec3 r = globalRot();
+    vec3 relative{c.x * cos(-r.y) + c.z * sin(-r.y), c.y, -c.x * sin(-r.y) + c.z * cos(-r.y)}; //rotate controller pos around y axis to match slider rotation
+    return relative.ProjectTo(trackDir);
 }
