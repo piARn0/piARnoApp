@@ -22,7 +22,7 @@ private:
     //internal helpers
     void buildPiano(int numKeys);
     void loadMidi();
-    void drawSong();
+    void drawSong(int numKeys);
 
     Engine *engine;
 

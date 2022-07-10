@@ -55,7 +55,9 @@ void Piarno::buildPiano(int numKeys) {
 void Piarno::init(Engine *e) {
     engine = e;
 
-    buildPiano(88);
+    int numKeys = 88;
+
+    buildPiano(numKeys);
 
     pauseButton.geometry = engine->getGeometry(Mesh::teapot);
     pauseButton.pos = pianoKeys[5].pos;
@@ -67,39 +69,60 @@ void Piarno::init(Engine *e) {
 
     loadMidi();
 
-    drawSong();
+    drawSong(numKeys);
 }
 
-void Piarno::drawSong() {
-    // count the total number of key presses (=notes being played)
+void Piarno::drawSong(int numKeys) {
+    // count the total number of key presses events (=notes being played)
     int keyPressNum = 0;
-
-    std::vector<smf::MidiEvent> keyEvents;
     for (int i = 0; i < midi.getNumEvents(0); i++) {
         int command = midi[0][i][0];
         if (command == 0x90) {
-            keyEvents.push_back(midi[0][i]);
             keyPressNum++;
         }
     }
-
+    // TODO: cleanup after debugging
     log("Number of notes in this song: " + std::to_string(keyPressNum));
-
-    allTiles.resize(keyPressNum);
+    // TODO: use keyPressNum instead for more memory efficiency
+    allTiles.resize(midi.getNumEvents(0));
 
     float widthWhite = 0.0236, widthBlack = 0.011;
     float gap = 0.0005; //gap between keys
 
-    for (int i = 0; i < keyPressNum; i++) {
-        auto &tile = allTiles[i];
-        auto key = keyEvents[i][1] + 3 - 12;
-        tile.geometry =  engine->getGeometry(Mesh::rect);
-        tile.pos = pianoKeys[key].pos;
-        tile.pos.z = -0.2f * (i + 1);
-        tile.rot = vec3{M_PI / 2, 0, 0};
-        tile.scl = vec3{isBlack(key) ? widthBlack - gap : widthWhite - gap, 0.126, 1};
-        tile.col = color{0, 0, 255, 255};
-        pianoScene.attach(tile);
+    // TODO: decide what's the default value
+    std::vector<double> keyMap(numKeys, -1.0);
+
+    for (int i = 0; i < midi.getNumEvents(0); i++) {
+        int command = midi[0][i][0];
+        int key = midi[0][i][1] + 3 - 12;
+
+        if (command == 0x90) {
+            // key press
+            double pressTime = midi[0][i].seconds;
+
+            keyMap[key] = pressTime;
+
+        } else if (command == 0x80) {
+            // key release
+            double releaseTime = midi[0][i].seconds;
+
+            // calculate how long that key was pressed
+            float totalDuration = releaseTime - keyMap[key];
+            auto &tile = allTiles[i];
+            tile.geometry =  engine->getGeometry(Mesh::rect);
+            tile.pos = pianoKeys[key].pos;
+
+            auto middleTime = (releaseTime + keyMap[key]) / 2;
+            tile.pos.z = -0.15f * (middleTime);
+            tile.rot = vec3{M_PI / 2, 0, 0};
+            tile.scl = vec3{isBlack(key) ? widthBlack - gap : widthWhite - gap, 0.126, totalDuration};
+            tile.col = color{0, 0, 255, 255};
+            pianoScene.attach(tile);
+
+        } else {
+            // ignore any other event
+            continue;
+        }
     }
 }
 
