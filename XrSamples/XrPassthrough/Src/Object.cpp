@@ -178,7 +178,7 @@ void Button::render(mat4 *postTransform) {
         geometry->render(trans);
 
     if(label != "") {
-        auto p = globalPos(pos + offset + vec3{0, scl.y, 0}), s = globalScl(scl * vec3{0.5, 0.5, 2}), r = globalRot(rot + vec3{-M_PI/2, 0, 0});
+        auto p = globalPos(pos + offset + vec3{0, scl.y, 0}), s = globalScl(scl * vec3{0.5, 0.5, 1}), r = globalRot(rot + vec3{-M_PI/2, 0, 0});
         engine->renderText(label, p, s, r, color{255, 255, 255, 255});
     }
 }
@@ -225,10 +225,11 @@ void Slider::update(const std::vector<Rigid> &controllers) {
 }
 
 float Slider::getVal() {
-    return val;
+    return minVal + val / (max - min) * (maxVal - minVal);
 }
 
-void Slider::setVal(float val) {
+void Slider::setVal(float v) {
+    val = (max-min) * (v-minVal) / (maxVal-minVal);
     offset = val * trackDir;
 }
 

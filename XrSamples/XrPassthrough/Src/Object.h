@@ -116,7 +116,8 @@ public:
 
     void render(mat4 *postTransform = nullptr) override;
 
-    float min = -0.25f, max = 0.25f;
+    float min = -0.25f, max = 0.25f; //slider track towards left and right
+    float minVal = 0, maxVal = 1; //range of the value for set/get
     vec3 trackDir{1.0f, 0.0f, 0.0f}; //direction of the track (make sure it's normalized!)
 
 protected:

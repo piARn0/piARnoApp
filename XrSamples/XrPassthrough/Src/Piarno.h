@@ -44,14 +44,17 @@ private:
 
     //song visualization
     std::vector<Tile> allTiles; //tile objects and their start time in seconds
-    float tileVelocity = 0.1; //determines tile pos, meters per second
+    float tileVelocity = 0.5; //determines tile pos, meters per second
 
     //playback & UI
     smf::MidiFile midi;
-    double currentTime = 0, speedMultiplier = 0.75;
-    int currentEvent = 0;
+    double currentTime = 0, speedMultiplier = 1;
+    int currentEvent = 0; //TODO: deprecated
     bool isPaused = true;
+
     Button pauseButton;
-    Slider slider;
+    Slider timeline;
+    Slider scrollSpeed;
+    Slider playbackSpeed;
 };
 
