@@ -235,43 +235,58 @@ void Piarno::createTiles() {
         }
     }
     // TODO: cleanup after debugging
-    log("Number of notes in this song: " + std::to_string(keyPressNum));
+    log("[DEBUG/Piarno] Number of notes in this song: " + std::to_string(keyPressNum));
     allTiles.resize(keyPressNum);
-
-    std::vector<Tile*> currentTile(numKeys, nullptr); //"currently" (within the below loop) active tile
+    
+    std::vector<Tile *> currentTile(numKeys,nullptr); //"currently" (within the below loop) active tile
 
     int k = 0; //current key press
     for (int i = 0; i < midi.getNumEvents(0); i++) {
         int command = midi[0][i][0];
         int key = midi[0][i][1] - offset;
 
-        if(0 <= key && key < numKeys) {
-            if (command == 0x90) {
-                // key press
-                allTiles[k].startTime = midi[0][i].seconds;
-                currentTile[key] = &allTiles[k]; //register the currently active tile for this lane
-                k++;
-            } else if (command == 0x80) {
-                // key release
-                currentTile[key]->endTime = midi[0][i].seconds;
+        // this key is out of range for the active piano
+        if (key < 0 || key >= numKeys) {
+            continue;
+        }
 
-                auto &tile = currentTile[key]->tile;
-                tile.geometry = engine->getGeometry(Mesh::rect);
-                tile.pos = pianoKeys[key].pos; //z will be set every frame based on current time
-                //tile.pos.y += 0.01; //float above keys
-                tile.rot = vec3{M_PI / 2, 0, 0};
-                tile.scl = vec3{(isBlack(key) ? widthBlack : widthWhite) - gap, 1,
-                                1}; //height will be updated
-                tile.col = color{230, 150, 40, 255};
-
-                pianoScene.attach(tile);
-
-                currentTile[key] = nullptr;
-
-            } else {
-                // ignore any other event
+        if (command == 0x90) {
+            // key press
+            log("[DEBUG/Piarno] Detected keypress for tile k=" + std::to_string(k) +
+                " at piano key: " + std::to_string(key));
+            allTiles[k].startTime = midi[0][i].seconds;
+            currentTile[key] = &allTiles[k]; //register the currently active tile for this lane
+            k++;
+        } else if (command == 0x80) {
+            // key release
+            if (currentTile[key] == nullptr) {
+                log("[DEBUG/Piarno] Detected key release for a key that was already released with number: " +
+                    std::to_string(key) + " and time " + std::to_string(midi[0][i].seconds));
                 continue;
-            }
+            } else
+                log("[DEBUG/Piarno] Detected key release for at piano key: " + std::to_string(key) +
+                    " with time " + std::to_string(midi[0][i].seconds));
+
+            currentTile[key]->endTime = midi[0][i].seconds;
+
+            // draw the tile
+            auto &tile = currentTile[key]->tile;
+            tile.geometry = engine->getGeometry(Mesh::rect);
+            tile.pos = pianoKeys[key].pos; //z will be set every frame based on current time
+            //tile.pos.y += 0.01; //float above keys
+            tile.rot = vec3{M_PI / 2, 0, 0};
+            tile.scl = vec3{(isBlack(key) ? widthBlack : widthWhite) - gap, 1,
+                            1}; //height will be updated
+            tile.col = color{230, 150, 40, 255};
+
+            pianoScene.attach(tile);
+
+            // release the placeholder indicating that there is no more key played at [key] index
+            currentTile[key] = nullptr;
+
+        } else {
+            // ignore any other event
+            continue;
         }
     }
 }
@@ -294,7 +309,7 @@ float Piarno::distFromTime(double time) {
 void Piarno::loadMidi() {
     //load midi file
     {
-#include "songs/canon.h"
+#include "songs/sweden.h"
 
         std::stringstream file(std::string(bytes, bytes + sizeof(bytes)));
         midi = smf::MidiFile(file);
