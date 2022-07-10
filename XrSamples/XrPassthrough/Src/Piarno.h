@@ -3,14 +3,20 @@
 //
 #pragma once
 
+#include "Global.h"
 #include "Object.h"
 #include "midi/MidiFile.h"
 
-class Engine;
+// Represents a falling tile of a note for song visualization
+struct Tile {
+    Object tile;
+    double startTime; //timestamp of this note start
+    double endTime; //timestamp of this note end
+};
 
 class Piarno {
 public:
-    void init(Engine *engine);
+    void init();
 
     //run once per frame after input/state update and before rendering
     void update();
@@ -19,14 +25,33 @@ public:
     void render();
 
 private:
-    Engine *engine;
+    //internal helpers
+    bool isBlack(int index);
+    void buildPiano();
+    void loadMidi();
+    void createTiles();
+    void updateTiles();
+    float distFromTime(double time);
 
-    bool pauseAlreadyChanged = false;
-    bool isPaused = false;
-    Object pauseButton;
+    //piano overlay
+    ObjectGroup pianoScene;
+    std::vector<Object> pianoKeys;
+    int numKeys = 49, offset = 24;
+    //int numKeys = 88, offset = 12-3;
+    float widthWhite = 0.0236, widthBlack = 0.011;
+    float heightWhite = 0.126, heightBlack = 0.08;
+    float gap = 0.0005; //gap between keys
 
-    std::vector<Object> pianoKeys{88};
+    //song visualization
+    std::vector<Tile> allTiles; //tile objects and their start time in seconds
+    float tileVelocity = 0.1; //determines tile pos, meters per second
+
+    //playback & UI
     smf::MidiFile midi;
-    int currentTick = 0;
+    double currentTime = 0, speedMultiplier = 0.75;
+    int currentEvent = 0;
+    bool isPaused = true;
+    Button pauseButton;
+    Slider slider;
 };
 

@@ -7,6 +7,7 @@
 #include <array>
 #include <string>
 
+#include "Global.h"
 #include "XrPassthroughGl.h"
 #include "Piarno.h"
 
@@ -48,18 +49,14 @@ public:
     uint64_t getFrame();
 
     // Input
-    OVR::Posef getControllerPose(int index);
+    const std::vector<Rigid>& getControllers();
     bool isButtonPressed(IO button);
     float getRightTriggerHoldLevel();
 
     // Render related
     Geometry* getGeometry(Mesh mesh);
-    void renderText(std::string text,
-                    float x, float y, float z,
-                    float sX, float sY, float sZ,
-                    float rX, float rY, float rZ,
-                    color_t r, color_t g, color_t b, color_t a
-                    );
+    float textWidth(const std::string &text);
+    void renderText(const std::string &text, vec3 pos, vec3 scl, vec3 rot, color col, bool centered = true);
 
     /**************** YOU ARE NOW ENTERING LOW LEVEL ****************/
 
@@ -73,6 +70,7 @@ public:
 protected:
     Scene *scene;
     Piarno piarno;
+    std::vector<Rigid> controllers;
 
     uint64_t frame = 0;
     std::array<XrBool32*, (size_t) IO::NUM> buttonStates;

@@ -8,175 +8,262 @@
 #include "Engine.h"
 #include "XrPassthroughGl.h"
 
-#include <android/log.h>
+using namespace global;
 
-#define OVR_LOG_TAG "PiARno"
+void Piarno::init() {
+    buildPiano();
 
-#define ALOGE(...) __android_log_print(ANDROID_LOG_ERROR, OVR_LOG_TAG, __VA_ARGS__)
-#define ALOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, OVR_LOG_TAG, __VA_ARGS__)
+    pauseButton.geometry = engine->getGeometry(Mesh::cube);
+    pauseButton.pos = pianoKeys[2].pos;
+    pauseButton.pos.z += 0.2;
+    pauseButton.scl = vec3{0.03, 0.02, 0.03};
+    pauseButton.col = color{255, 255, 255, 255};
+    pauseButton.radius = 0.02;
+    pauseButton.label = "PLAY";
+    pianoScene.attach(pauseButton);
 
+    slider.geometry = engine->getGeometry(Mesh::cube);
+    slider.pos = pauseButton.pos;
+    slider.pos.x += 0.1;
+    slider.scl = vec3{0.03, 0.02, 0.03};
+    slider.col = color{255, 255, 0, 255};
+    slider.radius = 0.02;
+    slider.label = "TIME"; //TODO: show current time in minutes:seconds instead
+    slider.min = 0;
+    slider.max = 0.5;
+    pianoScene.attach(slider);
 
-bool isBlack(int index) {
-    static const bool blackIndex[12] = {0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0};
+    loadMidi();
 
-    return blackIndex[(index + 12 - 3) % 12];
+    createTiles();
 }
 
-
-void Piarno::init(Engine *e) {
-    engine = e;
-
-    //TODO: create a GeometryBuilder class that you "render to" once to create a single geometry like this for efficiency and simplicity of object rotation, effectively grouping operation
-    float x = 0;
-    float widthWhite = 0.02215, widthBlack = 0.011;
-    float gap = 0.0005; //gap between keys
-    for (size_t i = 0; i < pianoKeys.size(); i++) {
-        auto &k = pianoKeys[i];
-
-        k.geometry = engine->getGeometry(Mesh::rect);
-
-        k.rotX = M_PI / 2;
-        k.rotY = 0;
-        k.rotZ = 0;
-
-        k.a = 200;
-
-        if (!isBlack(i)) //white key
-        {
-            k.posX = x;
-            k.posY = -1;
-            k.posZ = -1;
-
-            k.sclX = widthWhite - gap;
-            k.sclY = 0.126;
-            k.sclZ = 1;
-
-            k.r = k.g = k.b = 255;
-
-            x += widthWhite;
-        } else //black key
-        {
-            k.posX = x - widthWhite / 2;
-            k.posY = -1 + 0.005; //float above
-            k.posZ = -1 - 0.024;
-
-            k.sclX = widthBlack - gap;
-            k.sclY = 0.08;
-            k.sclZ = 1;
-
-            k.r = k.g = k.b = 0;
-        }
-    }
-
-#include "songs/supermario.h"
-
-    std::stringstream file(std::string(bytes, bytes + sizeof(bytes)));
-    midi = smf::MidiFile(file);
-    midi.absoluteTicks();
-    midi.joinTracks();
-    log("!!!!!!!!!!!!numEvents = " + std::to_string(midi.getNumEvents(0)) + "\n");
-
-
-    for (int i = 0; i < midi.getNumEvents(0); i++) {
-        log("tick=" + std::to_string(midi[0][i].tick));
-        log("command=" + std::to_string(midi[0][i][0]));
-        log("key=" + std::to_string(midi[0][i][1]));
-    }
-
-    pauseButton.geometry = engine->getGeometry(Mesh::teapot);
-    pauseButton.posX = -0.2;
-    pauseButton.posY = -1;
-    pauseButton.posZ = -1;
-    pauseButton.r = pauseButton.b = pauseButton.g = pauseButton.a = 255;
-    pauseButton.sclX = pauseButton.sclY = pauseButton.sclZ = 0.1;
-}
 
 void Piarno::update() {
-    if(!isPaused)
-        currentTick++;
-    // TODO: use controller to define this pos
-    auto ctrl_l = engine->getControllerPose(0).Translation;
-    auto ctrl_r = engine->getControllerPose(2).Translation;
+    if(!isPaused) {
+        currentTime += 1.0 / 72.0 * speedMultiplier;
+    }
 
-    // make piano surface flat
-//    piano_surface.rotX = M_PI / 2;
-//    piano_surface.rotZ = 0;
-//
-//    piano_surface.sclX = 1.0; //width in meters
-//    piano_surface.sclY = 0.126;
-//    piano_surface.sclZ = 1.0; //height of key in meters
+    //buttons
+    const auto &controllers = engine->getControllers();
+    pauseButton.update(controllers);
+    slider.update(controllers);
 
-    int beginTick = 72 * 2;
-    for(int i = 0; i < midi.getNumEvents(0); i++) {
-        int command = midi[0][i][0];
-        int key = midi[0][i][1];
-        //int vel = midi[0][i][2];
+    if (pauseButton.isPressed())
+        isPaused = !isPaused;
 
-        if(currentTick - beginTick == midi[0][i].tick / 10)
-        {
-            if(command == 0x90) //key press
-            {
-                auto &k = pianoKeys[key];
-                k.r = 255;
-                k.g = 0;
-                k.b = 0;
-            }
-            if(command == 0x80) //key release
-            {
-                auto &k = pianoKeys[key];
-                if(!isBlack(key)) {
-                    k.r = k.g = k.b = 255;
-                }
-                else {
-                    k.r = k.g = k.b = 0;
-                }
+    if (slider.isBeingPressed()) {
+        slider.col = color{200, 200, 0, 255};
+        isPaused = true;
+        currentTime = slider.getVal() / slider.max * midi.getFileDurationInSeconds();
+        currentEvent = 0; //search from beginning
+        //reset all highlighted colors TODO: put this into a neat function...
+        for(size_t i = 0; i < numKeys; i++) {
+            auto &k = pianoKeys[i];
+            if (!isBlack(i)) {
+                k.col = color{255, 255, 255, k.col.a};
+            } else {
+                k.col = color{0, 0, 0, k.col.a};
             }
         }
     }
-
-    if (engine->isButtonPressed(IO::rightTrigger) && engine->isButtonPressed(IO::leftTrigger)) {
-        pauseButton.posX = (ctrl_l.x + ctrl_r.x) / 2;
-        pauseButton.posY = (ctrl_l.y + ctrl_r.y) / 2;
-        pauseButton.posZ = (ctrl_l.z + ctrl_r.z) / 2;
-
-        // make it follow one controller
-        pauseButton.rotY = atan2(ctrl_r.x - ctrl_l.x, ctrl_r.z - ctrl_l.z) + M_PI / 2;
-    }
-
-    // compute the euclidean distance between the right joystick and the pause button
-    auto dist = hypot(hypot(ctrl_r.x - pauseButton.posX, ctrl_r.y - pauseButton.posY), ctrl_r.z - pauseButton.posZ);
-
-    // if the joystick is in the proximity of the pauseButton, flip the `isPaused` state (=press the button)
-    // and lock it until the joystick leaves that area far enough to be allowed to press the button once again
-    // this approach prevents continuously flipping the `isPaused` when the joystick remains in the vicinity of the button
-    if (dist < 0.1 && !pauseAlreadyChanged) {
-        isPaused = !isPaused;
-        pauseAlreadyChanged = true;
-//        ALOGE("You are now in pause button area, changing the state and locking");
-    } else if (dist > 0.1) {
-        pauseAlreadyChanged = false;
-//        ALOGE("The lock is now released");
+    else {
+        slider.col = color{255, 255, 0, 255};
+        slider.setVal(currentTime / midi.getFileDurationInSeconds() * slider.max);
     }
 
     // make the pauseButton either red or green displaying the current `isPaused` state
     if (isPaused) {
-        pauseButton.r = 255;
-        pauseButton.g = pauseButton.b = 0;
+        pauseButton.col = color{255, 0, 0, pauseButton.col.a};
+        pauseButton.label = "PLAY";
     } else {
-        pauseButton.g = 255;
-        pauseButton.r = pauseButton.b = 0;
+        pauseButton.col = color{0, 255, 0, pauseButton.col.a};
+        pauseButton.label = "PAUSE";
     }
+
+    //set piano position with controller
+    auto ctrlL = controllers[0].pos;
+    auto ctrlR = controllers[2].pos;
+    if (engine->isButtonPressed(IO::rightTrigger) && engine->isButtonPressed(IO::leftTrigger)) {
+        pianoScene.pos = (ctrlL + ctrlR) / 2;
+        pianoScene.pos.y -= 0.1;
+        pianoScene.rot.y = atan2(ctrlR.x - ctrlL.x, ctrlR.z - ctrlL.z) - M_PI/2;
+    }
+
+
+    //Process Midi events
+    //TODO: optimize this (using Tiles) and pack it away
+    for(; currentEvent < midi.getNumEvents(0); currentEvent++) {
+        int i = currentEvent;
+        int command = midi[0][i][0];
+        int key = midi[0][i][1] - offset;
+        //int vel = midi[0][i][2];
+
+        if(currentTime >= midi[0][i].seconds)
+        {
+            if(0 <= key && key < numKeys) {
+                if (command == 0x90) //key press
+                {
+                    auto &k = pianoKeys[key];
+                    k.col = color{255, 0, 0, k.col.a};
+                }
+                if (command == 0x80) //key release
+                {
+                    auto &k = pianoKeys[key];
+                    if (!isBlack(key)) {
+                        k.col = color{255, 255, 255, k.col.a};
+                    } else {
+                        k.col = color{0, 0, 0, k.col.a};
+                    }
+                }
+            }
+        }
+        else //no more events to process rn...
+            break;
+    }
+
+    updateTiles();
 }
+
 
 void Piarno::render() {
     engine->renderText("WELCOME TO PIARNO",
-                       -1, 1, -2,
-                       0.5, 0.5, 0.1,
-                       0, 0, 0,
-                       255, 255, 255, 255);
+                       vec3{0, 1 + sin(engine->getFrame() / 72.0f) * 0.05f, -2},
+                       vec3{0.5, 0.5, 0.3},
+                       vec3{0, 0, 0},
+                       color{255, 255, 255, 255});
 
-    pauseButton.render();
+    //NON-TRANSLUCENT OBJECTS:
+    //pauseButton.render(); //is now part of pianoScene
 
-    for (auto &k: pianoKeys)
-        k.render();
+    //TRANSLUCENT OBJECTS:
+    pianoScene.render();
+}
+
+
+
+bool Piarno::isBlack(int index) {
+    static const bool blackIndex[12] = {0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0};
+
+    return blackIndex[(index + offset) % 12];
+}
+
+void Piarno::buildPiano() {
+    pianoKeys.resize(numKeys);
+
+    float x = 0;
+
+    for (int i = 0; i < numKeys; i++) {
+        auto &k = pianoKeys[i];
+        k.geometry = engine->getGeometry(Mesh::rect);
+
+        k.rot = vec3{M_PI / 2, 0, 0};
+
+        if (!isBlack(i)) //white key
+        {
+            k.pos = vec3{x, 0, 0};
+            k.scl = vec3{widthWhite - gap, heightWhite, 1};
+            k.col = color{255, 255, 255, 150};
+
+            x += widthWhite;
+        } else //black key
+        {
+            k.pos = vec3{x - widthWhite / 2, 0.005, -0.024};
+            k.scl = vec3{widthBlack - gap, heightBlack, 1};
+            k.col = color{0, 0, 0, 150};
+        }
+
+        pianoScene.attach(k);
+    }
+
+    //center
+    float width = x;
+    for(auto &k : pianoKeys) {
+        k.pos.x -= width/2;
+    }
+}
+
+void Piarno::createTiles() {
+    // count the total number of key presses events (=notes being played)
+    int keyPressNum = 0;
+    for (int i = 0; i < midi.getNumEvents(0); i++) {
+        int command = midi[0][i][0];
+        if (command == 0x90) {
+            keyPressNum++;
+        }
+    }
+    // TODO: cleanup after debugging
+    log("Number of notes in this song: " + std::to_string(keyPressNum));
+    allTiles.resize(keyPressNum);
+
+    std::vector<Tile*> currentTile(numKeys, nullptr); //"currently" (within the below loop) active tile
+
+    int k = 0; //current key press
+    for (int i = 0; i < midi.getNumEvents(0); i++) {
+        int command = midi[0][i][0];
+        int key = midi[0][i][1] - offset;
+
+        //FIXME: check key boundary (some songs don't fit on small pianos)
+        if (command == 0x90) {
+            // key press
+            allTiles[k].startTime = midi[0][i].seconds;
+            currentTile[key] = &allTiles[k]; //register the currently active tile for this lane
+            k++;
+        } else if (command == 0x80) {
+            // key release
+            currentTile[key]->endTime = midi[0][i].seconds;
+
+            auto &tile = currentTile[key]->tile;
+            tile.geometry = engine->getGeometry(Mesh::rect);
+            tile.pos = pianoKeys[key].pos; //z will be set every frame based on current time
+            //tile.pos.y += 0.01; //float above keys
+            tile.rot = vec3{M_PI / 2, 0, 0};
+            tile.scl = vec3{(isBlack(key) ? widthBlack : widthWhite) - gap, 1, 1}; //height will be updated
+            tile.col = color{0, 0, 255, 255};
+
+            pianoScene.attach(tile);
+
+            currentTile[key] = nullptr;
+
+        } else {
+            // ignore any other event
+            continue;
+        }
+    }
+}
+
+void Piarno::updateTiles() {
+    for(auto &[tile, start, end] : allTiles) {
+        float startDist = std::max(0.0f, distFromTime(start - currentTime)); //distance in meters to start pos
+        float endDist = std::max(0.0f, distFromTime(end - currentTime)); //distance in meters to end pos
+
+        tile.scl.y = endDist - startDist; //tile length
+        tile.pos.z = -heightWhite / 2 - (startDist + tile.scl.y / 2); //center of tile
+    }
+}
+
+float Piarno::distFromTime(double time) {
+    return tileVelocity * time;
+}
+
+
+void Piarno::loadMidi() {
+    //load midi file
+    {
+#include "songs/jacque.h"
+
+        std::stringstream file(std::string(bytes, bytes + sizeof(bytes)));
+        midi = smf::MidiFile(file);
+        //midi.absoluteTicks();
+        midi.joinTracks();
+        midi.doTimeAnalysis(); //calculate seconds for each event
+        log("!!!!!!!!!!!!numEvents = " + std::to_string(midi.getNumEvents(0)) + "\n");
+
+//        for (int i = 0; i < midi.getNumEvents(0); i++) {
+//            log("tick=" + std::to_string(midi[0][i].tick));
+//            log("second=" + std::to_string(midi[0][i].seconds));
+//            log("command=" + std::to_string(midi[0][i][0]));
+//            log("key=" + std::to_string(midi[0][i][1]));
+//        }
+    }
 }
