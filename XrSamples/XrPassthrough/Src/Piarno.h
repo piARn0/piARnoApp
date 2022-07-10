@@ -37,26 +37,29 @@ private:
     //piano overlay
     ObjectGroup pianoScene;
     std::vector<Object> pianoKeys;
-    int numKeys = 49, offset = 24;
+    int numKeys = 49, offset = 24+12;
     //int numKeys = 88, offset = 12-3;
-    float widthWhite = 0.0236, widthBlack = 0.011;
-    float heightWhite = 0.126, heightBlack = 0.08;
-    float gap = 0.0005; //gap between keys
+    float widthWhite = 0.0236 - 0.00007, widthBlack = 0.011;
+    float heightWhite = 0.126 + 0.01, heightBlack = 0.08 + 0.01;
+    float gap = 0.0005, blackHover = 0.007; //gap between keys and hover amount of black keys
+    float overlayOpacity = 0.6;
 
     //song visualization
     std::vector<Tile> allTiles; //tile objects and their start time in seconds
-    float tileVelocity = 0.5; //determines tile pos, meters per second
     std::vector<float> keyHighlight; //highlight value for each key for incoming/current key
+    float keyPressDepth = blackHover - 0.001;
 
     //playback & UI
     smf::MidiFile midi;
-    double currentTime = 0, speedMultiplier = 1;
-    int currentEvent = 0; //TODO: deprecated
-    bool isPaused = true;
-
-    Button pauseButton;
+    double currentTime = 0;
+    Slider playbackSpeed{0.25, 1, 2}; //min default max
     Slider timeline;
-    Slider scrollSpeed;
-    Slider playbackSpeed;
+
+    bool isPaused = true;
+    Button pauseButton;
+    Slider scrollSpeed{0.01, 0.1, 5}; //min default max of tile velocity, meters per second
+
+    Object pianoOutline; //to help aligning
+    Button toggleOutline;
 };
 

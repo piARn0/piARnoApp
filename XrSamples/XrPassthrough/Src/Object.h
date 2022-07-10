@@ -36,6 +36,7 @@ public:
     color col{255, 255, 255, 255};
 
     Geometry *geometry;
+    bool show = true;
 
 protected:
     friend ObjectGroup; //allow it to access parent attribute
@@ -74,7 +75,7 @@ public:
     //offset position (center of body) relative to Object.pos
     vec3 offset{0, 0, 0};
     //radius of body in meters
-    float radius = 0.01;
+    float radius = 0.02;
 };
 
 //represents a push button UI element
@@ -94,35 +95,37 @@ public:
 
     void render(mat4 *postTransform = nullptr) override;
 
+    color pressCol = color{50, 50, 50, 255};
     std::string label;
 
 protected:
     bool pressed = false, pressedPrev = false;
-    float maxPress = radius * 2;
-
-    //TODO: add cooldown timer if press gets triggered multiple times at boundary
+    float maxPress = radius;
 };
 
 //a slider that can be moved along a set track (left and right)
 class Slider : public Button {
 public:
     Slider(Geometry *geometry = nullptr);
+    Slider(float minValue, float value, float maxValue, float left = 0, float right = 0.2, Geometry *geometry = nullptr);
 
     //run this once per frame
     void update(const std::vector<Rigid> &controllers);
 
-    float getVal();
-    void setVal(float val);
+    float get();
+    void set(float val);
 
     void render(mat4 *postTransform = nullptr) override;
 
-    float min = -0.25f, max = 0.25f; //slider track towards left and right
+    float min = 0, max = 0.2; //slider track towards left and right
     float minVal = 0, maxVal = 1; //range of the value for set/get
-    vec3 trackDir{1.0f, 0.0f, 0.0f}; //direction of the track (make sure it's normalized!)
 
 protected:
     vec3 calculateOffset(vec3 controllerPos);
 
     float val = 0;
+
+    vec3 trackDir{1.0f, 0.0f, 0.0f}; //direction of the track (make sure it's normalized!)
+
     vec3 controllerOffset{0,0,0}; //when pressed by controller, save its position so we can move along it
 };

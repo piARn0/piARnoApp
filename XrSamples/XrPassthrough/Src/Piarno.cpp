@@ -17,16 +17,22 @@ void Piarno::init() {
 
     createTiles();
 
-    //build UI
-    vec3 origin = pianoKeys[2].pos;
-    vec3 off{0,0,0};
+    /// Build UI
+    //alignment guidelines
+    pianoOutline.geometry = engine->getGeometry(Mesh::wireframe);
+    pianoOutline.pos = vec3{-widthWhite/2, 0, 0};
+    pianoOutline.scl = pianoKeys.back().pos - pianoKeys.front().pos + vec3{widthWhite, 1, heightWhite};
+    pianoOutline.col = color{0, 0, 255, 255};
+    pianoScene.attach(pianoOutline);
 
-    off.z += 0.2;
+    //center control panel: play/pause, timeline
+    vec3 origin = pianoKeys[2].pos;
+    vec3 off{0, 0, 0.2};
+
     pauseButton.geometry = engine->getGeometry(Mesh::cube);
     pauseButton.pos = origin + off;
     pauseButton.scl = vec3{0.03, 0.02, 0.03};
-    pauseButton.col = color{255, 255, 255, 255};
-    pauseButton.radius = 0.02;
+    pauseButton.pressCol = color{0, 0, 0, 0}; //disable pressColor
     pauseButton.label = "PLAY";
     pianoScene.attach(pauseButton);
 
@@ -35,57 +41,55 @@ void Piarno::init() {
     timeline.pos = origin + off;
     timeline.scl = vec3{0.03, 0.02, 0.03};
     timeline.col = color{100, 100, 100, 255};
-    timeline.radius = 0.02;
     timeline.label = "TIME"; //TODO: show current time in minutes:seconds instead
-    timeline.min = 0;
+    timeline.min = 0.0;
     timeline.max = 0.5;
     timeline.minVal = 0;
     timeline.maxVal = midi.getFileDurationInSeconds();
-    timeline.setVal(currentTime);
+    timeline.set(currentTime);
     pianoScene.attach(timeline);
 
-    off.x = 0;
+
+
+    //right control panel: playback speed, scroll speed, toggle alignment guide, piano offset
+    origin = pianoKeys.back().pos;
+    off = vec3{0.1, 0, 0.2};
+
+    playbackSpeed.geometry = engine->getGeometry(Mesh::cube);
+    playbackSpeed.pos = origin + off;
+    playbackSpeed.scl = vec3{0.03, 0.02, 0.03};
+    playbackSpeed.col = color{100, 100, 100, 255};
+    playbackSpeed.label = "SPEED";
+    pianoScene.attach(playbackSpeed);
+
     off.z += 0.1;
     scrollSpeed.geometry = engine->getGeometry(Mesh::cube);
     scrollSpeed.pos = origin + off;
     scrollSpeed.scl = vec3{0.03, 0.02, 0.03};
     scrollSpeed.col = color{100, 100, 100, 255};
-    scrollSpeed.radius = 0.02;
     scrollSpeed.label = "SCROLL";
-    scrollSpeed.min = 0;
-    scrollSpeed.max = 0.2;
-    scrollSpeed.minVal = 0.01;
-    scrollSpeed.maxVal = 5;
-    scrollSpeed.setVal(tileVelocity);
     pianoScene.attach(scrollSpeed);
 
-    off.x += scrollSpeed.max + 0.1;
-    playbackSpeed.geometry = engine->getGeometry(Mesh::cube);
-    playbackSpeed.pos = origin + off;
-    playbackSpeed.scl = vec3{0.03, 0.02, 0.03};
-    playbackSpeed.col = color{100, 100, 100, 255};
-    playbackSpeed.radius = 0.02;
-    playbackSpeed.label = "SPEED";
-    playbackSpeed.min = 0;
-    playbackSpeed.max = 0.2;
-    playbackSpeed.minVal = 0.1;
-    playbackSpeed.maxVal = 10;
-    playbackSpeed.setVal(speedMultiplier);
-    pianoScene.attach(playbackSpeed);
+    off.z += 0.1;
+    off.x += 0.015;
+    toggleOutline.geometry = engine->getGeometry(Mesh::cube);
+    toggleOutline.pos = origin + off;
+    toggleOutline.scl = vec3{0.03, 0.02, 0.03};
+    toggleOutline.col = color{0, 0, 150, 255};
+    toggleOutline.pressCol = color{0, 0, 100, 255};
+    toggleOutline.label = "ALIGN";
+    pianoScene.attach(toggleOutline);
 }
 
 
 void Piarno::update() {
-    if(!isPaused) {
-        currentTime = std::min(currentTime + 1.0 / 72.0 * speedMultiplier, midi.getFileDurationInSeconds());
-    }
-
-    //buttons
+    //buttons and UI
     const auto &controllers = engine->getControllers();
     pauseButton.update(controllers);
     timeline.update(controllers);
     scrollSpeed.update(controllers);
     playbackSpeed.update(controllers);
+    toggleOutline.update(controllers);
 
     if (pauseButton.isPressed())
         isPaused = !isPaused;
@@ -100,69 +104,32 @@ void Piarno::update() {
     }
 
     if (timeline.isBeingPressed()) {
-        timeline.col = color{50, 50, 50, 255};
         isPaused = true;
-        currentTime = timeline.getVal();
-        currentEvent = 0; //search from beginning
-        //reset all highlighted colors TODO: put this into a neat function...
-        for(size_t i = 0; i < numKeys; i++) {
-            auto &k = pianoKeys[i];
-            if (!isBlack(i)) {
-                k.col = color{255, 255, 255, k.col.a};
-            } else {
-                k.col = color{0, 0, 0, k.col.a};
-            }
-        }
+        currentTime = timeline.get();
     }
     else {
-        timeline.col = color{100, 100, 100, 255};
-        timeline.setVal(currentTime);
+        timeline.set(currentTime);
     }
 
-    tileVelocity = scrollSpeed.getVal();
-    speedMultiplier = playbackSpeed.getVal();
+    if(playbackSpeed.isReleased()) { //round to 0.25, 0.5, ..., 2.0
+        playbackSpeed.set(round(playbackSpeed.get() * 4) / 4);
+    }
 
+    if(toggleOutline.isPressed())
+        pianoOutline.show = !pianoOutline.show;
 
     //set piano position with controller
     auto ctrlL = controllers[0].pos;
-    auto ctrlR = controllers[2].pos;
+    auto ctrlR = controllers[1].pos;
     if (engine->isButtonPressed(IO::rightTrigger) && engine->isButtonPressed(IO::leftTrigger)) {
         pianoScene.pos = (ctrlL + ctrlR) / 2;
-        pianoScene.pos.y -= 0.1;
+        pianoScene.pos.y -= 0.05;
         pianoScene.rot.y = atan2(ctrlR.x - ctrlL.x, ctrlR.z - ctrlL.z) - M_PI/2;
     }
 
-
-    //Process Midi events
-    //TODO: optimize this (using Tiles) and pack it away
-    /*for(; currentEvent < midi.getNumEvents(0); currentEvent++) {
-        int i = currentEvent;
-        int command = midi[0][i][0];
-        int key = midi[0][i][1] - offset;
-        //int vel = midi[0][i][2];
-
-        if(currentTime >= midi[0][i].seconds)
-        {
-            if(0 <= key && key < numKeys) {
-                if (command == 0x90) //key press
-                {
-                    auto &k = pianoKeys[key];
-                    k.col = color{255, 0, 0, k.col.a};
-                }
-                if (command == 0x80) //key release
-                {
-                    auto &k = pianoKeys[key];
-                    if (!isBlack(key)) {
-                        k.col = color{255, 255, 255, k.col.a};
-                    } else {
-                        k.col = color{0, 0, 0, k.col.a};
-                    }
-                }
-            }
-        }
-        else //no more events to process rn...
-            break;
-    }*/
+    //update time and tiles
+    if(!isPaused)
+        currentTime = std::min(currentTime + 1.0 / 72.0 * playbackSpeed.get(), midi.getFileDurationInSeconds());
 
     updateTiles();
 }
@@ -175,10 +142,6 @@ void Piarno::render() {
                        vec3{0, 0, 0},
                        color{255, 255, 255, 255});
 
-    //NON-TRANSLUCENT OBJECTS:
-    //pauseButton.render(); //is now part of pianoScene
-
-    //TRANSLUCENT OBJECTS:
     pianoScene.render();
 }
 
@@ -208,14 +171,21 @@ void Piarno::buildPiano() {
             k.col = color{255, 255, 255, 100};
 
             x += widthWhite;
+
+            pianoScene.attach(k); //attach white keys first (for translucent render ordering!)
         } else //black key
         {
-            k.pos = vec3{x - widthWhite / 2, 0.005, -0.024};
+            k.pos = vec3{x - widthWhite / 2, blackHover, - heightWhite/2 + heightBlack/2};
             k.scl = vec3{widthBlack - gap, heightBlack, 1};
             k.col = color{0, 0, 0, 100};
         }
+    }
 
-        pianoScene.attach(k);
+    //attach black keys after white keys
+    for (int i = 0; i < numKeys; i++) {
+        auto &k = pianoKeys[i];
+        if (isBlack(i)) //black key
+            pianoScene.attach(k);
     }
 
     //center
@@ -276,11 +246,14 @@ void Piarno::createTiles() {
             tile.pos = pianoKeys[key].pos; //z will be set every frame based on current time
             tile.rot = vec3{M_PI / 2, 0, 0};
             tile.scl = vec3{(isBlack(key) ? widthBlack : widthWhite) - gap, 1, 1}; //height will be updated
-            tile.col = color{230, 150, 40, 255};
 
             if(isBlack(key)) {
-                tile.pos.y += 0.01; //float above keys
-                tile.col = color{115, 75, 25, 255};
+                tile.pos.y = blackHover - keyPressDepth; //float above keys
+                tile.col = color{0, 50, 150, 255};
+            }
+            else {
+                tile.pos.y = -keyPressDepth;
+                tile.col = color{0, 85, 255, 255};
             }
 
             pianoScene.attach(tile);
@@ -299,38 +272,44 @@ void Piarno::updateTiles() {
     keyHighlight.assign(numKeys, 0.0f);
 
     for(auto &[tile, key, start, end] : allTiles) {
-        float startDist = std::max(0.0f, distFromTime(start - currentTime)); //distance in meters to start pos
-        float endDist = std::max(0.0f, distFromTime(end - currentTime)); //distance in meters to end pos
+        float startDist = distFromTime(start - currentTime); //distance in meters to start pos
+        float endDist = distFromTime(end - currentTime); //distance in meters to end pos
 
-        tile.scl.y = endDist - startDist; //tile length
-        tile.pos.z = -heightWhite / 2 - (startDist + tile.scl.y / 2); //center of tile
+        tile.scl.y = std::max(0.0f, endDist) - std::max(0.0f, startDist); //tile length
+        tile.pos.z = -heightWhite / 2 - (std::max(0.0f, startDist) + tile.scl.y / 2); //center of tile
+
+        tile.show = endDist > 0; //don't render if tile is already in the past
 
         //highlight keys depending on its key press time
-        float highlightStart = tileVelocity * 1; //start shadow 1 seconds before press
-        if(0 < startDist && startDist < highlightStart) //warmup highlight before start
+        float highlightStart = distFromTime(1); //start shadow 1 second before press
+        if(0 < startDist && startDist < highlightStart) //fade-in highlight before start
             keyHighlight[key] = std::max(keyHighlight[key], 1 - (startDist / highlightStart));
-        else if(startDist == 0 && endDist > 0) //cooldown highlight after press (until key end)
-            keyHighlight[key] = std::max(keyHighlight[key], endDist / (endDist - distFromTime(start - currentTime)));
+        else if(startDist <= 0 && endDist > 0) //fade-out highlight after press (until key end or max highlightStart)
+            keyHighlight[key] = std::max(keyHighlight[key], std::min(1 - (startDist / highlightStart), endDist / (endDist - startDist)));
     }
 
     for(int k=0; k<numKeys; k++) {
         float h = keyHighlight[k];
-        if(!isBlack(k)) //white
-            pianoKeys[k].col = color{255, color_t(255 * (1 - h)), color_t(255 * (1 - h)), 150};
-        else //black
-            pianoKeys[k].col = color{color_t(255 * h), 0, 0, 150};
+        if(!isBlack(k)) { //white
+            pianoKeys[k].col = color{255, color_t(255 * (1 - h)), color_t(255 * (1 - h)), color_t(255 * overlayOpacity)};
+            pianoKeys[k].pos.y = -h * keyPressDepth;
+        }
+        else { //black
+            pianoKeys[k].col = color{color_t(255 * h), 0, 0, color_t(255 * overlayOpacity)};
+            pianoKeys[k].pos.y = blackHover - h * keyPressDepth;
+        }
     }
 }
 
 float Piarno::distFromTime(double time) {
-    return tileVelocity * time;
+    return scrollSpeed.get() * time;
 }
 
 
 void Piarno::loadMidi() {
     //load midi file
     {
-#include "songs/sweden.h"
+#include "songs/swedem.h"
 
         std::stringstream file(std::string(bytes, bytes + sizeof(bytes)));
         midi = smf::MidiFile(file);

@@ -25,6 +25,9 @@ Object::Object(Geometry *geometry) : geometry(geometry) {
 }
 
 void Object::render(mat4 *postTransform) {
+    if(!show)
+        return;
+
     if (geometry->global_color) {
         //color of whole object
         geometry->updateColors(std::vector<color_t> {col.r, col.g, col.b, col.a});
@@ -155,17 +158,21 @@ bool Button::isBeingPressed() {
 }
 
 void Button::render(mat4 *postTransform) {
+    if(!show)
+        return;
+
+    color c = pressed && pressCol.a > 0 ? pressCol : col;
     if (geometry->global_color) {
         //color of whole object
-        geometry->updateColors(std::vector<color_t> {col.r, col.g, col.b, col.a});
+        geometry->updateColors(std::vector<color_t> {c.r, c.g, c.b, c.a});
     } else {
         //color each vertex the same color
         std::vector<color_t> colors(geometry->vertexCount * 4 / 3);
         for (size_t i = 0; i < colors.size(); i += 4) {
-            colors[i + 0] = col.r;
-            colors[i + 1] = col.g;
-            colors[i + 2] = col.b;
-            colors[i + 3] = col.a;
+            colors[i + 0] = c.r;
+            colors[i + 1] = c.g;
+            colors[i + 2] = c.b;
+            colors[i + 3] = c.a;
         }
         geometry->updateColors(colors);
     }
@@ -178,7 +185,7 @@ void Button::render(mat4 *postTransform) {
         geometry->render(trans);
 
     if(label != "") {
-        auto p = globalPos(pos + offset + vec3{0, scl.y, 0}), s = globalScl(scl * vec3{0.5, 0.5, 1}), r = globalRot(rot + vec3{-M_PI/2, 0, 0});
+        auto p = globalPos(pos + offset + vec3{0, scl.y, 0}), s = globalScl(scl * vec3{0.5, 0.8, 1}), r = globalRot(rot + vec3{-M_PI/2, 0, 0});
         engine->renderText(label, p, s, r, color{255, 255, 255, 255});
     }
 }
@@ -186,6 +193,12 @@ void Button::render(mat4 *postTransform) {
 
 Slider::Slider(Geometry *geometry) : Button(geometry) {
 }
+
+Slider::Slider(float minVal, float value, float maxVal, float left, float right, Geometry *geometry)
+: Button(geometry), minVal(minVal), maxVal(maxVal), min(left), max(right) {
+    set(value);
+}
+
 
 void Slider::update(const std::vector<Rigid> &controllers) {
     pressedPrev = pressed;
@@ -224,21 +237,26 @@ void Slider::update(const std::vector<Rigid> &controllers) {
     offset.y = -currentPress;
 }
 
-float Slider::getVal() {
+float Slider::get() {
     return minVal + val / (max - min) * (maxVal - minVal);
 }
 
-void Slider::setVal(float v) {
+void Slider::set(float v) {
     val = (max-min) * (v-minVal) / (maxVal-minVal);
-    offset = val * trackDir;
+    auto newOffset = val * trackDir;
+    offset.x = newOffset.x;
+    offset.z = newOffset.z;
 }
 
 void Slider::render(mat4 *postTransform) {
+    if(!show)
+        return;
+
     Button::render(postTransform);
 
     //render slider track
     auto track = engine->getGeometry(Mesh::rect);
-    track->updateColors(std::vector<color_t> {100, 100, 100, 255});
+    track->updateColors(std::vector<color_t> {50, 50, 50, 255});
 
     //set the transformation matrix and render
     mat4 trans = translate(pos + vec3{(min+max)/2, -scl.y/2, 0}) * rotate(rot + vec3{(float)-M_PI/2, 0, 0}) * scale(vec3{max - min, 0.01, 1});

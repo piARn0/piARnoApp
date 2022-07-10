@@ -21,7 +21,7 @@ enum class Mesh : size_t {
     axes = 26, //ranges 0-25 are for alphabets A-Z
     cube,
     rect,
-    //line,
+    wireframe,
     teapot,
     NUM
 };

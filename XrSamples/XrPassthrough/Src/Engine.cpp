@@ -31,12 +31,13 @@ Engine::Engine(Scene *scene) : scene(scene) {
     register_io(aButton);
     register_io(bButton);
 
-    for(auto &c : scene->trackedController) {
+    for(int i = 0; i < 2; i++) {
+        auto &c = scene->trackedController[i*2];
         Rigid r{getGeometry(Mesh::cube)};
         r.pos = c.pose.Translation;
         r.rot = vec3{c.pose.Rotation.x, c.pose.Rotation.y, c.pose.Rotation.z};
-        r.scl = vec3{0.02f, 0.02f, 0.02f};
-        r.col = color{100, 100, 100, 255};
+        r.scl = vec3{0.01f, 0.01f, 0.01f};
+        r.col = color{255, 255, 255, 255};
         r.radius = 0.03;
         controllers.push_back(std::move(r));
     }
@@ -98,8 +99,8 @@ void Engine::renderText(const std::string &text, vec3 pos, vec3 scl, vec3 rot, c
 void Engine::update() {
     frame++;
 
-    for(int i=0; i<4; i++) {
-        auto &c = scene->trackedController[i];
+    for(int i=0; i<controllers.size(); i++) {
+        auto &c = scene->trackedController[i*2];
         if(c.active) {
             auto &r = controllers[i];
             r.pos = c.pose.Translation;
@@ -217,7 +218,7 @@ std::vector <Geometry> Engine::loadGeometries() {
     {
 #include "models/cube.h"
 
-        g[(size_t) Mesh::cube] = Geometry(vertices, colors, indices);
+        g[(size_t) Mesh::cube] = Geometry(vertices, indices);
     }
 
     {
@@ -226,10 +227,11 @@ std::vector <Geometry> Engine::loadGeometries() {
         g[(size_t) Mesh::rect] = Geometry(vertices, indices);
     }
 
-//    {
-//#include "models/line.h"
-//        g.push_back(Geometry(std::move(vertices), std::move(colors), std::move(indices)));
-//    }
+    {
+#include "models/piano_wireframe.h"
+
+        g[(size_t) Mesh::wireframe] = Geometry(vertices, indices, GL_LINES);
+    }
 
     {
 #include "models/teapot.h"
