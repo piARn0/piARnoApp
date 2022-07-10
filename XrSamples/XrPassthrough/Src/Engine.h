@@ -7,6 +7,7 @@
 #include <array>
 #include <string>
 
+#include "Global.h"
 #include "XrPassthroughGl.h"
 #include "Piarno.h"
 
@@ -54,7 +55,8 @@ public:
 
     // Render related
     Geometry* getGeometry(Mesh mesh);
-    void renderText(std::string text, vec3 pos, vec3 scl, vec3 rot, color col);
+    float textWidth(const std::string &text);
+    void renderText(const std::string &text, vec3 pos, vec3 scl, vec3 rot, color col, bool centered = true);
 
     /**************** YOU ARE NOW ENTERING LOW LEVEL ****************/
 
