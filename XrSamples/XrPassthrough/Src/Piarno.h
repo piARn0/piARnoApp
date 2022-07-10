@@ -10,6 +10,7 @@
 // Represents a falling tile of a note for song visualization
 struct Tile {
     Object tile;
+    int key; //key index of this tile
     double startTime; //timestamp of this note start
     double endTime; //timestamp of this note end
 };
@@ -45,6 +46,7 @@ private:
     //song visualization
     std::vector<Tile> allTiles; //tile objects and their start time in seconds
     float tileVelocity = 0.5; //determines tile pos, meters per second
+    std::vector<float> keyHighlight; //highlight value for each key for incoming/current key
 
     //playback & UI
     smf::MidiFile midi;

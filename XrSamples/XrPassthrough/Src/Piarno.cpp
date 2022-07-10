@@ -135,7 +135,7 @@ void Piarno::update() {
 
     //Process Midi events
     //TODO: optimize this (using Tiles) and pack it away
-    for(; currentEvent < midi.getNumEvents(0); currentEvent++) {
+    /*for(; currentEvent < midi.getNumEvents(0); currentEvent++) {
         int i = currentEvent;
         int command = midi[0][i][0];
         int key = midi[0][i][1] - offset;
@@ -162,7 +162,7 @@ void Piarno::update() {
         }
         else //no more events to process rn...
             break;
-    }
+    }*/
 
     updateTiles();
 }
@@ -205,14 +205,14 @@ void Piarno::buildPiano() {
         {
             k.pos = vec3{x, 0, 0};
             k.scl = vec3{widthWhite - gap, heightWhite, 1};
-            k.col = color{255, 255, 255, 150};
+            k.col = color{255, 255, 255, 100};
 
             x += widthWhite;
         } else //black key
         {
             k.pos = vec3{x - widthWhite / 2, 0.005, -0.024};
             k.scl = vec3{widthBlack - gap, heightBlack, 1};
-            k.col = color{0, 0, 0, 150};
+            k.col = color{0, 0, 0, 100};
         }
 
         pianoScene.attach(k);
@@ -255,6 +255,7 @@ void Piarno::createTiles() {
             log("[DEBUG/Piarno] Detected keypress for tile k=" + std::to_string(k) +
                 " at piano key: " + std::to_string(key));
             allTiles[k].startTime = midi[0][i].seconds;
+            allTiles[k].key = key;
             currentTile[key] = &allTiles[k]; //register the currently active tile for this lane
             k++;
         } else if (command == 0x80) {
@@ -273,11 +274,14 @@ void Piarno::createTiles() {
             auto &tile = currentTile[key]->tile;
             tile.geometry = engine->getGeometry(Mesh::rect);
             tile.pos = pianoKeys[key].pos; //z will be set every frame based on current time
-            //tile.pos.y += 0.01; //float above keys
             tile.rot = vec3{M_PI / 2, 0, 0};
-            tile.scl = vec3{(isBlack(key) ? widthBlack : widthWhite) - gap, 1,
-                            1}; //height will be updated
+            tile.scl = vec3{(isBlack(key) ? widthBlack : widthWhite) - gap, 1, 1}; //height will be updated
             tile.col = color{230, 150, 40, 255};
+
+            if(isBlack(key)) {
+                tile.pos.y += 0.01; //float above keys
+                tile.col = color{115, 75, 25, 255};
+            }
 
             pianoScene.attach(tile);
 
@@ -292,12 +296,29 @@ void Piarno::createTiles() {
 }
 
 void Piarno::updateTiles() {
-    for(auto &[tile, start, end] : allTiles) {
+    keyHighlight.assign(numKeys, 0.0f);
+
+    for(auto &[tile, key, start, end] : allTiles) {
         float startDist = std::max(0.0f, distFromTime(start - currentTime)); //distance in meters to start pos
         float endDist = std::max(0.0f, distFromTime(end - currentTime)); //distance in meters to end pos
 
         tile.scl.y = endDist - startDist; //tile length
         tile.pos.z = -heightWhite / 2 - (startDist + tile.scl.y / 2); //center of tile
+
+        //highlight keys depending on its key press time
+        float highlightStart = tileVelocity * 1; //start shadow 1 seconds before press
+        if(0 < startDist && startDist < highlightStart) //warmup highlight before start
+            keyHighlight[key] = std::max(keyHighlight[key], 1 - (startDist / highlightStart));
+        else if(startDist == 0 && endDist > 0) //cooldown highlight after press (until key end)
+            keyHighlight[key] = std::max(keyHighlight[key], endDist / (endDist - distFromTime(start - currentTime)));
+    }
+
+    for(int k=0; k<numKeys; k++) {
+        float h = keyHighlight[k];
+        if(!isBlack(k)) //white
+            pianoKeys[k].col = color{255, color_t(255 * (1 - h)), color_t(255 * (1 - h)), 150};
+        else //black
+            pianoKeys[k].col = color{color_t(255 * h), 0, 0, 150};
     }
 }
 
@@ -319,7 +340,7 @@ void Piarno::loadMidi() {
 //        log("!!!!!!!!!!!!numEvents = " + std::to_string(midi.getNumEvents(0)) + "\n");
 //
 //        for (int i = 0; i < midi.getNumEvents(0); i++) {
-//            log("tick=" + std::to_string(midi[0][i].tick));
+//            log("tick=" + std::to_string(midi[0][i].tick));8
 //            log("second=" + std::to_string(midi[0][i].seconds));
 //            log("command=" + std::to_string(midi[0][i][0]));
 //            log("key=" + std::to_string(midi[0][i][1]));

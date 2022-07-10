@@ -1059,7 +1059,7 @@ void android_main(struct android_app* androidApp) {
     passthroughLayer = reconPassthroughLayer;
     OXR(xrPassthroughLayerResumeFB(passthroughLayer));
     style.textureOpacityFactor = 1.0f;
-    style.edgeColor = {1.0f, 1.0f, 1.0f, 0.0f}; //no edge rendering
+    style.edgeColor = {0.0f, 0.0f, 0.0f, 1.0f}; //no edge rendering
     OXR(xrPassthroughLayerSetStyleFB(passthroughLayer, &style));
 
     // create the scene if not yet created.
