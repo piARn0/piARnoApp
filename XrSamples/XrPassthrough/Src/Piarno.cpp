@@ -309,7 +309,7 @@ float Piarno::distFromTime(double time) {
 void Piarno::loadMidi() {
     //load midi file
     {
-#include "songs/swedem.h"
+#include "songs/sweden.h"
 
         std::stringstream file(std::string(bytes, bytes + sizeof(bytes)));
         midi = smf::MidiFile(file);
