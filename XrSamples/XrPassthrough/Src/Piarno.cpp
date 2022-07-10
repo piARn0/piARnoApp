@@ -113,7 +113,8 @@ void Piarno::drawSong(int numKeys) {
             tile.pos = pianoKeys[key].pos;
 
             auto middleTime = (releaseTime + keyMap[key]) / 2;
-            tile.pos.z = -0.15f * (middleTime);
+            tile.pos.z = -0.15f * (middleTime) - 0.2f;
+            tile.pos.y = 0.01;
             tile.rot = vec3{M_PI / 2, 0, 0};
             tile.scl = vec3{isBlack(key) ? widthBlack - gap : widthWhite - gap, 0.126, totalDuration};
             tile.col = color{0, 0, 255, 255};
@@ -127,42 +128,47 @@ void Piarno::drawSong(int numKeys) {
 }
 
 void Piarno::update() {
-    if(!isPaused)
-        currentTime += 1.0/72.0 * speedMultiplier;
+    if(!isPaused) {
+        currentTime += 1.0 / 72.0 * speedMultiplier;
+        for (auto &tile: allTiles) {
+            tile.pos.z += 1.0/72.0 * speedMultiplier * 0.1;
+        }
+    }
 
     pauseButton.update(engine->getControllers());
 
     //Process Midi events
     double beginTime = 2;
 
-    for(; currentEvent < midi.getNumEvents(0); currentEvent++) {
-        int i = currentEvent;
-        int command = midi[0][i][0];
-        // TODO: replace magic numbers for piano-specific offset with something more intuitive?
-        int key = midi[0][i][1] + 3 - 12;
-        //int vel = midi[0][i][2];
-
-        if((currentTime - beginTime) >= midi[0][i].seconds)
-        {
-            if(command == 0x90) //key press
-            {
-                auto &k = pianoKeys[key];
-                k.col = color{255, 0, 0, k.col.a};
-            }
-            if(command == 0x80) //key release
-            {
-                auto &k = pianoKeys[key];
-                if(!isBlack(key)) {
-                    k.col = color{255, 255, 255, k.col.a};
-                }
-                else {
-                    k.col = color{0, 0, 0, k.col.a};
-                }
-            }
-        }
-        else //no more events to process rn...
-            break;
-    }
+    // TODO: the floating keys are not synchronized with the red keys
+//    for(; currentEvent < midi.getNumEvents(0); currentEvent++) {
+//        int i = currentEvent;
+//        int command = midi[0][i][0];
+//        // TODO: replace magic numbers for piano-specific offset with something more intuitive?
+//        int key = midi[0][i][1] + 3 - 12;
+//        //int vel = midi[0][i][2];
+//
+//        if((currentTime - beginTime) >= midi[0][i].seconds)
+//        {
+//            if(command == 0x90) //key press
+//            {
+//                auto &k = pianoKeys[key];
+//                k.col = color{255, 0, 0, k.col.a};
+//            }
+//            if(command == 0x80) //key release
+//            {
+//                auto &k = pianoKeys[key];
+//                if(!isBlack(key)) {
+//                    k.col = color{255, 255, 255, k.col.a};
+//                }
+//                else {
+//                    k.col = color{0, 0, 0, k.col.a};
+//                }
+//            }
+//        }
+//        else //no more events to process rn...
+//            break;
+//    }
 
     //Follow controller
     auto ctrl_l = engine->getControllers()[0].pos;
