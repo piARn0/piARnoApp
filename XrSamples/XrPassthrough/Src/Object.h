@@ -9,8 +9,21 @@
 using vec3 = OVR::Vector3f;
 using mat4 = OVR::Matrix4f;
 
+const size_t R = 0;
+const size_t G = 1;
+const size_t B = 2;
+const size_t A = 3;
+
 struct color {
-    color_t r, g, b, a;
+    color(color_t r, color_t g, color_t b, color_t a, Geometry *perVertexGeom = nullptr);
+
+    color_t& r(int i = 0);
+    color_t& g(int i = 0);
+    color_t& b(int i = 0);
+    color_t& a(int i = 0);
+    void setAll(size_t channel, color_t val);
+
+    std::vector<color_t> data;
 };
 
 mat4 translate(vec3 pos);

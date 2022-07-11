@@ -7,6 +7,40 @@
 
 using namespace global;
 
+color::color(color_t r, color_t g, color_t b, color_t a, Geometry *perVertexGeom) : data{r, g, b, a} {
+    if(perVertexGeom && !perVertexGeom->global_color) {
+        data.resize(perVertexGeom->vertexCount * 4 / 3);
+        for (size_t i = 4; i < data.size(); i += 4) {
+            data[i + 0] = r;
+            data[i + 1] = g;
+            data[i + 2] = b;
+            data[i + 3] = a;
+        }
+    }
+}
+
+color_t& color::r(int i) {
+    return data[4*i + 0];
+}
+
+color_t& color::g(int i) {
+    return data[4*i + 1];
+}
+
+color_t& color::b(int i) {
+    return data[4*i + 2];
+}
+
+color_t& color::a(int i) {
+    return data[4*i + 3];
+}
+
+void color::setAll(size_t channel, color_t val) {
+    for(size_t i = channel; i < data.size(); i += 4)
+        data[i] = val;
+}
+
+
 mat4 translate(vec3 pos) {
     return mat4::Translation(pos);
 }
@@ -21,27 +55,13 @@ mat4 rotate(vec3 rot) {
 
 
 Object::Object(Geometry *geometry) : geometry(geometry) {
-
 }
 
 void Object::render(mat4 *postTransform) {
     if(!show)
         return;
 
-    if (geometry->global_color) {
-        //color of whole object
-        geometry->updateColors(std::vector<color_t> {col.r, col.g, col.b, col.a});
-    } else {
-        //color each vertex the same color
-        std::vector<color_t> colors(geometry->vertexCount * 4 / 3);
-        for (size_t i = 0; i < colors.size(); i += 4) {
-            colors[i + 0] = col.r;
-            colors[i + 1] = col.g;
-            colors[i + 2] = col.b;
-            colors[i + 3] = col.a;
-        }
-        geometry->updateColors(colors);
-    }
+    geometry->updateColors(col.data);
 
     //set the transformation matrix and render
     mat4 trans = translate(pos) * rotate(rot) * scale(scl);
@@ -161,21 +181,9 @@ void Button::render(mat4 *postTransform) {
     if(!show)
         return;
 
-    color c = pressed && pressCol.a > 0 ? pressCol : col;
-    if (geometry->global_color) {
-        //color of whole object
-        geometry->updateColors(std::vector<color_t> {c.r, c.g, c.b, c.a});
-    } else {
-        //color each vertex the same color
-        std::vector<color_t> colors(geometry->vertexCount * 4 / 3);
-        for (size_t i = 0; i < colors.size(); i += 4) {
-            colors[i + 0] = c.r;
-            colors[i + 1] = c.g;
-            colors[i + 2] = c.b;
-            colors[i + 3] = c.a;
-        }
-        geometry->updateColors(colors);
-    }
+    color c = pressed && pressCol.a() > 0 ? pressCol : col;
+    geometry->updateColors(c.data);
+
 
     //set the transformation matrix and render
     mat4 trans = translate(pos + offset) * rotate(rot) * scale(scl);
@@ -256,7 +264,7 @@ void Slider::render(mat4 *postTransform) {
 
     //render slider track
     auto track = engine->getGeometry(Mesh::rect);
-    track->updateColors(std::vector<color_t> {50, 50, 50, 255});
+    track->updateColors(color{50, 50, 50, 255}.data);
 
     //set the transformation matrix and render
     mat4 trans = translate(pos + vec3{(min+max)/2, -scl.y/2, 0}) * rotate(rot + vec3{(float)-M_PI/2, 0, 0}) * scale(vec3{max - min, 0.01, 1});

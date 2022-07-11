@@ -21,6 +21,7 @@ enum class Mesh : size_t {
     axes = 26, //ranges 0-25 are for alphabets A-Z
     cube,
     rect,
+    rectGradient,
     wireframe,
     teapot,
     NUM
@@ -56,7 +57,7 @@ public:
     // Render related
     Geometry* getGeometry(Mesh mesh);
     float textWidth(const std::string &text);
-    void renderText(const std::string &text, vec3 pos, vec3 scl, vec3 rot, color col, bool centered = true);
+    void renderText(const std::string &text, vec3 pos, vec3 scl, vec3 rot, const color &col, bool centered = true);
 
     /**************** YOU ARE NOW ENTERING LOW LEVEL ****************/
 

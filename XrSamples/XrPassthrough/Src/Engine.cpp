@@ -76,8 +76,8 @@ float Engine::textWidth(const std::string &text) {
     return xOff - (text.size() == 0 ? 0 : 0.1);
 }
 
-void Engine::renderText(const std::string &text, vec3 pos, vec3 scl, vec3 rot, color col, bool centered) {
-    scene->geometries[0].updateColors(std::vector<color_t>{col.r, col.g, col.b, col.a});
+void Engine::renderText(const std::string &text, vec3 pos, vec3 scl, vec3 rot, const color &col, bool centered) {
+    scene->geometries[0].updateColors(col.data);
 
     float xOff = centered ? -textWidth(text)/2 : 0;
     float yOff = centered ? -0.4 : 0;
@@ -225,6 +225,12 @@ std::vector <Geometry> Engine::loadGeometries() {
 #include "models/rect.h"
 
         g[(size_t) Mesh::rect] = Geometry(vertices, indices);
+    }
+
+    {
+#include "models/rect.h"
+
+        g[(size_t) Mesh::rectGradient] = Geometry(vertices, colors, indices);
     }
 
     {

@@ -21,7 +21,7 @@ void Piarno::init() {
     //alignment guidelines
     pianoOutline.geometry = engine->getGeometry(Mesh::wireframe);
     pianoOutline.pos = vec3{-widthWhite/2, 0, 0};
-    pianoOutline.scl = pianoKeys.back().pos - pianoKeys.front().pos + vec3{widthWhite, 1, heightWhite};
+    pianoOutline.scl = pianoKeys.back().pos - pianoKeys.front().pos + vec3{widthWhite, 0.5, heightWhite};
     pianoOutline.col = color{0, 0, 255, 255};
     pianoScene.attach(pianoOutline);
 
@@ -96,10 +96,10 @@ void Piarno::update() {
 
     // make the pauseButton either red or green displaying the current `isPaused` state
     if (isPaused) {
-        pauseButton.col = color{255, 0, 0, pauseButton.col.a};
+        pauseButton.col = color{255, 0, 0, pauseButton.col.a()};
         pauseButton.label = "PLAY";
     } else {
-        pauseButton.col = color{0, 255, 0, pauseButton.col.a};
+        pauseButton.col = color{0, 255, 0, pauseButton.col.a()};
         pauseButton.label = "PAUSE";
     }
 
@@ -160,7 +160,7 @@ void Piarno::buildPiano() {
 
     for (int i = 0; i < numKeys; i++) {
         auto &k = pianoKeys[i];
-        k.geometry = engine->getGeometry(Mesh::rect);
+        k.geometry = engine->getGeometry(Mesh::rectGradient);
 
         k.rot = vec3{M_PI / 2, 0, 0};
 
@@ -168,7 +168,8 @@ void Piarno::buildPiano() {
         {
             k.pos = vec3{x, 0, 0};
             k.scl = vec3{widthWhite - gap, heightWhite, 1};
-            k.col = color{255, 255, 255, 100};
+            k.col = color{255, 255, 255, 50, k.geometry};
+            k.col.a(0) = k.col.a(1) = 230; //make top parts more solid
 
             x += widthWhite;
 
@@ -177,7 +178,8 @@ void Piarno::buildPiano() {
         {
             k.pos = vec3{x - widthWhite / 2, blackHover, - heightWhite/2 + heightBlack/2};
             k.scl = vec3{widthBlack - gap, heightBlack, 1};
-            k.col = color{0, 0, 0, 100};
+            k.col = color{0, 0, 0, 50, k.geometry};
+            k.col.a(0) = k.col.a(1) = 230; //make top parts more solid
         }
     }
 
@@ -285,17 +287,21 @@ void Piarno::updateTiles() {
         if(0 < startDist && startDist < highlightStart) //fade-in highlight before start
             keyHighlight[key] = std::max(keyHighlight[key], 1 - (startDist / highlightStart));
         else if(startDist <= 0 && endDist > 0) //fade-out highlight after press (until key end or max highlightStart)
-            keyHighlight[key] = std::max(keyHighlight[key], std::min(1 - (startDist / highlightStart), endDist / (endDist - startDist)));
+            keyHighlight[key] = std::max(keyHighlight[key], std::min(1 + (startDist / highlightStart * 2), endDist / (endDist - startDist)));
     }
 
+    //apply highlight (turn red & press down)
     for(int k=0; k<numKeys; k++) {
         float h = keyHighlight[k];
+        auto &c = pianoKeys[k].col;
+
         if(!isBlack(k)) { //white
-            pianoKeys[k].col = color{255, color_t(255 * (1 - h)), color_t(255 * (1 - h)), color_t(255 * overlayOpacity)};
+            c.setAll(G, color_t(255 * (1 - h)));
+            c.setAll(B, color_t(255 * (1 - h)));
             pianoKeys[k].pos.y = -h * keyPressDepth;
         }
         else { //black
-            pianoKeys[k].col = color{color_t(255 * h), 0, 0, color_t(255 * overlayOpacity)};
+            c.setAll(R, color_t(255 * h));
             pianoKeys[k].pos.y = blackHover - h * keyPressDepth;
         }
     }
