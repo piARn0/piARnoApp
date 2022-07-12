@@ -13,8 +13,7 @@ using namespace global;
 void Piarno::init() {
     buildPiano();
 
-    loadMidi();
-
+    loadMidi(0);
     createTiles();
 
     /// Build UI
@@ -24,6 +23,7 @@ void Piarno::init() {
     pianoOutline.scl = pianoKeys.back().pos - pianoKeys.front().pos + vec3{widthWhite, 0.5, heightWhite};
     pianoOutline.col = color{0, 0, 255, 255};
     pianoScene.attach(pianoOutline);
+
 
     //center control panel: play/pause, timeline
     vec3 origin = pianoKeys[2].pos;
@@ -50,10 +50,36 @@ void Piarno::init() {
     pianoScene.attach(timeline);
 
 
+    //left control panel: song selector, select button
+    origin = pianoKeys[0].pos;
+    off = vec3{-0.4, 0, 0.3};
+
+    songListScroll.geometry = engine->getGeometry(Mesh::cube);
+    songListScroll.pos = origin + off;
+    songListScroll.scl = vec3{0.03, 0.02, 0.03};
+    songListScroll.col = color{100, 100, 100, 255};
+    songListScroll.label = "SCROLL";
+    songListScroll.min = 0.0;
+    songListScroll.max = 0.3;
+    songListScroll.minVal = 0;
+    songListScroll.maxVal = songs.size() - 1;
+    songListScroll.set(0);
+    pianoScene.attach(songListScroll);
+
+    off.x += 0.4;
+    off.z += 0.2;
+    selectSong.geometry = engine->getGeometry(Mesh::cube);
+    selectSong.pos = origin + off;
+    selectSong.scl = vec3{0.03, 0.02, 0.03};
+    selectSong.col = color{100, 100, 100, 255};
+    selectSong.label = "SELECT";
+    pianoScene.attach(selectSong);
+
+
 
     //right control panel: playback speed, scroll speed, toggle alignment guide, piano offset
     origin = pianoKeys.back().pos;
-    off = vec3{0.1, 0, 0.2};
+    off = vec3{0.1, 0, 0.3};
 
     playbackSpeed.geometry = engine->getGeometry(Mesh::cube);
     playbackSpeed.pos = origin + off;
@@ -90,6 +116,8 @@ void Piarno::update() {
     scrollSpeed.update(controllers);
     playbackSpeed.update(controllers);
     toggleOutline.update(controllers);
+    songListScroll.update(controllers);
+    selectSong.update(controllers);
 
     if (pauseButton.isPressed())
         isPaused = !isPaused;
@@ -118,6 +146,16 @@ void Piarno::update() {
     if(toggleOutline.isPressed())
         pianoOutline.show = !pianoOutline.show;
 
+    if(selectSong.isPressed()) {
+        loadMidi((size_t) songListScroll.get());
+        createTiles();
+        currentTime = 0;
+        timeline.set(currentTime);
+    }
+
+    if(songListScroll.isReleased())
+        songListScroll.set(round(songListScroll.get()));
+
     //set piano position with controller
     auto ctrlL = controllers[0].pos;
     auto ctrlR = controllers[1].pos;
@@ -143,6 +181,24 @@ void Piarno::render() {
                        color{255, 255, 255, 255});
 
     pianoScene.render();
+
+    //render song list
+    {
+        float height = 0.05;
+        vec3 size{0.03, 0.03, 0.05};
+        vec3 rot = songListScroll.globalRot(songListScroll.rot + vec3{-M_PI/2, M_PI/2, 0});
+        for (size_t i = 0; i < songs.size(); i++) {
+            auto &s = songs[i];
+            vec3 listPos = songListScroll.globalPos(songListScroll.pos + vec3{songListScroll.max/2 - (songListScroll.get() - i) * height, 0, 0.2});
+
+            color_t a = (1 - std::min(std::abs(songListScroll.get() - i) / (songListScroll.max / height / 1.5f), 1.0f)) * 255;
+            if (0 < a) {
+                color c = i == round(songListScroll.get()) ?
+                        color{0, 126, 252, a} : color{255, 255,255, a};
+                engine->renderText(s, listPos, size, rot, c);
+            }
+        }
+    }
 }
 
 
@@ -312,23 +368,74 @@ float Piarno::distFromTime(double time) {
 }
 
 
-void Piarno::loadMidi() {
-    //load midi file
-    {
-#include "songs/sweden.h"
+void Piarno::loadMidi(int i) {
+    std::stringstream file;
 
-        std::stringstream file(std::string(bytes, bytes + sizeof(bytes)));
-        midi = smf::MidiFile(file);
-        //midi.absoluteTicks();
-        midi.joinTracks();
-        midi.doTimeAnalysis(); //calculate seconds for each event
-//        log("!!!!!!!!!!!!numEvents = " + std::to_string(midi.getNumEvents(0)) + "\n");
-//
-//        for (int i = 0; i < midi.getNumEvents(0); i++) {
-//            log("tick=" + std::to_string(midi[0][i].tick));8
-//            log("second=" + std::to_string(midi[0][i].seconds));
-//            log("command=" + std::to_string(midi[0][i][0]));
-//            log("key=" + std::to_string(midi[0][i][1]));
-//        }
+    switch(i) {
+        case 0:
+        {
+#include "songs/ac_2am.h"
+            file.str(std::string(bytes, bytes + sizeof(bytes)));
+        } break;
+        case 1:
+        {
+#include "songs/canon.h"
+            file.str(std::string(bytes, bytes + sizeof(bytes)));
+        } break;
+        case 2:
+        {
+#include "songs/sweden.h"
+            file.str(std::string(bytes, bytes + sizeof(bytes)));
+        } break;
+        case 3:
+        {
+#include "songs/twinkle.h"
+            file.str(std::string(bytes, bytes + sizeof(bytes)));
+        } break;
+        case 4:
+        {
+#include "songs/supermario.h"
+            file.str(std::string(bytes, bytes + sizeof(bytes)));
+        } break;
+        case 5:
+        {
+#include "songs/hittheroad.h"
+            file.str(std::string(bytes, bytes + sizeof(bytes)));
+        } break;
+        case 6:
+        {
+#include "songs/gymnopedie.h"
+            file.str(std::string(bytes, bytes + sizeof(bytes)));
+        } break;
+        case 7:
+        {
+#include "songs/elise.h"
+            file.str(std::string(bytes, bytes + sizeof(bytes)));
+        } break;
+        case 8:
+        {
+#include "songs/jacque.h"
+            file.str(std::string(bytes, bytes + sizeof(bytes)));
+        } break;
+        case 9:
+        {
+#include "songs/ode.h"
+            file.str(std::string(bytes, bytes + sizeof(bytes)));
+        } break;
+        case 10:
+        {
+#include "songs/heartnsoul.h"
+            file.str(std::string(bytes, bytes + sizeof(bytes)));
+        } break;
+        case 11:
+        {
+#include "songs/dre.h"
+            file.str(std::string(bytes, bytes + sizeof(bytes)));
+        } break;
     }
+
+    midi = smf::MidiFile(file);
+    //midi.absoluteTicks();
+    midi.joinTracks();
+    midi.doTimeAnalysis();
 }

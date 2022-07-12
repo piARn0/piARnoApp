@@ -37,6 +37,7 @@ mat4 rotate(vec3 rot);
 class Object {
 public:
     Object(Geometry *geometry = nullptr);
+    virtual ~Object() = default;
     virtual void render(mat4 *postTransform = nullptr);
 
     vec3 globalPos(std::optional<vec3> p = std::nullopt) const;
@@ -82,6 +83,7 @@ protected:
 class Rigid : public Object {
 public:
     Rigid(Geometry *geometry = nullptr);
+    ~Rigid() override = default;
 
     bool isColliding(const Rigid &other);
 
@@ -95,6 +97,7 @@ public:
 class Button : public Rigid {
 public:
     Button(Geometry *geometry = nullptr);
+    ~Button() override = default;
 
     //run this once per frame
     void update(const std::vector<Rigid> &controllers);
@@ -121,6 +124,7 @@ class Slider : public Button {
 public:
     Slider(Geometry *geometry = nullptr);
     Slider(float minValue, float value, float maxValue, float left = 0, float right = 0.2, Geometry *geometry = nullptr);
+    ~Slider() override = default;
 
     //run this once per frame
     void update(const std::vector<Rigid> &controllers);

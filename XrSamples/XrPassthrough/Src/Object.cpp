@@ -194,7 +194,7 @@ void Button::render(mat4 *postTransform) {
 
     if(label != "") {
         auto p = globalPos(pos + offset + vec3{0, scl.y, 0}), s = globalScl(scl * vec3{0.5, 0.8, 1}), r = globalRot(rot + vec3{-M_PI/2, 0, 0});
-        engine->renderText(label, p, s, r, color{255, 255, 255, 255});
+        engine->renderText(label, p, s, r, color{255, 255, 255, 200});
     }
 }
 

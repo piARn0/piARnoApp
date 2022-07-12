@@ -7,6 +7,21 @@
 #include "Object.h"
 #include "midi/MidiFile.h"
 
+const std::vector<std::string> songs = {
+    "TWO AM",
+    "Canon",
+    "Sweden",
+    "Twinkle",
+    "Supermario",
+    "Hit the Road Jack",
+    "Gymnopedie",
+    "Fuer Elise",
+    "Jacque",
+    "Ode to Joy",
+    "Heart n Soul",
+    "Dre"
+};
+
 // Represents a falling tile of a note for song visualization
 struct Tile {
     Object tile;
@@ -29,7 +44,7 @@ private:
     //internal helpers
     bool isBlack(int index);
     void buildPiano();
-    void loadMidi();
+    void loadMidi(int index);
     void createTiles();
     void updateTiles();
     float distFromTime(double time);
@@ -37,9 +52,9 @@ private:
     //piano overlay
     ObjectGroup pianoScene;
     std::vector<Object> pianoKeys;
-    int numKeys = 49, offset = 24+12;
-    //int numKeys = 88, offset = 12-3;
-    float widthWhite = 0.0236 - 0.00007, widthBlack = 0.011;
+    //int numKeys = 49, offset = 24+12;
+    int numKeys = 88, offset = 12-3;
+    float widthWhite = 0.0236 /*- 0.00007*/, widthBlack = 0.011;
     float heightWhite = 0.126 + 0.01, heightBlack = 0.08 + 0.01;
     float gap = 0.0005, blackHover = 0.007; //gap between keys and hover amount of black keys
     float overlayOpacity = 0.6;
@@ -54,6 +69,8 @@ private:
     double currentTime = 0;
     Slider playbackSpeed{0.25, 1, 2}; //min default max
     Slider timeline;
+    Slider songListScroll;
+    Button selectSong;
 
     bool isPaused = true;
     Button pauseButton;
