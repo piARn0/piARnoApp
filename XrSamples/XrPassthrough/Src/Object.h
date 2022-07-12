@@ -70,6 +70,7 @@ public:
     iterator end();
     size_t size();
     void attach(Object &obj);
+    void detach(Object *ptr);
 
     vec3 pos{0, 0, 0};
     vec3 rot{0, 0, 0};

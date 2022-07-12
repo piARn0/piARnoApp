@@ -264,8 +264,12 @@ void Piarno::createTiles() {
     }
     // TODO: cleanup after debugging
     log("[DEBUG/Piarno] Number of notes in this song: " + std::to_string(keyPressNum));
-    allTiles.resize(keyPressNum);
-    
+
+    for(auto &t : allTiles)
+        pianoScene.detach(&t.tile);
+
+    allTiles = std::vector<Tile>(keyPressNum);
+
     std::vector<Tile *> currentTile(numKeys,nullptr); //"currently" (within the below loop) active tile
 
     int k = 0; //current key press

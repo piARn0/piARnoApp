@@ -124,6 +124,12 @@ void ObjectGroup::attach(Object &obj) {
     obj.parent = this;
 }
 
+void ObjectGroup::detach(Object *ptr) {
+    auto it = std::find(objects.begin(), objects.end(), ptr);
+    if(it != objects.end())
+        objects.erase(it);
+}
+
 
 Rigid::Rigid(Geometry *geometry) : Object(geometry) {
 
