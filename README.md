@@ -6,7 +6,10 @@
 - Jack Sterling Klusmann [@Jack-Klusmann](https://github.com/Jack-Klusmann)
 
 ## Project Description:
-Our project is an augmented reality application for head-mounted displays (specifically, the oculus Quest). 
+piARno is a piano teaching and practicing application for head-mounted displays (in our case, the Oculus Quest).
+Upon launching the application, the user will be prompted to specify the location of the piano as well as select the song the user would like to play. 
+Subsequently, the user will be guided through the selected song by 3D augmented tiles moving towards the piano keys.
+Once the user should press a key, a tile will touch the respective piano key and light up. The alignment of the tiles tells the users which keys to press next. The length of the tiles tell the user how long the keys need to be pressed.
 
 ## Used Frameworks:
 - [Oculus Mobile SDK](https://developer.oculus.com/downloads/package/oculus-mobile-sdk/) using C++ for Android [Native Development Kit](https://developer.android.com/ndk)
