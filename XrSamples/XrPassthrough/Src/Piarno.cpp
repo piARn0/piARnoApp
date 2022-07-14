@@ -147,9 +147,12 @@ void Piarno::update() {
         pianoOutline.show = !pianoOutline.show;
 
     if(selectSong.isPressed()) {
-        loadMidi((size_t) songListScroll.get());
+        loadMidi((size_t) round(songListScroll.get()));
         createTiles();
         currentTime = 0;
+        isPaused = true;
+        timeline.minVal = 0;
+        timeline.maxVal = midi.getFileDurationInSeconds();
         timeline.set(currentTime);
     }
 
@@ -210,6 +213,10 @@ bool Piarno::isBlack(int index) {
 }
 
 void Piarno::buildPiano() {
+    //compensate for non-centered black keys
+    static const float keyOffset[12] = {0, -0.00141, 0, 0.00141, 0, 0, -0.00193, 0, 0.0, 0, 0.00193, 0};
+
+
     pianoKeys.resize(numKeys);
 
     float x = 0;
@@ -232,7 +239,7 @@ void Piarno::buildPiano() {
             pianoScene.attach(k); //attach white keys first (for translucent render ordering!)
         } else //black key
         {
-            k.pos = vec3{x - widthWhite / 2, blackHover, - heightWhite/2 + heightBlack/2};
+            k.pos = vec3{x - widthWhite / 2 + keyOffset[(i + offset) % 12], blackHover, - heightWhite/2 + heightBlack/2};
             k.scl = vec3{widthBlack - gap, heightBlack, 1};
             k.col = color{0, 0, 0, 50, k.geometry};
             k.col.a(0) = k.col.a(1) = 230; //make top parts more solid
@@ -258,17 +265,20 @@ void Piarno::createTiles() {
     int keyPressNum = 0;
     for (int i = 0; i < midi.getNumEvents(0); i++) {
         int command = midi[0][i][0];
-        if (command == 0x90) {
+        int velocity = midi[0][i][2];
+        if (command == 0x90 && velocity > 0) {
             keyPressNum++;
         }
     }
     // TODO: cleanup after debugging
     log("[DEBUG/Piarno] Number of notes in this song: " + std::to_string(keyPressNum));
 
+    //clean up previously loaded tiles from scene
     for(auto &t : allTiles)
         pianoScene.detach(&t.tile);
 
     allTiles = std::vector<Tile>(keyPressNum);
+    trackToIndex = std::unordered_map<int, size_t>();
 
     std::vector<Tile *> currentTile(numKeys,nullptr); //"currently" (within the below loop) active tile
 
@@ -276,29 +286,36 @@ void Piarno::createTiles() {
     for (int i = 0; i < midi.getNumEvents(0); i++) {
         int command = midi[0][i][0];
         int key = midi[0][i][1] - offset;
+        int velocity = midi[0][i][2];
 
         // this key is out of range for the active piano
         if (key < 0 || key >= numKeys) {
             continue;
         }
 
-        if (command == 0x90) {
+        if (command == 0x90 && velocity > 0) {
             // key press
-            log("[DEBUG/Piarno] Detected keypress for tile k=" + std::to_string(k) +
-                " at piano key: " + std::to_string(key));
+//            log("[DEBUG/Piarno] Detected keypress for tile k=" + std::to_string(k) +
+//                " at piano key: " + std::to_string(key) + " with vel = " + std::to_string(velocity));
             allTiles[k].startTime = midi[0][i].seconds;
             allTiles[k].key = key;
             currentTile[key] = &allTiles[k]; //register the currently active tile for this lane
             k++;
-        } else if (command == 0x80) {
+        } else if (command == 0x80 || command == 0x90 && velocity == 0) {
             // key release
+//            log("MIDI LOAD: TRACK = "+std::to_string(midi[0][i].track));
+
+            //assign index to track
+            auto [it, isNew] = trackToIndex.try_emplace(midi[0][i].track, trackToIndex.size());
+            size_t track = it->second % (tileColor.size()/2);
+
             if (currentTile[key] == nullptr) {
                 log("[DEBUG/Piarno] Detected key release for a key that was already released with number: " +
                     std::to_string(key) + " and time " + std::to_string(midi[0][i].seconds));
                 continue;
             } else
-                log("[DEBUG/Piarno] Detected key release for at piano key: " + std::to_string(key) +
-                    " with time " + std::to_string(midi[0][i].seconds));
+//                log("[DEBUG/Piarno] Detected key release for at piano key: " + std::to_string(key) +
+//                    " with time " + std::to_string(midi[0][i].seconds));
 
             currentTile[key]->endTime = midi[0][i].seconds;
 
@@ -311,12 +328,13 @@ void Piarno::createTiles() {
 
             if(isBlack(key)) {
                 tile.pos.y = blackHover - keyPressDepth; //float above keys
-                tile.col = color{0, 50, 150, 255};
+                tile.col = tileColor[2*track + 1];
             }
             else {
                 tile.pos.y = -keyPressDepth;
-                tile.col = color{0, 85, 255, 255};
+                tile.col = tileColor[2*track];
             }
+            tile.col.a() = 191 + velocity / 2; //velocity goes from 0 to 128
 
             pianoScene.attach(tile);
 
@@ -332,15 +350,18 @@ void Piarno::createTiles() {
 
 void Piarno::updateTiles() {
     keyHighlight.assign(numKeys, 0.0f);
+    std::vector<Object*> closestTile(numKeys, nullptr); //ptr to closest tile per key (including currently pressed)
 
     for(auto &[tile, key, start, end] : allTiles) {
         float startDist = distFromTime(start - currentTime); //distance in meters to start pos
         float endDist = distFromTime(end - currentTime); //distance in meters to end pos
 
+        tile.show = endDist > 0; //don't render if tile is already in the past
+        if(!tile.show)
+            continue;
+
         tile.scl.y = std::max(0.0f, endDist) - std::max(0.0f, startDist); //tile length
         tile.pos.z = -heightWhite / 2 - (std::max(0.0f, startDist) + tile.scl.y / 2); //center of tile
-
-        tile.show = endDist > 0; //don't render if tile is already in the past
 
         //highlight keys depending on its key press time
         float highlightStart = distFromTime(1); //start shadow 1 second before press
@@ -348,22 +369,26 @@ void Piarno::updateTiles() {
             keyHighlight[key] = std::max(keyHighlight[key], 1 - (startDist / highlightStart));
         else if(startDist <= 0 && endDist > 0) //fade-out highlight after press (until key end or max highlightStart)
             keyHighlight[key] = std::max(keyHighlight[key], std::min(1 + (startDist / highlightStart * 2), endDist / (endDist - startDist)));
+
+
+        //this assumes the tiles are sorted by time
+        if(!closestTile[key]) {
+            closestTile[key] = &tile;
+        }
     }
 
     //apply highlight (turn red & press down)
     for(int k=0; k<numKeys; k++) {
-        float h = keyHighlight[k];
+        float h = std::max(0.0f, keyHighlight[k]);
         auto &c = pianoKeys[k].col;
 
-        if(!isBlack(k)) { //white
-            c.setAll(G, color_t(255 * (1 - h)));
-            c.setAll(B, color_t(255 * (1 - h)));
-            pianoKeys[k].pos.y = -h * keyPressDepth;
-        }
-        else { //black
-            c.setAll(R, color_t(255 * h));
-            pianoKeys[k].pos.y = blackHover - h * keyPressDepth;
-        }
+        color t = closestTile[k] ? closestTile[k]->col : color{255, 0, 0, 255}; //target color
+        vec3 rgb = (isBlack(k) ? vec3{0,0,0} : vec3{255, 255, 255}) * (1-h) + vec3{(float)t.r(), (float)t.g(), (float)t.b()} * h;
+        c.setAll(R, color_t(rgb.x));
+        c.setAll(G, color_t(rgb.y));
+        c.setAll(B, color_t(rgb.z));
+
+        pianoKeys[k].pos.y = (isBlack(k) ? blackHover : 0) - h * keyPressDepth;
     }
 }
 
@@ -388,7 +413,7 @@ void Piarno::loadMidi(int i) {
         } break;
         case 2:
         {
-#include "songs/sweden.h"
+#include "songs/sweden1.h"
             file.str(std::string(bytes, bytes + sizeof(bytes)));
         } break;
         case 3:
@@ -428,12 +453,107 @@ void Piarno::loadMidi(int i) {
         } break;
         case 10:
         {
-#include "songs/heartnsoul.h"
+#include "songs/heartnsoul1.h"
             file.str(std::string(bytes, bytes + sizeof(bytes)));
         } break;
         case 11:
         {
-#include "songs/dre.h"
+#include "songs/heartnsoul2.h"
+            file.str(std::string(bytes, bytes + sizeof(bytes)));
+        } break;
+        case 12:
+        {
+#include "songs/pirate.h"
+            file.str(std::string(bytes, bytes + sizeof(bytes)));
+        } break;
+        case 13:
+        {
+#include "songs/wet_hands.h"
+            file.str(std::string(bytes, bytes + sizeof(bytes)));
+        } break;
+        case 14:
+        {
+#include "songs/sweden2.h"
+            file.str(std::string(bytes, bytes + sizeof(bytes)));
+        } break;
+        case 15:
+        {
+#include "songs/spring.h"
+            file.str(std::string(bytes, bytes + sizeof(bytes)));
+        } break;
+        case 16:
+        {
+#include "songs/winter.h"
+            file.str(std::string(bytes, bytes + sizeof(bytes)));
+        } break;
+        case 17:
+        {
+#include "songs/game_of_thrones.h"
+            file.str(std::string(bytes, bytes + sizeof(bytes)));
+        } break;
+        case 18:
+        {
+#include "songs/minuet.h"
+            file.str(std::string(bytes, bytes + sizeof(bytes)));
+        } break;
+        case 19:
+        {
+#include "songs/beethoven.h"
+            file.str(std::string(bytes, bytes + sizeof(bytes)));
+        } break;
+        case 20:
+        {
+#include "songs/fairy_tail.h"
+            file.str(std::string(bytes, bytes + sizeof(bytes)));
+        } break;
+        case 21:
+        {
+#include "songs/river_flows.h"
+            file.str(std::string(bytes, bytes + sizeof(bytes)));
+        } break;
+        case 22:
+        {
+#include "songs/amelie.h"
+            file.str(std::string(bytes, bytes + sizeof(bytes)));
+        } break;
+        case 23:
+        {
+#include "songs/name_of_love.h"
+            file.str(std::string(bytes, bytes + sizeof(bytes)));
+        } break;
+        case 24:
+        {
+#include "songs/imagine.h"
+            file.str(std::string(bytes, bytes + sizeof(bytes)));
+        } break;
+        case 25:
+        {
+#include "songs/winner_takes_it_all.h"
+            file.str(std::string(bytes, bytes + sizeof(bytes)));
+        } break;
+        case 26:
+        {
+#include "songs/over_the_rainbow.h"
+            file.str(std::string(bytes, bytes + sizeof(bytes)));
+        } break;
+        case 27:
+        {
+#include "songs/paradise.h"
+            file.str(std::string(bytes, bytes + sizeof(bytes)));
+        } break;
+        case 28:
+        {
+#include "songs/let_her_go.h"
+            file.str(std::string(bytes, bytes + sizeof(bytes)));
+        } break;
+        case 29:
+        {
+#include "songs/take_on_me.h"
+            file.str(std::string(bytes, bytes + sizeof(bytes)));
+        } break;
+        case 30:
+        {
+#include "songs/coffin_dance.h"
             file.str(std::string(bytes, bytes + sizeof(bytes)));
         } break;
     }
@@ -442,4 +562,6 @@ void Piarno::loadMidi(int i) {
     //midi.absoluteTicks();
     midi.joinTracks();
     midi.doTimeAnalysis();
+
+    log("[DEBUG/Piarno] LOADED MIDI FILE " + (songs[i]));
 }
