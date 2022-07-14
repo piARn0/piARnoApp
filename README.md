@@ -4,8 +4,8 @@
 
 ## Members
 - Joong-Won Seo [@JoongWonSeo](https://github.com/JoongWonSeo)
-- Mohammad Naanaa [@hamnaanaa](https://github.com/hamnaanaa)
 - Jack Sterling Klusmann [@Jack-Klusmann](https://github.com/Jack-Klusmann)
+- Mohammad Naanaa [@hamnaanaa](https://github.com/hamnaanaa)
 
 ## Project Description
 piARno is a piano teaching and practicing application for head-mounted displays (in our case, the Oculus Quest).
@@ -26,7 +26,18 @@ TODO: Add release .apk
 TODO: list all Android studio dependencies and explain the process
 
 1. Clone this repository
-2. 
+2. Install Android Studio
+3. Within the Android Studio SDK Manager, install:
+  3.1 Android SDK Platform, API level 26
+  3.2 Android SDK Build Tools, v 28.0.3 or later
+  3.3 Android NDK
+4. Within Android Studio, ensure the following veriables are set:
+  4.1 Set the environment variable JAVA_HOME to the JDK location, typically C:\Program Files\Android\Android Studio\jre.
+  4.2 Set the environment variable ANDROID_HOME to the Android SDK location, typically C:\Users\[username]\AppData\Local\Android\Sdk.
+  4.3 Set the environment variable ANDROID_NDK_HOME to the Android NDK location, typically C:\Users\[username]\AppData\Local\Android\Sdk\ndk\       [versionnumber].
+  4.4 Add the JDK tools directory to your PATH, typically C:\Program Files\Android\Android Studio\jre\bin.
+  4.5 Add the Android SDK platform-tools directory to your PATH, typically C:\Users\[username]\AppData\Local\Android\Sdk\platform-tools.
+  4.6 Add the Android SDK tools directory to your PATH, typically C:\Users\<username>\AppData\Local\Android\Sdk\tools.
 
 ## Used Frameworks
 
