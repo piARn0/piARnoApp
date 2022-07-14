@@ -27,17 +27,19 @@ TODO: list all Android studio dependencies and explain the process. not done yet
 
 1. Clone this repository  
 2. Install Android Studio  
-3. Within the Android Studio SDK Manager, install:  
-  3.1 Android SDK Platform, API level 26  
-  3.2 Android SDK Build Tools, v 28.0.3 or later  
-  3.3 Android NDK  
-4. Within Android Studio, ensure the following veriables are set:   
-  4.1 Set the environment variable JAVA_HOME to the JDK location C:\Program Files\Android\Android Studio\jre.  
-  4.2 Set the environment variable ANDROID_HOME to the Android SDK location C:\Users\[username]\AppData\Local\Android\Sdk.  
-  4.3 Set the environment variable ANDROID_NDK_HOME to the Android NDK location C:\Users\[username]\AppData\Local\Android\Sdk\ndk\[versionnumber].  
-  4.4 Add the JDK tools directory to your PATH C:\Program Files\Android\Android Studio\jre\bin.  
-  4.5 Add the Android SDK platform-tools directory to your PATH C:\Users\[username]\AppData\Local\Android\Sdk\platform-tools.  
-  4.6 Add the Android SDK tools directory to your PATH C:\Users\<username>\AppData\Local\Android\Sdk\tools.  
+3. If you are a Mac user, install XCode.  
+4. Within the Android Studio SDK Manager, install:  
+  4.1 Android SDK Platform, API level 26  
+  4.2 Android SDK Build Tools, v 28.0.3 or later  
+  4.3 Android NDK  
+5. Within Android Studio, ensure the following veriables are set:   
+  5.1 Set the environment variable JAVA_HOME to the JDK location C:\Program Files\Android\Android Studio\jre.  
+  5.2 Set the environment variable ANDROID_HOME to the Android SDK location C:\Users\[username]\AppData\Local\Android\Sdk.  
+  5.3 Set the environment variable ANDROID_NDK_HOME to the Android NDK location C:\Users\[username]\AppData\Local\Android\Sdk\ndk\[versionnumber].  
+  5.4 Add the JDK tools directory to your PATH C:\Program Files\Android\Android Studio\jre\bin.  
+  5.5 Add the Android SDK platform-tools directory to your PATH C:\Users\[username]\AppData\Local\Android\Sdk\platform-tools.  
+  5.6 Add the Android SDK tools directory to your PATH C:\Users\<username>\AppData\Local\Android\Sdk\tools.  
+6. If you are a Windows user, set up your system to detect your Android device over USB. You may need to install a USB driver for ADB.  
 
 ## Used Frameworks
 
