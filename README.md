@@ -1,7 +1,7 @@
 # piARno App
 
 ## Members:
-- Joong-Won Seo [JoongWonSeo](https://github.com/JoongWonSeo)
+- Joong-Won Seo [@JoongWonSeo](https://github.com/JoongWonSeo)
 - Mohammad Naanaa [@hamnaanaa](https://github.com/hamnaanaa)
 - Jack Sterling Klusmann [@Jack-Klusmann](https://github.com/Jack-Klusmann)
 
