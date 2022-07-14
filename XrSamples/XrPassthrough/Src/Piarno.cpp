@@ -45,7 +45,7 @@ void Piarno::init() {
     timeline.min = 0.0;
     timeline.max = 0.5;
     timeline.minVal = 0;
-    timeline.maxVal = midi.getFileDurationInSeconds();
+    timeline.maxVal = midi.getFileDurationInSeconds() + waitTimeBegin;
     timeline.set(currentTime);
     pianoScene.attach(timeline);
 
@@ -152,7 +152,7 @@ void Piarno::update() {
         currentTime = 0;
         isPaused = true;
         timeline.minVal = 0;
-        timeline.maxVal = midi.getFileDurationInSeconds();
+        timeline.maxVal = midi.getFileDurationInSeconds() + waitTimeBegin;
         timeline.set(currentTime);
     }
 
@@ -170,7 +170,8 @@ void Piarno::update() {
 
     //update time and tiles
     if(!isPaused)
-        currentTime = std::min(currentTime + 1.0 / 72.0 * playbackSpeed.get(), midi.getFileDurationInSeconds());
+        currentTime = std::min(currentTime + 1.0 / 72.0 * playbackSpeed.get(),
+                               midi.getFileDurationInSeconds() + waitTimeBegin);
 
     updateTiles();
 }
@@ -297,7 +298,7 @@ void Piarno::createTiles() {
             // key press
 //            log("[DEBUG/Piarno] Detected keypress for tile k=" + std::to_string(k) +
 //                " at piano key: " + std::to_string(key) + " with vel = " + std::to_string(velocity));
-            allTiles[k].startTime = midi[0][i].seconds;
+            allTiles[k].startTime = midi[0][i].seconds + waitTimeBegin;
             allTiles[k].key = key;
             currentTile[key] = &allTiles[k]; //register the currently active tile for this lane
             k++;
@@ -311,13 +312,13 @@ void Piarno::createTiles() {
 
             if (currentTile[key] == nullptr) {
                 log("[DEBUG/Piarno] Detected key release for a key that was already released with number: " +
-                    std::to_string(key) + " and time " + std::to_string(midi[0][i].seconds));
+                    std::to_string(key) + " and time " + std::to_string(midi[0][i].seconds + waitTimeBegin));
                 continue;
             } else
 //                log("[DEBUG/Piarno] Detected key release for at piano key: " + std::to_string(key) +
 //                    " with time " + std::to_string(midi[0][i].seconds));
 
-            currentTile[key]->endTime = midi[0][i].seconds;
+            currentTile[key]->endTime = midi[0][i].seconds + waitTimeBegin;
 
             // draw the tile
             auto &tile = currentTile[key]->tile;
