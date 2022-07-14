@@ -32,3 +32,5 @@ This project is based on the XRPassthrough sample code from the [Oculus OpenXR M
 - [Midifile](https://github.com/craigsapp/midifile): C++ MIDIfile parsing library developed by Craig Stuart Sapp ([@craigsapp](https://github.com/craigsapp/midifile)).
 
 - [obj2c](https://github.com/glampert/obj2c): Simple command line tool to convert Wavefront OBJ models to C/C++ data arrays developed by Guilherme R. Lampert ([glampert](https://github.com/glampert)).
+
+- [Minecraft Ten Font](https://www.fontspace.com/minecraft-ten-font-f40317): Font used for rendering in-app text.
