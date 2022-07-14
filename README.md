@@ -2,8 +2,8 @@
 
 ## Members:
 - Joong-Won Seo
-- Mohammad Naanaa
-- Jack Sterling Klusmann
+- Mohammad Naanaa [@hamnaanaa](https://github.com/hamnaanaa)
+- Jack Sterling Klusmann (@Jack-Klusmann) (https://github.com/Jack-Klusmann)
 
 ## Project Description:
 Our project is an augmented reality application for head-mounted displays (specifically, the oculus Quest). 
