@@ -13,6 +13,21 @@ Upon launching the application, the user will be prompted to specify the locatio
 Subsequently, the user will be guided through the selected song by 3D augmented tiles moving towards the piano keys.
 Once the user should press a key, a tile will touch the respective piano key and light up. The alignment of the tiles tells the users which keys to press next. The length of the tiles tell the user how long the keys need to be pressed.
 
+## Installation
+
+This project supports two installation options - pre-compiled APK and building from sources with Android Studio.
+
+### Pre-Compiled APK
+
+TODO: Add release .apk
+
+### Building from sources
+
+TODO: list all Android studio dependencies and explain the process
+
+1. Clone this repository
+2. 
+
 ## Used Frameworks
 
 This project is based on the XRPassthrough sample code from the [Oculus OpenXR Mobile SDK](https://developer.oculus.com/downloads/package/oculus-openxr-mobile-sdk).
