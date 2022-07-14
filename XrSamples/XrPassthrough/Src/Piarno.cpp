@@ -26,7 +26,7 @@ void Piarno::init() {
 
 
     //center control panel: play/pause, timeline
-    vec3 origin = pianoKeys[2].pos;
+    vec3 origin{-0.3, 0, 0};
     vec3 off{0, 0, 0.2};
 
     pauseButton.geometry = engine->getGeometry(Mesh::cube);
@@ -51,7 +51,7 @@ void Piarno::init() {
 
 
     //left control panel: song selector, select button
-    origin = pianoKeys[0].pos;
+    origin = vec3{-0.34, 0, 0};
     off = vec3{-0.4, 0, 0.3};
 
     songListScroll.geometry = engine->getGeometry(Mesh::cube);
@@ -59,26 +59,17 @@ void Piarno::init() {
     songListScroll.scl = vec3{0.03, 0.02, 0.03};
     songListScroll.col = color{100, 100, 100, 255};
     songListScroll.label = "SCROLL";
+    songListScroll.labelRot = M_PI/2;
     songListScroll.min = 0.0;
-    songListScroll.max = 0.3;
+    songListScroll.max = 0.4;
     songListScroll.minVal = 0;
     songListScroll.maxVal = songs.size() - 1;
     songListScroll.set(0);
     pianoScene.attach(songListScroll);
 
-    off.x += 0.4;
-    off.z += 0.2;
-    selectSong.geometry = engine->getGeometry(Mesh::cube);
-    selectSong.pos = origin + off;
-    selectSong.scl = vec3{0.03, 0.02, 0.03};
-    selectSong.col = color{100, 100, 100, 255};
-    selectSong.label = "SELECT";
-    pianoScene.attach(selectSong);
-
-
 
     //right control panel: playback speed, scroll speed, toggle alignment guide, piano offset
-    origin = pianoKeys.back().pos;
+    origin = vec3{0.3, 0, 0};
     off = vec3{0.1, 0, 0.3};
 
     playbackSpeed.geometry = engine->getGeometry(Mesh::cube);
@@ -86,6 +77,7 @@ void Piarno::init() {
     playbackSpeed.scl = vec3{0.03, 0.02, 0.03};
     playbackSpeed.col = color{100, 100, 100, 255};
     playbackSpeed.label = "SPEED";
+    playbackSpeed.labelRot = -M_PI/2;
     pianoScene.attach(playbackSpeed);
 
     off.z += 0.1;
@@ -94,6 +86,7 @@ void Piarno::init() {
     scrollSpeed.scl = vec3{0.03, 0.02, 0.03};
     scrollSpeed.col = color{100, 100, 100, 255};
     scrollSpeed.label = "SCROLL";
+    scrollSpeed.labelRot = -M_PI/2;
     pianoScene.attach(scrollSpeed);
 
     off.z += 0.1;
@@ -104,6 +97,7 @@ void Piarno::init() {
     toggleOutline.col = color{0, 0, 150, 255};
     toggleOutline.pressCol = color{0, 0, 100, 255};
     toggleOutline.label = "ALIGN";
+    toggleOutline.labelRot = -M_PI/2;
     pianoScene.attach(toggleOutline);
 }
 
@@ -117,7 +111,6 @@ void Piarno::update() {
     playbackSpeed.update(controllers);
     toggleOutline.update(controllers);
     songListScroll.update(controllers);
-    selectSong.update(controllers);
 
     if (pauseButton.isPressed())
         isPaused = !isPaused;
@@ -146,7 +139,8 @@ void Piarno::update() {
     if(toggleOutline.isPressed())
         pianoOutline.show = !pianoOutline.show;
 
-    if(selectSong.isPressed()) {
+    if(songListScroll.isReleased()) {
+        songListScroll.set(round(songListScroll.get()));
         loadMidi((size_t) round(songListScroll.get()));
         createTiles();
         currentTime = 0;
@@ -155,9 +149,6 @@ void Piarno::update() {
         timeline.maxVal = midi.getFileDurationInSeconds() + waitTimeBegin;
         timeline.set(currentTime);
     }
-
-    if(songListScroll.isReleased())
-        songListScroll.set(round(songListScroll.get()));
 
     //set piano position with controller
     auto ctrlL = controllers[0].pos;
@@ -193,12 +184,12 @@ void Piarno::render() {
         vec3 rot = songListScroll.globalRot(songListScroll.rot + vec3{-M_PI/2, M_PI/2, 0});
         for (size_t i = 0; i < songs.size(); i++) {
             auto &s = songs[i];
-            vec3 listPos = songListScroll.globalPos(songListScroll.pos + vec3{songListScroll.max/2 - (songListScroll.get() - i) * height, 0, 0.2});
+            vec3 listPos = songListScroll.globalPos(songListScroll.pos + vec3{songListScroll.max/2 - (songListScroll.get() - i) * height, 0, 0.3});
 
             color_t a = (1 - std::min(std::abs(songListScroll.get() - i) / (songListScroll.max / height / 1.5f), 1.0f)) * 255;
             if (0 < a) {
                 color c = i == round(songListScroll.get()) ?
-                        color{0, 126, 252, a} : color{255, 255,255, a};
+                        color{50, 176, 255, a} : color{255, 255,255, a};
                 engine->renderText(s, listPos, size, rot, c);
             }
         }

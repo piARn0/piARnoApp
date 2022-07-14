@@ -101,11 +101,10 @@ private:
     Slider playbackSpeed{0.25, 1, 2}; //min default max
     Slider timeline;
     Slider songListScroll;
-    Button selectSong;
 
     bool isPaused = true;
     Button pauseButton;
-    Slider scrollSpeed{0.05, 0.2, 5}; //min default max of tile velocity, meters per second
+    Slider scrollSpeed{0.05, 0.2, 2}; //min default max of tile velocity, meters per second
 
     Object pianoOutline; //to help aligning
     Button toggleOutline;
