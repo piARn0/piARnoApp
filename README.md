@@ -1,9 +1,9 @@
 # piARno App
 
 ## Members:
-- Joong-Won Seo (Matrikelnummer: 03712390)
-- Mohammad Naanaa (Matrikelnummer: 03713091)
-- Jack Sterling Klusmann (Matrikelnummer: 03709664)
+- Joong-Won Seo
+- Mohammad Naanaa
+- Jack Sterling Klusmann
 
 ## Project Description:
 Our project is an augmented reality application for head-mounted displays (specifically, the oculus Quest). 
