@@ -10,6 +10,7 @@ Our project is an augmented reality application for head-mounted displays (speci
 
 ## Used Frameworks:
 - [Oculus Mobile SDK](https://developer.oculus.com/downloads/package/oculus-mobile-sdk/) using C++ for Android [Native Development Kit](https://developer.android.com/ndk)
-- [OpenXR](https://www.khronos.org/openxr/)
-- [OpenGL](https://www.opengl.org)
-- Midifile: C++ MIDIfile parsing library
+- [Passthrough API](https://developer.oculus.com/documentation/unity/unity-passthrough/): Real-time 3D visualization of the physical world in the Oculus headsets for AR development
+- [OpenXR](https://www.khronos.org/openxr/): 
+- [OpenGL](https://www.opengl.org): 3D rendering
+- [Midifile](https://github.com/craigsapp/midifile): C++ MIDIfile parsing library
