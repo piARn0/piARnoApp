@@ -23,7 +23,7 @@ TODO: Add release .apk
 
 ### Building from sources
 
-TODO: list all Android studio dependencies and explain the process
+TODO: list all Android studio dependencies and explain the process. not done yet
 
 1. Clone this repository  
 2. Install Android Studio  
