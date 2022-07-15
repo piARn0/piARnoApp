@@ -114,6 +114,7 @@ public:
 
     color pressCol = color{50, 50, 50, 255};
     std::string label;
+    float labelRot = 0;
 
 protected:
     bool pressed = false, pressedPrev = false;
