@@ -131,17 +131,20 @@ void Piarno::update() {
     else {
         timeline.set(currentTime);
     }
+
     int sec = floor(currentTime);
-    timeline.label = std::string(6, '\0');
-    std::sprintf(&timeline.label[0], "%02d:%02d", sec / 60, sec % 60);
-    log(timeline.label);
+    std::stringstream t;
+    t << std::setfill('0') << std::setw(2) << (sec / 60) << ":"
+      << std::setfill('0') << std::setw(2) << (sec % 60);
+    timeline.label = t.str();
 
     if(playbackSpeed.isReleased()) { //round to 0.25, 0.5, ..., 2.0
         playbackSpeed.set(round(playbackSpeed.get() * 4) / 4);
     }
 
-    playbackSpeed.label = std::string(6, '\0');
-    sprintf(&playbackSpeed.label[0], "X%.2f", playbackSpeed.get());
+    std::stringstream s;
+    s << "X" << std::fixed << std::setprecision(2) << playbackSpeed.get();
+    playbackSpeed.label = s.str();
 
     if(toggleOutline.isPressed())
         pianoOutline.show = !pianoOutline.show;

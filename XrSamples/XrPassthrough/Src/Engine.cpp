@@ -72,6 +72,13 @@ float Engine::textWidth(const std::string &text) {
             xOff += fontWidth[0];
         else if (auto alpha = toupper(c) - 'A'; 0 <= alpha && alpha < 26)
             xOff += fontWidth[alpha] + 0.1;
+        else if (auto num = c - '0'; 0 <= num && num < 10) {
+            xOff += fontWidth[26+num] + 0.1;
+        } else if (c == '.') {
+            xOff += fontWidth[36] + 0.1;
+        } else if (c == ':') {
+            xOff += fontWidth[37] + 0.1;
+        }
     }
     return xOff - (text.size() == 0 ? 0 : 0.1);
 }
