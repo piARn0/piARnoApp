@@ -97,7 +97,7 @@ private:
 
     //playback & UI
     smf::MidiFile midi;
-    double currentTime = 0;
+    double currentTime = 0, waitTimeBegin = 3;
     Slider playbackSpeed{0.25, 1, 2}; //min default max
     Slider timeline;
     Slider songListScroll;
