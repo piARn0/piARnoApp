@@ -9,26 +9,26 @@
 #include <unordered_map>
 
 const std::vector<std::string> songs = {
-    "2AM",
     "Canon",
+    "2AM",
     "Sweden",
     "Twinkle",
     "Supermario",
     "Hit the Road Jack",
-    "Gymnopedie",
+    "Gymnopedie No.2",
     "Fuer Elise",
     "Jacque",
     "Ode to Joy",
     "Heart n Soul 1",
     "Heart n Soul 2",
-    "Pirate",
+    "Coffin Dance",
     "Wet Hands",
-    "Sweden 2",
+    "Sweden  I Easy I",
     "Four Seasons Spring",
     "Four Seasons Winter",
     "Game of Thrones",
-    "Minuet",
-    "7th Symphony 2nd Movement",
+    "Minuet in F Major",
+    "Beethoven 7th Symphony",
     "Fairy Tail",
     "River Flows in You",
     "Amelie Theme",
@@ -39,7 +39,7 @@ const std::vector<std::string> songs = {
     "Paradise",
     "Let Her Go",
     "Take On Me",
-    "Coffin Dance"
+    "Harry Potter"
 };
 
 // Represents a falling tile of a note for song visualization

@@ -412,12 +412,12 @@ void Piarno::loadMidi(int i) {
     switch(i) {
         case 0:
         {
-#include "songs/ac_2am.h"
+#include "songs/canon.h"
             file.str(std::string(bytes, bytes + sizeof(bytes)));
         } break;
         case 1:
         {
-#include "songs/canon.h"
+#include "songs/ac_2am.h"
             file.str(std::string(bytes, bytes + sizeof(bytes)));
         } break;
         case 2:
@@ -472,7 +472,7 @@ void Piarno::loadMidi(int i) {
         } break;
         case 12:
         {
-#include "songs/pirate.h"
+#include "songs/coffin_dance.h"
             file.str(std::string(bytes, bytes + sizeof(bytes)));
         } break;
         case 13:
@@ -562,7 +562,7 @@ void Piarno::loadMidi(int i) {
         } break;
         case 30:
         {
-#include "songs/coffin_dance.h"
+#include "songs/hp.h"
             file.str(std::string(bytes, bytes + sizeof(bytes)));
         } break;
     }

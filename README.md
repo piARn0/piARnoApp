@@ -40,6 +40,22 @@ TODO: list all Android studio dependencies and explain the process. not done yet
   5.5 Add the Android SDK platform-tools directory to your PATH C:\Users\[username]\AppData\Local\Android\Sdk\platform-tools.  
   5.6 Add the Android SDK tools directory to your PATH C:\Users\<username>\AppData\Local\Android\Sdk\tools.  
 6. If you are a Windows user, set up your system to detect your Android device over USB. You may need to install a USB driver for ADB.  
+7. Import the project in Android Studio by selecting the `<repo root>/XrSamples/XrPassthrough/Projects/Android` folder.
+8. Connect your Oculus Quest 2 headset via USB and press 'Run'.
+
+## Implementation Overview
+
+All of the relevant source files are located in `<repo root>/XrSamples/XrPassthrough/Src`.
+
+`Engine.h/cpp` and `Object.h/cpp` contain the classes that create an abstraction layer on top of the underlying frameworks OpenGL ES and OpenXR, in order to simplify the actual project code and make it more portable.
+
+`Piarno.h/cpp` contains the code of the project relevant logic (piano overlay rendering, falling tiles based on the MIDI file, UI controls, etc.).
+
+The `midi` subfolder contains the `Midifile` library (see below) to parse raw MIDI files into the events containing e.g. note press/release information.
+
+The subfolders `models` and `songs` each contain pre-converted 3D models and MIDI files, respectively (in order to avoid NDK's complicated file loading procedure).
+
+
 
 ## Used Frameworks
 
