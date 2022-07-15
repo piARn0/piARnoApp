@@ -184,13 +184,13 @@ void Piarno::render() {
                        mid.globalPos(mid.pos + vec3{0, 1.35f + sin(engine->getFrame() / 72.0f) * 0.05f, -2}),
                        vec3{0.27, 0.3, 0.3},
                        pianoScene.rot,
-                       color{255, 255, 255, 255});
+                       color{200, 200, 200, 255});
 
     engine->renderText("PIARNO",
                        mid.globalPos(mid.pos + vec3{0, 1 + sin(engine->getFrame() / 72.0f) * 0.05f, -2}),
                        vec3{0.5, 0.5, 0.3},
                        pianoScene.rot,
-                       color{255, 255, 255, 255});
+                       color{50, 50, 50, 255});
 
     pianoScene.render();
 
