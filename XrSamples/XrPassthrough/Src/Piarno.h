@@ -9,7 +9,7 @@
 #include <unordered_map>
 
 const std::vector<std::string> songs = {
-    "TWO AM",
+    "2AM",
     "Canon",
     "Sweden",
     "Twinkle",
@@ -19,11 +19,11 @@ const std::vector<std::string> songs = {
     "Fuer Elise",
     "Jacque",
     "Ode to Joy",
-    "Heart n Soul I",
-    "Heart n Soul II",
+    "Heart n Soul 1",
+    "Heart n Soul 2",
     "Pirate",
     "Wet Hands",
-    "Sweden II",
+    "Sweden 2",
     "Four Seasons Spring",
     "Four Seasons Winter",
     "Game of Thrones",

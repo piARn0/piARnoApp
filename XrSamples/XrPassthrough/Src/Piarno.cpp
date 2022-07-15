@@ -138,10 +138,17 @@ void Piarno::update() {
     else {
         timeline.set(currentTime);
     }
+    int sec = floor(currentTime);
+    timeline.label = std::string(6, '\0');
+    std::sprintf(&timeline.label[0], "%02d:%02d", sec / 60, sec % 60);
+    log(timeline.label);
 
     if(playbackSpeed.isReleased()) { //round to 0.25, 0.5, ..., 2.0
         playbackSpeed.set(round(playbackSpeed.get() * 4) / 4);
     }
+
+    playbackSpeed.label = std::string(6, '\0');
+    sprintf(&playbackSpeed.label[0], "X%.2f", playbackSpeed.get());
 
     if(toggleOutline.isPressed())
         pianoOutline.show = !pianoOutline.show;
@@ -177,10 +184,17 @@ void Piarno::update() {
 
 
 void Piarno::render() {
-    engine->renderText("WELCOME TO PIARNO",
-                       vec3{0, 1 + sin(engine->getFrame() / 72.0f) * 0.05f, -2},
+    auto &mid = pianoKeys[pianoKeys.size()/2];
+    engine->renderText("WELCOME TO",
+                       mid.globalPos(mid.pos + vec3{0, 1.35f + sin(engine->getFrame() / 72.0f) * 0.05f, -2}),
+                       vec3{0.27, 0.3, 0.3},
+                       pianoScene.rot,
+                       color{255, 255, 255, 255});
+
+    engine->renderText("PIARNO",
+                       mid.globalPos(mid.pos + vec3{0, 1 + sin(engine->getFrame() / 72.0f) * 0.05f, -2}),
                        vec3{0.5, 0.5, 0.3},
-                       vec3{0, 0, 0},
+                       pianoScene.rot,
                        color{255, 255, 255, 255});
 
     pianoScene.render();

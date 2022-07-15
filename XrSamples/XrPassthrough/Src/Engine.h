@@ -18,7 +18,7 @@ void log(std::string s);
 
 
 enum class Mesh : size_t {
-    axes = 26, //ranges 0-25 are for alphabets A-Z
+    axes = 38, //ranges 0-25 are for alphabets A-Z, 26-35 for 0-9, 36 for . and 37 for :
     cube,
     rect,
     rectGradient,
@@ -76,5 +76,5 @@ protected:
     uint64_t frame = 0;
     std::array<XrBool32*, (size_t) IO::NUM> buttonStates;
 
-    static std::array<float, 26> fontWidth;
+    static std::array<float, 38> fontWidth;
 };
