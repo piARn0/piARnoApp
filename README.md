@@ -2,6 +2,7 @@
 
 # piARno App
 
+[Brief tutorial on YouTube](https://youtu.be/0_xlNFG5BpI)
 
 ## Members
 - Joong-Won Seo [@JoongWonSeo](https://github.com/JoongWonSeo)
