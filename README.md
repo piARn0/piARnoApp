@@ -2,12 +2,17 @@
 
 # piARno App
 
-[Brief tutorial on YouTube](https://youtu.be/0_xlNFG5BpI)
+<img width="1440" alt="piarno_preview" src="https://user-images.githubusercontent.com/42655977/182244584-43fc21e7-9b44-4267-b3a5-4d726119fdf0.png">
+
+<p align="center">
+  <a href="https://youtu.be/0_xlNFG5BpI">Brief tutorial on YouTube</a>
+</p>
+
 
 ## Members
 - Joong-Won Seo [@JoongWonSeo](https://github.com/JoongWonSeo)
-- Jack Sterling Klusmann [@Jack-Klusmann](https://github.com/Jack-Klusmann)
 - Mohammad Naanaa [@hamnaanaa](https://github.com/hamnaanaa)
+- Jack Sterling Klusmann [@Jack-Klusmann](https://github.com/Jack-Klusmann)
 
 
 ## Project Description
