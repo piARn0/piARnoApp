@@ -2,8 +2,9 @@
 
 # piARno App
 
-<img width="1440" alt="piarno_preview" src="https://user-images.githubusercontent.com/42655977/182244584-43fc21e7-9b44-4267-b3a5-4d726119fdf0.png">
-
+<a href="https://youtu.be/0_xlNFG5BpI">
+  <img width="1440" alt="piarno_preview" src="https://user-images.githubusercontent.com/42655977/182244584-43fc21e7-9b44-4267-b3a5-4d726119fdf0.png">
+</a>
 <p align="center">
   <a href="https://youtu.be/0_xlNFG5BpI">Brief tutorial on YouTube</a>
 </p>
