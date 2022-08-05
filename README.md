@@ -58,9 +58,9 @@ You can use ADB or SideQuest to install the pre-compiled APK onto your Quest 2. 
 
 All of the relevant source files are located in `<repo root>/XrSamples/XrPassthrough/Src`.
 
-`Engine.h/cpp` and `Object.h/cpp` contain the classes that create an abstraction layer on top of the underlying frameworks OpenGL ES and OpenXR, in order to simplify the actual project code and make it more portable.
+`Engine.(h|cpp)` and `Object.(h|cpp)` contain the classes that create an abstraction layer on top of the underlying frameworks OpenGL ES and OpenXR, in order to simplify the actual project code and make it more portable.
 
-`Piarno.h/cpp` contains the code of the project relevant logic (piano overlay rendering, falling tiles based on the MIDI file, UI controls, etc.).
+`Piarno.(h|cpp)` contains the code of the project relevant logic (piano overlay rendering, falling tiles based on the MIDI file, UI controls, etc.).
 
 The `midi` subfolder contains the `Midifile` library (see below) to parse raw MIDI files into the events containing e.g. note press/release information.
 
